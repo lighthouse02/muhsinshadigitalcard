@@ -931,6 +931,37 @@ img { display: block; max-width: 100%; }
   box-shadow: 0 0 0 4px rgba(200,169,110,.22);
 }
 .form-group textarea { resize: vertical; min-height: 120px; }
+
+/* ── Salutation + name inline row ── */
+.name-row {
+  display: flex;
+  gap: 0;
+}
+.salutation-select {
+  width: auto;
+  min-width: 88px;
+  flex-shrink: 0;
+  border-right: none !important;
+  border-radius: 10px 0 0 10px !important;
+  padding-left: .75rem !important;
+  padding-right: .5rem !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .55rem center;
+  background-size: 8px;
+  color: var(--text-light) !important;
+}
+.name-row input {
+  flex: 1;
+  min-width: 0;
+  border-radius: 0 10px 10px 0 !important;
+}
+.salutation-select:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 4px rgba(200,169,110,.22);
+  z-index: 1;
+  position: relative;
+}
 .radio-group { display: flex; gap: 1.25rem; flex-wrap: wrap; }
 .radio-label {
   display: flex;

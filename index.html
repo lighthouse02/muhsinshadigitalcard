@@ -272,7 +272,19 @@
 
               <div class="form-group">
                 <label for="rsvp-name">Full Name <span>*</span></label>
-                <input type="text" id="rsvp-name" name="name" placeholder="Your full name" required aria-describedby="name-error" />
+                <div class="name-row">
+                  <select id="rsvp-salutation" name="salutation" class="salutation-select" aria-label="Salutation">
+                    <option value="">—</option>
+                    <option value="En.">En.</option>
+                    <option value="Pn.">Pn.</option>
+                    <option value="Tn. Hj.">Tn. Hj.</option>
+                    <option value="Pn. Hjh.">Pn. Hjh.</option>
+                    <option value="Dr.">Dr.</option>
+                    <option value="Dato'">Dato'</option>
+                    <option value="Datin">Datin</option>
+                  </select>
+                  <input type="text" id="rsvp-name" name="name" placeholder="Your full name" required aria-describedby="name-error" />
+                </div>
                 <p id="name-error" class="form-error hidden" role="alert"></p>
               </div>
               <div class="form-group">

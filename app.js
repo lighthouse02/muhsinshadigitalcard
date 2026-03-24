@@ -384,9 +384,11 @@
     e.preventDefault();
     document.getElementById('rsvp-success').classList.add('hidden');
 
-    const attendance = rsvpForm.querySelector('input[name="attendance"]:checked');
-    const name       = document.getElementById('rsvp-name').value.trim();
-    const phone      = document.getElementById('rsvp-phone').value.trim();
+    const attendance   = rsvpForm.querySelector('input[name="attendance"]:checked');
+    const salutation   = (document.getElementById('rsvp-salutation').value || '').trim();
+    const rawName      = document.getElementById('rsvp-name').value.trim();
+    const name         = salutation ? `${salutation} ${rawName}` : rawName;
+    const phone        = document.getElementById('rsvp-phone').value.trim();
 
     if (!attendance)                   { showInlineError('attendance-error', 'Please select your attendance'); return; }
     clearInlineError('attendance-error');
