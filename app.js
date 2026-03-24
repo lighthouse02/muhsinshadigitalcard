@@ -551,6 +551,29 @@
   }
 
   /* =============================================
+     DEV PREVIEW — Ctrl+Shift+K
+     Shows the attendance card with sample data
+     without filling the RSVP form.
+  ============================================= */
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'K') {
+      e.preventDefault();
+      const successEl = document.getElementById('rsvp-success');
+      const cardSection = document.getElementById('rsvp-card-section');
+      const msgEl = document.getElementById('rsvp-success-msg');
+      // Scroll to RSVP section
+      document.getElementById('rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Show success block with card
+      successEl.classList.remove('hidden');
+      cardSection.classList.remove('hidden');
+      if (msgEl) msgEl.textContent = '[DEV PREVIEW] Thank you! We look forward to celebrating with you.';
+      document.fonts.ready.then(() => drawAttendanceCard('Dr. Ahmad Muadz bin Idris'));
+      // Subtle console hint
+      console.info('%c[DEV] Attendance card preview — Ctrl+Shift+K', 'color:#C8A96E;font-weight:600');
+    }
+  });
+
+  /* =============================================
      7. SIGNATURE PAD + PRIVATE MESSAGE
   ============================================= */
   const canvas     = document.getElementById('signature-canvas');
