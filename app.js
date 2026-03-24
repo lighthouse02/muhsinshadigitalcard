@@ -42,7 +42,7 @@
   });
 
   // Scroll-spy: highlight the link for the section currently in view
-  const navSections = ['story','itinerary','gallery','rsvp','location','gift'];
+  const navSections = ['itinerary','gallery','rsvp','location','gift'];
   const sectionEls  = navSections.map(id => document.getElementById(id)).filter(Boolean);
 
   const spyObserver = new IntersectionObserver(
@@ -160,65 +160,62 @@
   setInterval(updateCountdown, 1000);
 
   /* =============================================
-     4. CALENDAR WIDGET
+     4. ADD TO CALENDAR BUTTONS
   ============================================= */
-  const WEDDING_MONTH = 3; // April (0-indexed)
-  const WEDDING_YEAR  = 2026;
-  const WEDDING_DAY   = 12;
+  (function setupCalendarLinks() {
+    // Google Calendar URL
+    const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=Muhsin+%26+Sha+Wedding' +
+      '&dates=20260412T020000Z%2F20260412T090000Z' +
+      '&details=You+are+invited+to+the+wedding+of+Muhsin+%26+Sha.' +
+      '&location=Dewan+Delima%2C+Kajang';
+    document.getElementById('cal-google').href = gcal;
 
-  let calYear  = WEDDING_YEAR;
-  let calMonth = WEDDING_MONTH;
+    // ICS content
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Muhsin & Sha Wedding//EN',
+      'BEGIN:VEVENT',
+      'DTSTART:20260412T100000',
+      'DTEND:20260412T150000',
+      'SUMMARY:Muhsin & Sha Wedding',
+      'DESCRIPTION:You are invited to the wedding of Muhsin & Sha.',
+      'LOCATION:Dewan Delima\, Kajang',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
 
-  const MONTH_NAMES = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
-  ];
+    const icsBlob = new Blob([ics], { type: 'text/calendar' });
+    const icsUrl  = URL.createObjectURL(icsBlob);
+    document.getElementById('cal-apple').href = icsUrl;
+    document.getElementById('cal-ics').href   = icsUrl;
+  })();
 
-  function renderCalendar() {
-    const grid       = document.getElementById('cal-grid');
-    const labelEl    = document.getElementById('cal-month-year');
-    const firstDay   = new Date(calYear, calMonth, 1).getDay();
-    const daysInMonth= new Date(calYear, calMonth + 1, 0).getDate();
-    const today      = new Date();
+  /* =============================================
+     4b. ITINERARY ACCORDION
+  ============================================= */
+  document.querySelectorAll('.accord-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item     = btn.closest('.accord-item');
+      const body     = item.querySelector('.accord-body');
+      const isOpen   = btn.getAttribute('aria-expanded') === 'true';
 
-    labelEl.textContent = `${MONTH_NAMES[calMonth]} ${calYear}`;
-    grid.innerHTML = '';
+      // Close all others
+      document.querySelectorAll('.accord-item').forEach(i => {
+        i.querySelector('.accord-btn').setAttribute('aria-expanded', 'false');
+        i.querySelector('.accord-body').style.maxHeight = null;
+        i.classList.remove('accord-open');
+      });
 
-    // Empty cells before first day
-    for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement('div');
-      empty.className = 'cal-day empty';
-      grid.appendChild(empty);
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement('div');
-      cell.className = 'cal-day';
-      cell.textContent = d;
-
-      const isToday    = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
-      const isWedding  = (d === WEDDING_DAY && calMonth === WEDDING_MONTH && calYear === WEDDING_YEAR);
-
-      if (isWedding)  cell.classList.add('wedding-day');
-      else if (isToday) cell.classList.add('today');
-
-      if (isWedding) cell.title = '💛 Our Wedding Day!';
-      grid.appendChild(cell);
-    }
-  }
-
-  document.getElementById('cal-prev').addEventListener('click', () => {
-    calMonth--;
-    if (calMonth < 0) { calMonth = 11; calYear--; }
-    renderCalendar();
+      // Toggle clicked item
+      if (!isOpen) {
+        btn.setAttribute('aria-expanded', 'true');
+        body.style.maxHeight = body.scrollHeight + 'px';
+        item.classList.add('accord-open');
+      }
+    });
   });
-  document.getElementById('cal-next').addEventListener('click', () => {
-    calMonth++;
-    if (calMonth > 11) { calMonth = 0; calYear++; }
-    renderCalendar();
-  });
-
-  renderCalendar();
 
   /* =============================================
      5. GALLERY LIGHTBOX
@@ -467,8 +464,7 @@
      10. SCROLL REVEAL
   ============================================= */
   const revealEls = document.querySelectorAll(
-    '#story .story-card, #countdown-section, #calendar-section .calendar-widget, ' +
-    '#itinerary .itinerary-item, .gallery-item, ' +
+    '#countdown-section, #itinerary .accord-item, .gallery-item, ' +
     '#rsvp .engage-tabs, #rsvp .panel-card, ' +
     '#location .location-card, #gift .gift-card'
   );

@@ -20,7 +20,6 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" id="nav-links" role="list">
-        <li><a href="#story">Our Story</a></li>
         <li><a href="#itinerary">Itinerary</a></li>
         <li><a href="#gallery">Gallery</a></li>
         <li><a href="#rsvp">RSVP</a></li>
@@ -53,14 +52,34 @@
         <span class="hero-date-main">12 · 04 · 2026</span>
         <span>10:00 AM</span>
       </div>
-      <a href="#rsvp" class="btn-primary fade-in-up delay-5">RSVP Now</a>
+      <!-- Couple story strip -->
+      <div class="hero-story fade-in-up delay-5">
+        <div class="hero-story-step">
+          <div class="hss-dot"><i class="fas fa-heart"></i></div>
+          <span>Met</span><small>2021</small>
+        </div>
+        <div class="hss-line"></div>
+        <div class="hero-story-step">
+          <div class="hss-dot"><i class="fas fa-ring"></i></div>
+          <span>Engaged</span><small>2025</small>
+        </div>
+        <div class="hss-line"></div>
+        <div class="hero-story-step hss-active">
+          <div class="hss-dot"><i class="fas fa-mosque"></i></div>
+          <span>Wedding</span><small>2026</small>
+        </div>
+      </div>
+      <div class="hero-ctas fade-in-up delay-5">
+        <a href="#rsvp" class="btn-primary">RSVP Now</a>
+        <a href="#itinerary" class="btn-outline btn-outline-light">View Itinerary</a>
+      </div>
     </div>
     <div class="scroll-down">
       <span></span><span></span><span></span>
     </div>
   </section>
 
-  <!-- ========== COUNTDOWN ========== -->
+  <!-- ========== COUNTDOWN + SAVE THE DATE ========== -->
   <section id="countdown-section">
     <h2 class="section-title">Counting Down To Our Big Day</h2>
     <div id="countdown">
@@ -72,107 +91,68 @@
       <div class="count-sep">:</div>
       <div class="count-box"><span id="seconds">00</span><label>Seconds</label></div>
     </div>
-  </section>
-
-  <!-- ========== OUR STORY ========== -->
-  <section id="story">
-    <div class="container">
-      <h2 class="section-title">Our Story</h2>
-      <div class="story-timeline">
-        <div class="story-item left">
-          <div class="story-card">
-            <i class="fas fa-heart story-icon"></i>
-            <h3>First Meeting</h3>
-            <span class="story-year">2021</span>
-            <p>Two souls crossed paths, unaware that fate had already written their story together.</p>
-          </div>
-        </div>
-        <div class="story-item right">
-          <div class="story-card">
-            <i class="fas fa-ring story-icon"></i>
-            <h3>Engagement</h3>
-            <span class="story-year">2025</span>
-            <p>He got down on one knee, and she said yes. The journey to forever began.</p>
-          </div>
-        </div>
-        <div class="story-item left">
-          <div class="story-card">
-            <i class="fas fa-mosque story-icon"></i>
-            <h3>The Wedding</h3>
-            <span class="story-year">2026</span>
-            <p>In the presence of loved ones, they will begin their new chapter as husband and wife.</p>
-          </div>
-        </div>
+    <!-- Add to Calendar -->
+    <div class="save-date-bar">
+      <p class="save-date-label"><i class="fas fa-calendar-plus"></i> Save the Date &mdash; 12 April 2026</p>
+      <div class="save-date-btns">
+        <a id="cal-google" href="#" target="_blank" rel="noopener" class="cal-btn cal-google">
+          <i class="fab fa-google"></i> Google
+        </a>
+        <a id="cal-apple" href="#" class="cal-btn cal-apple">
+          <i class="fab fa-apple"></i> Apple
+        </a>
+        <a id="cal-ics" href="#" download="muhsin-sha-wedding.ics" class="cal-btn cal-ics">
+          <i class="fas fa-calendar-alt"></i> .ics
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ========== CALENDAR / SAVE THE DATE ========== -->
-  <section id="calendar-section">
-    <div class="container">
-      <h2 class="section-title">Save the Date</h2>
-      <p class="section-sub">Mark your calendar — you won't want to miss this!</p>
-      <div class="calendar-widget">
-        <div class="cal-header">
-          <button id="cal-prev"><i class="fas fa-chevron-left"></i></button>
-          <span id="cal-month-year">April 2026</span>
-          <button id="cal-next"><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="cal-days-header">
-          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-        <div class="cal-legend">
-          <span class="cal-marked-dot"></span> Wedding Day — 12 April 2026
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========== ITINERARY ========== -->
+  <!-- ========== ITINERARY (accordion) ========== -->
   <section id="itinerary">
     <div class="container">
-      <h2 class="section-title">Wedding Itinerary</h2>
-      <div class="itinerary-list">
-        <div class="itinerary-item">
-          <div class="itinerary-time">09:00 AM</div>
-          <div class="itinerary-dot"></div>
-          <div class="itinerary-desc">
-            <h3>Guest Arrival</h3>
-            <p>Welcome reception &amp; refreshments</p>
-          </div>
+      <h2 class="section-title">Wedding Day</h2>
+      <p class="section-sub">Saturday, 12 April 2026 &middot; Dewan Delima, Kajang</p>
+      <div class="accord-list">
+        <div class="accord-item">
+          <button class="accord-btn" aria-expanded="false">
+            <span class="accord-time">09:00 AM</span>
+            <span class="accord-title">Guest Arrival</span>
+            <i class="fas fa-chevron-down accord-arrow"></i>
+          </button>
+          <div class="accord-body"><p>Welcome reception &amp; refreshments await upon your arrival.</p></div>
         </div>
-        <div class="itinerary-item">
-          <div class="itinerary-time">10:00 AM</div>
-          <div class="itinerary-dot"></div>
-          <div class="itinerary-desc">
-            <h3>Akad Nikah</h3>
-            <p>The sacred wedding ceremony</p>
-          </div>
+        <div class="accord-item">
+          <button class="accord-btn" aria-expanded="false">
+            <span class="accord-time">10:00 AM</span>
+            <span class="accord-title">Akad Nikah</span>
+            <i class="fas fa-chevron-down accord-arrow"></i>
+          </button>
+          <div class="accord-body"><p>The sacred wedding ceremony &mdash; the moment two souls become one.</p></div>
         </div>
-        <div class="itinerary-item">
-          <div class="itinerary-time">11:00 AM</div>
-          <div class="itinerary-dot"></div>
-          <div class="itinerary-desc">
-            <h3>Bersanding</h3>
-            <p>Bride &amp; groom on the pelamin</p>
-          </div>
+        <div class="accord-item">
+          <button class="accord-btn" aria-expanded="false">
+            <span class="accord-time">11:00 AM</span>
+            <span class="accord-title">Bersanding</span>
+            <i class="fas fa-chevron-down accord-arrow"></i>
+          </button>
+          <div class="accord-body"><p>Bride &amp; groom seated on the pelamin, beautifully adorned.</p></div>
         </div>
-        <div class="itinerary-item">
-          <div class="itinerary-time">12:00 PM</div>
-          <div class="itinerary-dot"></div>
-          <div class="itinerary-desc">
-            <h3>Wedding Feast (Walimah)</h3>
-            <p>Lunch &amp; celebration with family and friends</p>
-          </div>
+        <div class="accord-item">
+          <button class="accord-btn" aria-expanded="false">
+            <span class="accord-time">12:00 PM</span>
+            <span class="accord-title">Wedding Feast (Walimah)</span>
+            <i class="fas fa-chevron-down accord-arrow"></i>
+          </button>
+          <div class="accord-body"><p>Lunch &amp; celebration with family and friends. Savoury dishes &amp; desserts will be served.</p></div>
         </div>
-        <div class="itinerary-item">
-          <div class="itinerary-time">03:00 PM</div>
-          <div class="itinerary-dot"></div>
-          <div class="itinerary-desc">
-            <h3>End of Event</h3>
-            <p>Thank you for celebrating with us!</p>
-          </div>
+        <div class="accord-item">
+          <button class="accord-btn" aria-expanded="false">
+            <span class="accord-time">03:00 PM</span>
+            <span class="accord-title">End of Event</span>
+            <i class="fas fa-chevron-down accord-arrow"></i>
+          </button>
+          <div class="accord-body"><p>Thank you for celebrating this special day with us. Your presence means everything. 🤍</p></div>
         </div>
       </div>
     </div>
@@ -218,6 +198,14 @@
     <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
     <img id="lightbox-img" src="" alt="Gallery image" />
     <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
+  </div>
+
+  <!-- ========== RSVP CTA PULL ========== -->
+  <div class="rsvp-pull">
+    <div class="container rsvp-pull-inner">
+      <p class="rsvp-pull-text"><i class="fas fa-calendar-check"></i> Your presence means the world to us &mdash; please RSVP by <strong>1 April 2026</strong></p>
+      <a href="#rsvp" class="btn-primary">RSVP &amp; leave your wishes</a>
+    </div>
   </div>
 
   <!-- ========== ENGAGE (RSVP · MESSAGE · WISHES) ========== -->
