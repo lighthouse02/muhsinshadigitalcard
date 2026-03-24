@@ -1089,6 +1089,14 @@ img { display: block; max-width: 100%; }
 }
 .form-success.hidden { display: none; }
 
+.form-error {
+  color: #e53935;
+  font-size: .82rem;
+  margin-top: .3rem;
+  font-family: var(--font-sans);
+}
+.form-error.hidden { display: none; }
+
 /* ---------- RSVP ---------- */
 #rsvp {
   padding: 3.5rem 0;

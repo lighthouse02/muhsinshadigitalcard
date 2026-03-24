@@ -42,7 +42,7 @@
   });
 
   // Scroll-spy: highlight the link for the section currently in view
-  const navSections = ['story','itinerary','dresscode','gallery','rsvp','location','gift'];
+  const navSections = ['story','itinerary','gallery','rsvp','location','gift'];
   const sectionEls  = navSections.map(id => document.getElementById(id)).filter(Boolean);
 
   const spyObserver = new IntersectionObserver(
@@ -282,6 +282,7 @@
   attendanceRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       guestsGroup.style.display = radio.value === 'no' ? 'none' : '';
+      clearInlineError('attendance-error');
     });
   });
 
@@ -292,21 +293,26 @@
     const email      = document.getElementById('rsvp-email').value.trim();
     const attendance = rsvpForm.querySelector('input[name="attendance"]:checked');
 
-    // Basic validation
+    // Hide any previous success
+    document.getElementById('rsvp-success').classList.add('hidden');
+
+    // Validation
     if (!name) { flashError('rsvp-name', 'Please enter your name'); return; }
     if (!isValidEmail(email)) { flashError('rsvp-email', 'Please enter a valid email'); return; }
-    if (!attendance) { alert('Please select your attendance.'); return; }
+    if (!attendance) { showInlineError('attendance-error', 'Please select your attendance'); return; }
+    clearInlineError('attendance-error');
 
     // Simulate submission
     const successEl = document.getElementById('rsvp-success');
-    rsvpForm.querySelector('.btn-primary').disabled = true;
-    rsvpForm.querySelector('.btn-primary').textContent = 'Sending...';
+    const rsvpBtn = rsvpForm.querySelector('.btn-primary');
+    rsvpBtn.disabled = true;
+    rsvpBtn.textContent = 'Sending...';
 
     setTimeout(() => {
       successEl.classList.remove('hidden');
       rsvpForm.reset();
-      rsvpForm.querySelector('.btn-primary').disabled = false;
-      rsvpForm.querySelector('.btn-primary').textContent = 'Send RSVP';
+      rsvpBtn.disabled = false;
+      rsvpBtn.textContent = 'Send RSVP';
       guestsGroup.style.display = '';
     }, 1000);
   });
@@ -336,6 +342,7 @@
   resizeCanvas();
 
   document.getElementById('sig-clear').addEventListener('click', () => sigPad.clear());
+  canvas.addEventListener('pointerdown', () => clearInlineError('sig-error'));
 
   const msgForm = document.getElementById('message-form');
   msgForm.addEventListener('submit', (e) => {
@@ -344,24 +351,29 @@
     const name = document.getElementById('msg-name').value.trim();
     const text = document.getElementById('msg-text').value.trim();
 
+    // Hide any previous success
+    document.getElementById('msg-success').classList.add('hidden');
+
     if (!name) { flashError('msg-name', 'Please enter your name'); return; }
     if (!text) { flashError('msg-text', 'Please write a message'); return; }
     if (sigPad.isEmpty()) {
-      alert('Please add your signature before sending.');
+      showInlineError('sig-error', 'Please add your signature before sending');
       return;
     }
+    clearInlineError('sig-error');
 
     // In a real implementation, you'd POST name, text, and sigPad.toDataURL() to your backend
     const successEl = document.getElementById('msg-success');
-    msgForm.querySelector('.btn-primary').disabled = true;
-    msgForm.querySelector('.btn-primary').textContent = 'Sending...';
+    const msgBtn = msgForm.querySelector('.btn-primary');
+    msgBtn.disabled = true;
+    msgBtn.textContent = 'Sending...';
 
     setTimeout(() => {
       successEl.classList.remove('hidden');
       msgForm.reset();
       sigPad.clear();
-      msgForm.querySelector('.btn-primary').disabled = false;
-      msgForm.querySelector('.btn-primary').textContent = 'Send Private Message';
+      msgBtn.disabled = false;
+      msgBtn.textContent = 'Send Private Message';
     }, 1000);
   });
 
@@ -379,10 +391,8 @@
     const name = sanitize(nameInput.value.trim());
     const text = sanitize(textInput.value.trim());
 
-    if (!name || !text) {
-      alert('Please fill in both your name and your wish.');
-      return;
-    }
+    if (!name) { flashError('wish-name', 'Please enter your name'); return; }
+    if (!text) { flashError('wish-text', 'Please enter your wish'); return; }
 
     const card = document.createElement('div');
     card.className = 'wish-card';
@@ -437,7 +447,7 @@
   ============================================= */
   const revealEls = document.querySelectorAll(
     '#story .story-card, #countdown-section, #calendar-section .calendar-widget, ' +
-    '#itinerary .itinerary-item, #dresscode .dress-swatches, .gallery-item, ' +
+    '#itinerary .itinerary-item, .gallery-item, ' +
     '#rsvp .rsvp-form, #message-section .message-form, #wishes .wish-card, ' +
     '#location .location-card, #gift .gift-card'
   );
@@ -478,12 +488,26 @@
   function flashError(inputId, msg) {
     const el = document.getElementById(inputId);
     if (!el) return;
+    const orig = el.placeholder;
     el.style.borderColor = '#e53935';
     el.placeholder = msg;
     el.focus();
     setTimeout(() => {
       el.style.borderColor = '';
+      el.placeholder = orig;
     }, 2500);
+  }
+
+  function showInlineError(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  function clearInlineError(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
   }
 
   // Sanitize text to prevent XSS when building DOM via innerHTML

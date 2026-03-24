@@ -22,7 +22,6 @@
       <ul class="nav-links" id="nav-links" role="list">
         <li><a href="#story">Our Story</a></li>
         <li><a href="#itinerary">Itinerary</a></li>
-        <li><a href="#dresscode">Dress Code</a></li>
         <li><a href="#gallery">Gallery</a></li>
         <li><a href="#rsvp">RSVP</a></li>
         <li><a href="#location">Location</a></li>
@@ -179,21 +178,6 @@
     </div>
   </section>
 
-  <!-- ========== DRESS CODE ========== -->
-  <section id="dresscode">
-    <div class="container">
-      <h2 class="section-title">Dress Code</h2>
-      <p class="section-sub">Please dress in our wedding palette</p>
-      <div class="dress-swatches">
-        <div class="swatch" style="background:#C8A96E;"><span>Gold</span></div>
-        <div class="swatch" style="background:#FFFFFF; border:1px solid #ddd;"><span style="color:#999;">Ivory</span></div>
-        <div class="swatch" style="background:#8B7355;"><span>Mocha</span></div>
-        <div class="swatch" style="background:#D4C1A1;"><span>Champagne</span></div>
-      </div>
-      <p class="dresscode-note">Smart casual / traditional attire preferred. Please avoid wearing white or black.</p>
-    </div>
-  </section>
-
   <!-- ========== GALLERY ========== -->
   <section id="gallery">
     <div class="container">
@@ -264,6 +248,7 @@
               <input type="radio" name="attendance" value="no" /> Regretfully Declines
             </label>
           </div>
+          <p id="attendance-error" class="form-error hidden"></p>
         </div>
         <div class="form-group" id="guests-group">
           <label for="rsvp-guests">Number of Guests <span>*</span></label>
@@ -312,6 +297,7 @@
             </div>
           </div>
           <p class="sig-hint">Sign above using your mouse or finger</p>
+          <p id="sig-error" class="form-error hidden"></p>
         </div>
         <button type="submit" class="btn-primary">Send Private Message</button>
         <div id="msg-success" class="form-success hidden">
