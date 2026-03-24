@@ -12,14 +12,32 @@
 </head>
 <body>
 
+  <!-- ========== STICKY NAVIGATION ========== -->
+  <nav id="site-nav" class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">M <span>&</span> S</a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="#story">Our Story</a></li>
+        <li><a href="#itinerary">Itinerary</a></li>
+        <li><a href="#dresscode">Dress Code</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#rsvp">RSVP</a></li>
+        <li><a href="#location">Location</a></li>
+        <li><a href="#gift">Gift</a></li>
+      </ul>
+    </div>
+  </nav>
+
   <!-- ========== MUSIC PLAYER ========== -->
   <div id="music-player">
     <button id="music-btn" title="Toggle music">
       <i class="fas fa-music"></i>
     </button>
-    <audio id="bg-music" loop>
-      <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg" />
-    </audio>
+    <!-- Hidden YouTube player — audio only, visually invisible -->
+    <div id="yt-player" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
   </div>
 
   <!-- ========== HERO ========== -->
@@ -383,19 +401,6 @@
         </div>
       </div>
 
-      <!-- Weather Forecast Widget -->
-      <div id="weather-widget" class="weather-widget">
-        <div class="weather-header">
-          <i class="fas fa-cloud-sun"></i>
-          <span>Wedding Day Forecast &mdash; 12 April 2026 &middot; Kajang, Selangor</span>
-        </div>
-        <div id="weather-content" class="weather-content">
-          <div class="weather-loading">
-            <div class="weather-spinner"></div>
-            <span>Checking forecast&hellip;</span>
-          </div>
-        </div>
-      </div>
 
     </div>
   </section>
@@ -442,6 +447,8 @@
     </div>
   </footer>
 
+  <!-- YouTube IFrame API (async) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="app.js"></script>
 </body>
 </html>

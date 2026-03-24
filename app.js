@@ -7,19 +7,96 @@
   'use strict';
 
   /* =============================================
-     1. MUSIC PLAYER
+     0. STICKY NAVIGATION
   ============================================= */
-  const musicBtn  = document.getElementById('music-btn');
-  const bgMusic   = document.getElementById('bg-music');
-  let   musicOn   = false;
+  const siteNav     = document.getElementById('site-nav');
+  const navHamburger = document.getElementById('nav-hamburger');
+  const navLinks    = document.getElementById('nav-links');
+  const hero        = document.getElementById('hero');
+
+  // Reveal / hide navbar based on hero visibility
+  const heroObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        siteNav.classList.remove('nav-visible');
+      } else {
+        siteNav.classList.add('nav-visible');
+      }
+    },
+    { threshold: 0.1 }
+  );
+  heroObserver.observe(hero);
+
+  // Hamburger toggle
+  navHamburger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('nav-open');
+    navHamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close mobile menu when a link is clicked
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('nav-open');
+      navHamburger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Scroll-spy: highlight the link for the section currently in view
+  const navSections = ['story','itinerary','dresscode','gallery','rsvp','location','gift'];
+  const sectionEls  = navSections.map(id => document.getElementById(id)).filter(Boolean);
+
+  const spyObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.querySelectorAll('a').forEach(a => a.classList.remove('nav-active'));
+          const active = navLinks.querySelector(`a[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('nav-active');
+        }
+      });
+    },
+    { rootMargin: '-30% 0px -60% 0px' }
+  );
+  sectionEls.forEach(el => spyObserver.observe(el));
+
+  /* =============================================
+     1. MUSIC PLAYER — YouTube IFrame API
+        Song: https://www.youtube.com/watch?v=4ptRrq6qA8A
+  ============================================= */
+  const musicBtn = document.getElementById('music-btn');
+  let musicOn    = false;
+  let ytPlayer   = null;
+  let ytReady    = false;
+
+  // YouTube IFrame API calls this globally when the script has loaded
+  window.onYouTubeIframeAPIReady = function () {
+    ytPlayer = new YT.Player('yt-player', {
+      videoId: '4ptRrq6qA8A',
+      playerVars: {
+        autoplay:        0,
+        loop:            1,
+        playlist:        '4ptRrq6qA8A', // required for loop to work
+        controls:        0,
+        disablekb:       1,
+        fs:              0,
+        iv_load_policy:  3,
+        modestbranding:  1,
+        rel:             0,
+        origin:          window.location.origin, // fixes postMessage cross-origin error
+      },
+      events: {
+        onReady: function () { ytReady = true; },
+      },
+    });
+  };
 
   musicBtn.addEventListener('click', () => {
     if (musicOn) {
-      bgMusic.pause();
+      if (ytReady) ytPlayer.pauseVideo();
       musicBtn.innerHTML = '<i class="fas fa-music"></i>';
       musicBtn.style.background = 'linear-gradient(135deg, #aaa, #777)';
     } else {
-      bgMusic.play().catch(() => {});
+      if (ytReady) ytPlayer.playVideo();
       musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
       musicBtn.style.background = '';
     }
@@ -362,7 +439,7 @@
     '#story .story-card, #countdown-section, #calendar-section .calendar-widget, ' +
     '#itinerary .itinerary-item, #dresscode .dress-swatches, .gallery-item, ' +
     '#rsvp .rsvp-form, #message-section .message-form, #wishes .wish-card, ' +
-    '#location .location-card, #weather-widget, #gift .gift-card'
+    '#location .location-card, #gift .gift-card'
   );
 
   revealEls.forEach(el => el.classList.add('reveal'));
@@ -390,141 +467,6 @@
       }
     });
   });
-
-  /* =============================================
-     12. WEATHER FORECAST WIDGET
-     API: Open-Meteo (free, no key required)
-     Venue: Kajang, Selangor (2.9836, 101.7884)
-     Date: 2026-04-12
-  ============================================= */
-  (function initWeather() {
-    const LAT  = 2.9836;
-    const LON  = 101.7884;
-    const DATE = '2026-04-12';
-    const API  = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
-                 `&daily=weather_code,temperature_2m_max,temperature_2m_min,` +
-                 `precipitation_probability_max,wind_speed_10m_max,uv_index_max` +
-                 `&timezone=Asia%2FKuala_Lumpur&start_date=${DATE}&end_date=${DATE}`;
-
-    /* WMO Weather Interpretation Codes — labels & emoji */
-    const WMO = {
-      0:  { label: 'Clear Sky',           emoji: '☀️'  },
-      1:  { label: 'Mainly Clear',        emoji: '🌤️' },
-      2:  { label: 'Partly Cloudy',       emoji: '⛅'  },
-      3:  { label: 'Overcast',            emoji: '☁️'  },
-      45: { label: 'Foggy',               emoji: '🌫️' },
-      48: { label: 'Icy Fog',             emoji: '🌫️' },
-      51: { label: 'Light Drizzle',       emoji: '🌦️' },
-      53: { label: 'Moderate Drizzle',    emoji: '🌦️' },
-      55: { label: 'Heavy Drizzle',       emoji: '🌧️' },
-      61: { label: 'Light Rain',          emoji: '🌧️' },
-      63: { label: 'Moderate Rain',       emoji: '🌧️' },
-      65: { label: 'Heavy Rain',          emoji: '🌧️' },
-      80: { label: 'Slight Showers',      emoji: '🌦️' },
-      81: { label: 'Moderate Showers',    emoji: '🌦️' },
-      82: { label: 'Heavy Showers',       emoji: '⛈️'  },
-      95: { label: 'Thunderstorm',        emoji: '⛈️'  },
-      96: { label: 'Thunderstorm',        emoji: '⛈️'  },
-      99: { label: 'Thunderstorm + Hail', emoji: '⛈️'  },
-    };
-
-    function wmoLookup(code) {
-      return WMO[code] || { label: 'Variable', emoji: '🌡️' };
-    }
-
-    function buildHTML(d) {
-      const w = wmoLookup(d.weatherCode);
-      const avgTemp = Math.round((d.tempMax + d.tempMin) / 2);
-      const estimateBadge = d.isEstimate
-        ? `<div class="weather-estimate-badge">
-             <i class="fas fa-info-circle"></i>
-             Typical April climate &mdash; live forecast available ~16 days before the wedding
-           </div>`
-        : '';
-      // All interpolated values are numbers or from our own hardcoded lookup — no XSS risk
-      return `${estimateBadge}
-        <div class="weather-main">
-          <div class="weather-icon-big">${w.emoji}</div>
-          <div>
-            <div class="weather-temp-range">
-              <span class="temp-high">${d.tempMax}&deg;C</span>
-              <span class="temp-low">/ ${d.tempMin}&deg;C</span>
-            </div>
-            <div class="weather-condition">${w.label}</div>
-          </div>
-        </div>
-        <div class="weather-stats">
-          <div class="weather-stat">
-            <i class="fas fa-umbrella"></i>
-            <span class="stat-val">${d.rain}%</span>
-            <span class="stat-label">Rain Chance</span>
-          </div>
-          <div class="weather-stat">
-            <i class="fas fa-wind"></i>
-            <span class="stat-val">${d.wind} km/h</span>
-            <span class="stat-label">Wind</span>
-          </div>
-          <div class="weather-stat">
-            <i class="fas fa-sun"></i>
-            <span class="stat-val">${d.uv}</span>
-            <span class="stat-label">UV Index</span>
-          </div>
-          <div class="weather-stat">
-            <i class="fas fa-thermometer-half"></i>
-            <span class="stat-val">${avgTemp}&deg;C</span>
-            <span class="stat-label">Avg Temp</span>
-          </div>
-        </div>
-        <p class="weather-note">
-          ${d.isEstimate
-            ? 'Based on Kajang\'s historical April climate data'
-            : 'Live forecast &mdash; Open-Meteo &middot; Kajang, Selangor'}
-        </p>`;
-    }
-
-    /* Typical April climate for Kajang/KL when forecast not yet available */
-    function showEstimate() {
-      const el = document.getElementById('weather-content');
-      if (!el) return;
-      el.innerHTML = buildHTML({
-        weatherCode: 80,  // Slight showers typical for KL April afternoons
-        tempMax: 33,
-        tempMin: 24,
-        rain: 65,
-        wind: 15,
-        uv: 11,
-        isEstimate: true,
-      });
-    }
-
-    const contentEl = document.getElementById('weather-content');
-    if (!contentEl) return;
-
-    fetch(API)
-      .then(function (res) {
-        if (!res.ok) throw new Error('Network error');
-        return res.json();
-      })
-      .then(function (data) {
-        /* Open-Meteo returns empty arrays if date is out of forecast range */
-        if (!data.daily || !data.daily.time || data.daily.time.length === 0) {
-          showEstimate();
-          return;
-        }
-        contentEl.innerHTML = buildHTML({
-          weatherCode: data.daily.weather_code[0],
-          tempMax:     Math.round(data.daily.temperature_2m_max[0]),
-          tempMin:     Math.round(data.daily.temperature_2m_min[0]),
-          rain:        data.daily.precipitation_probability_max[0] != null
-                         ? data.daily.precipitation_probability_max[0]
-                         : '—',
-          wind:        Math.round(data.daily.wind_speed_10m_max[0]),
-          uv:          Math.round(data.daily.uv_index_max[0]),
-          isEstimate:  false,
-        });
-      })
-      .catch(showEstimate);
-  })();
 
   /* =============================================
      HELPERS
