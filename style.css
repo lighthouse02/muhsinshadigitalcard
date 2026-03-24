@@ -1141,6 +1141,122 @@ img { display: block; max-width: 100%; }
 }
 @media (min-width: 640px) { .map-frame iframe { height: 100%; min-height: 320px; } }
 
+/* ---------- WEATHER WIDGET ---------- */
+.weather-widget {
+  max-width: 900px;
+  margin: 1.25rem auto 0;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.weather-header {
+  background: linear-gradient(135deg, #1e6bbf, #0d47a1);
+  color: #fff;
+  padding: .85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  font-family: var(--font-serif);
+  font-size: .92rem;
+  letter-spacing: .03em;
+}
+.weather-header i { font-size: 1.1rem; }
+.weather-content { padding: 1.4rem 1.25rem 1.5rem; }
+.weather-loading {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  color: var(--text-light);
+  font-size: .88rem;
+}
+.weather-spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--gold-light);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: weatherSpin .8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes weatherSpin { to { transform: rotate(360deg); } }
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+.weather-icon-big { font-size: 3rem; line-height: 1; }
+.weather-temp-range .temp-high {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.weather-temp-range .temp-low {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-left: .3rem;
+}
+.weather-condition {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: .95rem;
+  color: var(--text-light);
+  margin-top: .15rem;
+}
+.weather-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .65rem;
+}
+@media (min-width: 480px) { .weather-stats { grid-template-columns: repeat(4, 1fr); } }
+.weather-stat {
+  background: var(--bg-alt);
+  border-radius: var(--radius-sm);
+  padding: .75rem .8rem;
+  text-align: center;
+}
+.weather-stat i { color: var(--gold); font-size: .9rem; }
+.weather-stat .stat-val {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: .2rem 0 .1rem;
+}
+.weather-stat .stat-label {
+  display: block;
+  font-size: .68rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.weather-note {
+  margin-top: 1rem;
+  font-size: .76rem;
+  color: var(--text-light);
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-align: center;
+}
+.weather-estimate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .7rem;
+  background: #fff3cd;
+  color: #856404;
+  padding: .2rem .7rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  font-style: normal;
+  font-family: var(--font-sans);
+}
+
 /* ---------- GIFT ---------- */
 #gift {
   padding: 3.5rem 0;
