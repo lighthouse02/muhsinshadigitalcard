@@ -940,7 +940,7 @@ img { display: block; max-width: 100%; }
   gap: 0;
 }
 .salutation-select {
-  width: auto;
+  width: auto !important;
   min-width: 88px;
   flex-shrink: 0;
   border-right: none !important;
