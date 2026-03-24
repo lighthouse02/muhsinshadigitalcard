@@ -1,5 +1,5 @@
 /* ============================================
-   MUHSIN & SHA — WEDDING DIGITAL CARD
+   MUHSIN & SYAQIELA — WEDDING DIGITAL CARD
    JavaScript — app.js
    ============================================ */
 
@@ -165,9 +165,9 @@
   (function setupCalendarLinks() {
     // Google Calendar URL
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-      '&text=Muhsin+%26+Sha+Wedding' +
+      '&text=Muhsin+%26+Syaqiela+Wedding' +
       '&dates=20260412T020000Z%2F20260412T090000Z' +
-      '&details=You+are+invited+to+the+wedding+of+Muhsin+%26+Sha.' +
+      '&details=You+are+invited+to+the+wedding+of+Muhsin+%26+Syaqiela.' +
       '&location=Dewan+Delima%2C+Kajang';
     document.getElementById('cal-google').href = gcal;
 
@@ -175,12 +175,12 @@
     const ics = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Muhsin & Sha Wedding//EN',
+      'PRODID:-//Muhsin & Syaqiela Wedding//EN',
       'BEGIN:VEVENT',
       'DTSTART:20260412T100000',
       'DTEND:20260412T150000',
-      'SUMMARY:Muhsin & Sha Wedding',
-      'DESCRIPTION:You are invited to the wedding of Muhsin & Sha.',
+      'SUMMARY:Muhsin & Syaqiela Wedding',
+      'DESCRIPTION:You are invited to the wedding of Muhsin & Syaqiela.',
       'LOCATION:Dewan Delima\, Kajang',
       'END:VEVENT',
       'END:VCALENDAR'
