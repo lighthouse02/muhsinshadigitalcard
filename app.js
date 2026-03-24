@@ -431,6 +431,18 @@
   function drawAttendanceCard(guestName) {
     const canvas = document.getElementById('rsvp-card-canvas');
     if (!canvas) return;
+
+    const HERO_IMG_URL = 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&fm=webp&q=80';
+    const heroImg = new Image();
+    heroImg.crossOrigin = 'anonymous';
+    heroImg.onload  = () => _renderCard(heroImg, guestName);
+    heroImg.onerror = () => _renderCard(null, guestName);   // fallback: dark fill
+    heroImg.src = HERO_IMG_URL;
+  }
+
+  function _renderCard(heroImg, guestName) {
+    const canvas = document.getElementById('rsvp-card-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const W = 800, H = 580;
     canvas.width  = W;
@@ -441,6 +453,7 @@
     const muted    = '#6b5c48';
     const cream    = '#fdf8ef';
     const heroBg   = '#1e1510';
+    const HERO_H   = 185;
 
     /* ── tiny helpers ─────────────────────────── */
     function diamond(x, y, s) {
@@ -454,15 +467,42 @@
 
     /* ══════════════════════════════════════════
        ZONE 1 — HERO BAND  (Y 0 – 185)
-       Dark mocha, big couple names
+       Hero photo + layered dark + gold overlay
     ════════════════════════════════════════════ */
-    ctx.fillStyle = heroBg;
-    ctx.fillRect(0, 0, W, 185);
-    const hg = ctx.createLinearGradient(0, 0, W, 185);
-    hg.addColorStop(0,   'rgba(200,169,110,.20)');
-    hg.addColorStop(0.5, 'rgba(200,169,110,.03)');
-    hg.addColorStop(1,   'rgba(200,169,110,.20)');
-    ctx.fillStyle = hg; ctx.fillRect(0, 0, W, 185);
+    // clip to hero band so photo doesn't bleed below
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, W, HERO_H);
+    ctx.clip();
+
+    if (heroImg) {
+      // cover-fit the image into the hero band
+      const iW = heroImg.naturalWidth  || heroImg.width;
+      const iH = heroImg.naturalHeight || heroImg.height;
+      const scale = Math.max(W / iW, HERO_H / iH);
+      const dw = iW * scale, dh = iH * scale;
+      const dx = (W - dw) / 2, dy = (HERO_H - dh) / 2;
+      ctx.drawImage(heroImg, dx, dy, dw, dh);
+    } else {
+      ctx.fillStyle = heroBg;
+      ctx.fillRect(0, 0, W, HERO_H);
+    }
+
+    // dark layered overlay — same feel as .hero-overlay on the site
+    const ov1 = ctx.createLinearGradient(0, 0, 0, HERO_H);
+    ov1.addColorStop(0,   'rgba(20,14,8,.72)');
+    ov1.addColorStop(0.5, 'rgba(20,14,8,.55)');
+    ov1.addColorStop(1,   'rgba(20,14,8,.78)');
+    ctx.fillStyle = ov1; ctx.fillRect(0, 0, W, HERO_H);
+
+    // subtle gold edge vignette
+    const hg = ctx.createLinearGradient(0, 0, W, HERO_H);
+    hg.addColorStop(0,   'rgba(200,169,110,.18)');
+    hg.addColorStop(0.5, 'rgba(200,169,110,0)');
+    hg.addColorStop(1,   'rgba(200,169,110,.18)');
+    ctx.fillStyle = hg; ctx.fillRect(0, 0, W, HERO_H);
+
+    ctx.restore(); // end hero clip
 
     // top ornament
     ctx.strokeStyle = 'rgba(200,169,110,.55)'; ctx.lineWidth = 0.8;
