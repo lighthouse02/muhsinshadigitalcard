@@ -1215,7 +1215,7 @@ img { display: block; max-width: 100%; }
 /* ── Guestbook type tabs ── */
 .gb-type-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: .45rem;
   margin-bottom: 1.5rem;
 }
@@ -1250,110 +1250,6 @@ img { display: block; max-width: 100%; }
 /* ── Guestbook type fields ── */
 .gb-type-field[hidden] { display: none; }
 .label-opt { font-size: .75rem; font-style: italic; color: var(--text-light); font-weight: 400; }
-
-/* ── Doa presets ── */
-.doa-presets {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  margin-bottom: .65rem;
-}
-.doa-preset-btn {
-  display: block;
-  width: 100%;
-  background: rgba(200,169,110,.07);
-  border: 1px solid rgba(200,169,110,.3);
-  border-radius: var(--radius-sm);
-  padding: .7rem .9rem;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: .88rem;
-  color: var(--text);
-  text-align: left;
-  cursor: pointer;
-  line-height: 1.55;
-  transition: background var(--transition), border-color var(--transition);
-}
-.doa-preset-btn:hover { background: rgba(200,169,110,.18); border-color: var(--gold); }
-
-/* ── Voice recorder ── */
-.voice-recorder {
-  border: 2px dashed rgba(200,169,110,.4);
-  border-radius: var(--radius);
-  padding: 1.5rem 1rem;
-  text-align: center;
-}
-.voice-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .75rem;
-}
-.voice-state.hidden { display: none; }
-.btn-voice-rec {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: .85rem 1.75rem;
-  font-family: var(--font-sans);
-  font-size: .95rem;
-  font-weight: 600;
-  cursor: pointer;
-  min-height: var(--touch);
-  transition: opacity .2s;
-}
-.btn-voice-rec:hover { opacity: .88; }
-.btn-voice-stop {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  background: #e53935;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: .85rem 1.75rem;
-  font-family: var(--font-sans);
-  font-size: .95rem;
-  font-weight: 600;
-  cursor: pointer;
-  min-height: var(--touch);
-  transition: opacity .2s;
-}
-.btn-voice-stop:hover { opacity: .88; }
-.voice-hint { font-size: .78rem; color: var(--text-light); font-style: italic; margin: 0; }
-.voice-pulse {
-  width: 58px; height: 58px;
-  border-radius: 50%;
-  background: #e53935;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 1.4rem;
-  animation: voicePulse 1s ease-in-out infinite;
-}
-@keyframes voicePulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,.5); }
-  50%       { box-shadow: 0 0 0 14px rgba(229,57,53,0); }
-}
-.voice-timer {
-  font-family: var(--font-sans);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #e53935;
-  letter-spacing: .06em;
-}
-.voice-audio-player, .wish-audio-player {
-  width: 100%;
-  max-width: 320px;
-  border-radius: var(--radius-sm);
-  margin: .35rem 0;
-  display: block;
-}
 
 /* ── Photo upload ── */
 .photo-drop-zone {
@@ -1420,7 +1316,6 @@ img { display: block; max-width: 100%; }
   border-radius: 30px;
 }
 .wish-badge-doa   { background: rgba(200,169,110,.18); color: var(--gold-dark); }
-.wish-badge-voice { background: rgba(229,57,53,.12);   color: #c62828; }
 .wish-badge-photo { background: rgba(33,150,243,.12);  color: #1565c0; }
 
 .wish-avatar-doa {
@@ -1466,9 +1361,6 @@ img { display: block; max-width: 100%; }
   margin: .2rem 0 .15rem;
   font-style: italic;
 }
-
-/* Voice note card */
-.wish-card-voice .wish-audio-player { width: 100%; margin: .3rem 0 .1rem; }
 
 /* Doa card — warm gold tint */
 .wish-card-doa {

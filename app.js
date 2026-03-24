@@ -462,8 +462,7 @@
   let currentGbType   = 'wish';
 
   const GB_LABELS = {
-    wish: 'Post Wish', doa: 'Send Doa',
-    voice: 'Post Voice Note', photo: 'Post Photo Memory',
+    wish: 'Post Wish', photo: 'Post Photo Memory',
   };
 
   // ── Type tab switching ──
@@ -479,77 +478,6 @@
       if (activeField) activeField.hidden = false;
       if (gbSubmitLabel) gbSubmitLabel.textContent = GB_LABELS[type] || 'Post';
     });
-  });
-
-  // ── Doa presets ──
-  document.querySelectorAll('.doa-preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const field = document.getElementById('doa-text');
-      if (field) field.value = btn.textContent.trim();
-    });
-  });
-
-  // ── Voice recording ──
-  let mediaRecorder = null, audioChunks = [], voiceBlob = null, voiceDataUrl = null;
-  let voiceTimerInt = null, voiceSeconds = 0;
-
-  const voiceStartBtn    = document.getElementById('voice-start-btn');
-  const voiceStopBtn     = document.getElementById('voice-stop-btn');
-  const voiceRetakeBtn   = document.getElementById('voice-retake-btn');
-  const voiceTimerEl     = document.getElementById('voice-timer');
-  const voiceIdleEl      = document.getElementById('voice-idle');
-  const voiceRecordingEl = document.getElementById('voice-recording');
-  const voicePreviewEl   = document.getElementById('voice-preview-state');
-  const voicePlayback    = document.getElementById('voice-playback');
-
-  function setVoiceState(state) {
-    if (voiceIdleEl)      voiceIdleEl.classList.toggle('hidden',      state !== 'idle');
-    if (voiceRecordingEl) voiceRecordingEl.classList.toggle('hidden', state !== 'recording');
-    if (voicePreviewEl)   voicePreviewEl.classList.toggle('hidden',   state !== 'preview');
-  }
-
-  function stopVoiceRecording() {
-    clearInterval(voiceTimerInt);
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-  }
-
-  voiceStartBtn && voiceStartBtn.addEventListener('click', async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunks = []; voiceBlob = null; voiceDataUrl = null;
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
-      mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-      mediaRecorder.onstop = () => {
-        stream.getTracks().forEach(t => t.stop());
-        voiceBlob = new Blob(audioChunks, { type: mimeType });
-        if (voicePlayback) voicePlayback.src = URL.createObjectURL(voiceBlob);
-        const reader = new FileReader();
-        reader.onload = () => { voiceDataUrl = reader.result; };
-        reader.readAsDataURL(voiceBlob);
-        setVoiceState('preview');
-      };
-      mediaRecorder.start();
-      voiceSeconds = 0;
-      if (voiceTimerEl) voiceTimerEl.textContent = '0:00';
-      voiceTimerInt = setInterval(() => {
-        voiceSeconds++;
-        const m = Math.floor(voiceSeconds / 60);
-        const s = String(voiceSeconds % 60).padStart(2, '0');
-        if (voiceTimerEl) voiceTimerEl.textContent = `${m}:${s}`;
-        if (voiceSeconds >= 30) stopVoiceRecording();
-      }, 1000);
-      setVoiceState('recording');
-    } catch (_) {
-      alert('Microphone access was denied. Please allow microphone access in your browser settings and try again.');
-    }
-  });
-
-  voiceStopBtn   && voiceStopBtn.addEventListener('click',   stopVoiceRecording);
-  voiceRetakeBtn && voiceRetakeBtn.addEventListener('click', () => {
-    voiceBlob = null; voiceDataUrl = null;
-    if (voicePlayback) voicePlayback.src = '';
-    setVoiceState('idle');
   });
 
   // ── Photo upload ──
@@ -618,18 +546,6 @@
           (entry.caption ? `<p class="wish-caption">${escapeHtml(entry.caption)}</p>` : '') +
           timeNode +
         `</div>`;
-    } else if (entry.type === 'voice') {
-      card.className = 'wish-card wish-card-voice';
-      card.innerHTML =
-        `<div class="wish-avatar">${initial}</div>` +
-        `<div class="wish-body">` +
-          `<div class="wish-meta-row">` +
-            `<strong>${escapeHtml(entry.name)}</strong>` +
-            `<span class="wish-badge wish-badge-voice"><i class="fas fa-microphone"></i> Voice</span>` +
-          `</div>` +
-          `<audio controls src="${entry.audioDataUrl || ''}" class="wish-audio-player" preload="none"></audio>` +
-          timeNode +
-        `</div>`;
     } else if (entry.type === 'doa') {
       card.className = 'wish-card wish-card-doa';
       card.innerHTML =
@@ -679,22 +595,6 @@
       const text = sanitize(t.value.trim());
       if (!text) { flashError('wish-text', 'Please enter your wish'); return; }
       entry.text = text; t.value = '';
-
-    } else if (currentGbType === 'doa') {
-      const t = document.getElementById('doa-text');
-      const text = sanitize(t.value.trim());
-      if (!text) { flashError('doa-text', 'Please write or select a doa'); return; }
-      entry.text = text; t.value = '';
-
-    } else if (currentGbType === 'voice') {
-      if (!voiceDataUrl) {
-        if (voiceStartBtn) { voiceStartBtn.style.outline = '2px solid #e53935'; setTimeout(() => { voiceStartBtn.style.outline = ''; }, 2000); }
-        return;
-      }
-      entry.audioDataUrl = voiceDataUrl;
-      voiceBlob = null; voiceDataUrl = null;
-      if (voicePlayback) voicePlayback.src = '';
-      setVoiceState('idle');
 
     } else if (currentGbType === 'photo') {
       if (!photoDataUrl) {

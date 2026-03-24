@@ -325,18 +325,12 @@
         <!-- Wishes Wall panel -->
         <div id="wishes-panel" class="engage-panel" role="tabpanel">
           <div class="panel-card">
-            <p class="panel-card-hint">Leave your blessings, a voice note, or a photo memory</p>
+            <p class="panel-card-hint">Leave your wish or a photo memory</p>
 
             <!-- Entry type selector -->
             <div class="gb-type-tabs" role="tablist" aria-label="Type of entry">
               <button class="gb-type-btn active" data-type="wish" role="tab" aria-selected="true">
                 <span class="gb-type-icon">💬</span><span>Wish</span>
-              </button>
-              <button class="gb-type-btn" data-type="doa" role="tab" aria-selected="false">
-                <span class="gb-type-icon">🤲</span><span>Doa</span>
-              </button>
-              <button class="gb-type-btn" data-type="voice" role="tab" aria-selected="false">
-                <span class="gb-type-icon">🎤</span><span>Voice</span>
               </button>
               <button class="gb-type-btn" data-type="photo" role="tab" aria-selected="false">
                 <span class="gb-type-icon">📸</span><span>Photo</span>
@@ -355,47 +349,6 @@
                 <div class="form-group">
                   <label for="wish-text">Your Wish <span>*</span></label>
                   <textarea id="wish-text" rows="3" placeholder="Your wishes for Muhsin &amp; Syaqiela…"></textarea>
-                </div>
-              </div>
-
-              <!-- Doa -->
-              <div id="gb-field-doa" class="gb-type-field" hidden>
-                <div class="form-group">
-                  <label>Quick Doa <span class="label-opt">(tap to fill)</span></label>
-                  <div class="doa-presets">
-                    <button type="button" class="doa-preset-btn">Barakallahu lakuma wa baraka 'alaykuma wa jama'a baynakuma fi khayr. 🤍</button>
-                    <button type="button" class="doa-preset-btn">Semoga rumah tangga kalian diberkati Allah, sakinah mawaddah warahmah. 💛</button>
-                    <button type="button" class="doa-preset-btn">May Allah bless your union and fill your home with love, peace, and joy. 🌸</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="doa-text">Your Doa <span>*</span></label>
-                  <textarea id="doa-text" rows="3" placeholder="Write or edit your doa here…"></textarea>
-                </div>
-              </div>
-
-              <!-- Voice Note -->
-              <div id="gb-field-voice" class="gb-type-field" hidden>
-                <div class="voice-recorder">
-                  <div id="voice-idle" class="voice-state">
-                    <button type="button" id="voice-start-btn" class="btn-voice-rec">
-                      <i class="fas fa-microphone"></i> Start Recording
-                    </button>
-                    <p class="voice-hint">Max 30 seconds &bull; Tap to record</p>
-                  </div>
-                  <div id="voice-recording" class="voice-state hidden">
-                    <div class="voice-pulse"><i class="fas fa-microphone"></i></div>
-                    <div id="voice-timer" class="voice-timer">0:00</div>
-                    <button type="button" id="voice-stop-btn" class="btn-voice-stop">
-                      <i class="fas fa-stop-circle"></i> Stop
-                    </button>
-                  </div>
-                  <div id="voice-preview-state" class="voice-state hidden">
-                    <audio id="voice-playback" controls class="voice-audio-player"></audio>
-                    <button type="button" id="voice-retake-btn" class="btn-outline" style="margin-top:.6rem;width:100%;">
-                      <i class="fas fa-redo"></i> Re-record
-                    </button>
-                  </div>
                 </div>
               </div>
 
