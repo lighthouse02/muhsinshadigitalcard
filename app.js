@@ -63,10 +63,48 @@
      1. MUSIC PLAYER — YouTube IFrame API
         Song: https://www.youtube.com/watch?v=4ptRrq6qA8A
   ============================================= */
-  const musicBtn = document.getElementById('music-btn');
+  const musicBtn      = document.getElementById('music-btn');
+  const musicIcon     = document.getElementById('music-icon');
+  const musicInfo     = document.getElementById('music-info');
+  const musicCurrent  = document.getElementById('music-current');
+  const musicDuration = document.getElementById('music-duration');
+  const musicFill     = document.getElementById('music-progress-fill');
+  const musicBar      = document.getElementById('music-progress-bar');
+  const musicTitle    = document.getElementById('music-song-title');
   let musicOn    = false;
   let ytPlayer   = null;
   let ytReady    = false;
+  let progressInt = null;
+
+  function fmtTime(sec) {
+    if (!isFinite(sec) || sec < 0) return '--:--';
+    const m = Math.floor(sec / 60);
+    const s = String(Math.floor(sec % 60)).padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function startProgress() {
+    clearInterval(progressInt);
+    progressInt = setInterval(() => {
+      if (!ytReady || !ytPlayer.getCurrentTime) return;
+      const cur = ytPlayer.getCurrentTime();
+      const dur = ytPlayer.getDuration();
+      if (musicCurrent) musicCurrent.textContent = fmtTime(cur);
+      if (musicDuration) musicDuration.textContent = fmtTime(dur);
+      if (musicFill && dur > 0) musicFill.style.width = `${(cur / dur) * 100}%`;
+    }, 500);
+  }
+
+  function stopProgress() { clearInterval(progressInt); }
+
+  // Seek on progress bar click
+  musicBar && musicBar.addEventListener('click', (e) => {
+    if (!ytReady || !musicOn) return;
+    const rect  = musicBar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    const dur   = ytPlayer.getDuration();
+    if (dur > 0) ytPlayer.seekTo(ratio * dur, true);
+  });
 
   // YouTube IFrame API calls this globally when the script has loaded
   window.onYouTubeIframeAPIReady = function () {
@@ -85,26 +123,50 @@
         origin:          window.location.origin, // fixes postMessage cross-origin error
       },
       events: {
-        onReady: function () { ytReady = true; },
-        onError: function () { musicBtn.style.display = 'none'; },
+        onReady: function (event) {
+          ytReady = true;
+          // Try to read the video title from the player data
+          try {
+            const data  = event.target.getVideoData();
+            const title = data && data.title;
+            if (title && musicTitle) musicTitle.textContent = title;
+          } catch (_) { /* title stays hardcoded fallback */ }
+        },
+        onError: function () {
+          if (musicBtn) musicBtn.style.display = 'none';
+          if (musicInfo) musicInfo.hidden = true;
+        },
+        onStateChange: function (event) {
+          // YT.PlayerState.ENDED = 0 — requeue for loop safety
+          if (event.data === 0 && ytReady) ytPlayer.playVideo();
+        },
       },
     });
   };
 
   // Hide music button if YouTube fails to load within 10 seconds
   setTimeout(function () {
-    if (!ytReady) musicBtn.style.display = 'none';
+    if (!ytReady) {
+      if (musicBtn)  musicBtn.style.display  = 'none';
+      if (musicInfo) musicInfo.hidden = true;
+    }
   }, 10000);
 
   musicBtn.addEventListener('click', () => {
     if (musicOn) {
       if (ytReady) ytPlayer.pauseVideo();
-      musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+      stopProgress();
+      if (musicIcon) { musicIcon.className = 'fas fa-music'; }
+      if (musicInfo) musicInfo.hidden = true;
       musicBtn.style.background = 'linear-gradient(135deg, #aaa, #777)';
+      musicBtn.setAttribute('aria-label', 'Play background music');
     } else {
       if (ytReady) ytPlayer.playVideo();
-      musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      startProgress();
+      if (musicIcon) { musicIcon.className = 'fas fa-pause'; }
+      if (musicInfo) musicInfo.hidden = false;
       musicBtn.style.background = '';
+      musicBtn.setAttribute('aria-label', 'Pause background music');
     }
     musicOn = !musicOn;
   });

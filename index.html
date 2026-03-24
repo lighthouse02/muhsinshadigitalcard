@@ -48,9 +48,19 @@
 
   <!-- ========== MUSIC PLAYER ========== -->
   <div id="music-player">
-    <button id="music-btn" title="Toggle music">
-      <i class="fas fa-music"></i>
+    <button id="music-btn" aria-label="Play background music" title="Toggle music">
+      <i class="fas fa-music" id="music-icon"></i>
     </button>
+    <div id="music-info" class="music-info" aria-hidden="true" hidden>
+      <div class="music-song-title" id="music-song-title">Di Pintu Syurga</div>
+      <div class="music-time-row">
+        <span id="music-current">0:00</span>
+        <div class="music-progress-bar" id="music-progress-bar">
+          <div class="music-progress-fill" id="music-progress-fill"></div>
+        </div>
+        <span id="music-duration">--:--</span>
+      </div>
+    </div>
     <!-- Hidden YouTube player — audio only, visually invisible -->
     <div id="yt-player" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
   </div>
