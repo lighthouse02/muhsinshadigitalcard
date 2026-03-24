@@ -593,82 +593,39 @@ img { display: block; max-width: 100%; }
 }
 @media (min-width: 640px) { #itinerary { padding: 5rem 0; } }
 
-.accord-list {
-  max-width: 600px;
+.itinerary-simple {
+  list-style: none;
+  max-width: 480px;
   margin: 0 auto;
   padding: 0 1.125rem;
   display: flex;
   flex-direction: column;
-  gap: .6rem;
+  gap: .5rem;
 }
-@media (min-width: 640px) { .accord-list { padding: 0 1.5rem; } }
-
-.accord-item {
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  border: 1px solid transparent;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.accord-item.accord-open {
-  border-color: var(--gold-light);
-  box-shadow: var(--shadow-lg);
-}
-
-.accord-btn {
-  width: 100%;
+@media (min-width: 640px) { .itinerary-simple { padding: 0 1.5rem; } }
+.itinerary-simple li {
   display: flex;
   align-items: center;
-  gap: .75rem;
-  padding: .9rem 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  min-height: var(--touch);
-  -webkit-tap-highlight-color: transparent;
+  gap: 1rem;
+  padding: .75rem 1.1rem;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
 }
-.accord-btn:hover { background: var(--bg-alt); }
-
-.accord-time {
+.itin-time {
   font-family: var(--font-serif);
-  font-size: .78rem;
-  color: var(--gold-dark);
+  font-size: .8rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  color: var(--gold-dark);
+  letter-spacing: .07em;
   text-transform: uppercase;
-  min-width: 70px;
+  min-width: 72px;
   flex-shrink: 0;
 }
-.accord-title {
-  flex: 1;
+.itin-name {
   font-family: var(--font-serif);
   font-size: 1rem;
   color: var(--text);
-  font-weight: 600;
-}
-.accord-arrow {
-  font-size: .78rem;
-  color: var(--gold);
-  transition: transform var(--transition);
-  flex-shrink: 0;
-}
-.accord-open .accord-arrow { transform: rotate(180deg); }
-
-.accord-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .36s cubic-bezier(.22,1,.36,1);
-}
-.accord-body p {
-  padding: 0 1rem .9rem;
-  font-size: .87rem;
-  color: var(--text-light);
-  line-height: 1.65;
-  border-top: 1px solid var(--bg-alt);
-  margin: 0;
-  padding-top: .65rem;
 }
 
 /* 4 boxes in a single tight row — never wraps */

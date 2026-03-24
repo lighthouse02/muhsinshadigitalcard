@@ -193,31 +193,6 @@
   })();
 
   /* =============================================
-     4b. ITINERARY ACCORDION
-  ============================================= */
-  document.querySelectorAll('.accord-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const item     = btn.closest('.accord-item');
-      const body     = item.querySelector('.accord-body');
-      const isOpen   = btn.getAttribute('aria-expanded') === 'true';
-
-      // Close all others
-      document.querySelectorAll('.accord-item').forEach(i => {
-        i.querySelector('.accord-btn').setAttribute('aria-expanded', 'false');
-        i.querySelector('.accord-body').style.maxHeight = null;
-        i.classList.remove('accord-open');
-      });
-
-      // Toggle clicked item
-      if (!isOpen) {
-        btn.setAttribute('aria-expanded', 'true');
-        body.style.maxHeight = body.scrollHeight + 'px';
-        item.classList.add('accord-open');
-      }
-    });
-  });
-
-  /* =============================================
      5. GALLERY LIGHTBOX
   ============================================= */
   const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
@@ -464,7 +439,7 @@
      10. SCROLL REVEAL
   ============================================= */
   const revealEls = document.querySelectorAll(
-    '#countdown-section, #itinerary .accord-item, .gallery-item, ' +
+    '#countdown-section, #itinerary .itinerary-simple, .gallery-item, ' +
     '#rsvp .engage-tabs, #rsvp .panel-card, ' +
     '#location .location-card, #gift .gift-card'
   );
