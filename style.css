@@ -1145,6 +1145,270 @@ img { display: block; max-width: 100%; }
 .wish-body p { font-size: .88rem; color: var(--text-light); margin: .25rem 0 .2rem; }
 .wish-time { font-size: .72rem; color: #aaa; }
 
+/* ── Guestbook type tabs ── */
+.gb-type-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .45rem;
+  margin-bottom: 1.5rem;
+}
+.gb-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  padding: .7rem .3rem;
+  background: var(--bg-alt);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--text-light);
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 64px;
+}
+.gb-type-btn:hover { border-color: var(--gold-light); color: var(--text); }
+.gb-type-btn.active {
+  border-color: var(--gold);
+  background: rgba(200,169,110,.1);
+  color: var(--gold-dark);
+  font-weight: 600;
+}
+.gb-type-icon { font-size: 1.35rem; line-height: 1; }
+@media (min-width: 400px) { .gb-type-btn { font-size: .78rem; padding: .75rem .5rem; } }
+
+/* ── Guestbook type fields ── */
+.gb-type-field[hidden] { display: none; }
+.label-opt { font-size: .75rem; font-style: italic; color: var(--text-light); font-weight: 400; }
+
+/* ── Doa presets ── */
+.doa-presets {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: .65rem;
+}
+.doa-preset-btn {
+  display: block;
+  width: 100%;
+  background: rgba(200,169,110,.07);
+  border: 1px solid rgba(200,169,110,.3);
+  border-radius: var(--radius-sm);
+  padding: .7rem .9rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.55;
+  transition: background var(--transition), border-color var(--transition);
+}
+.doa-preset-btn:hover { background: rgba(200,169,110,.18); border-color: var(--gold); }
+
+/* ── Voice recorder ── */
+.voice-recorder {
+  border: 2px dashed rgba(200,169,110,.4);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+.voice-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+.voice-state.hidden { display: none; }
+.btn-voice-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.75rem;
+  font-family: var(--font-sans);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: var(--touch);
+  transition: opacity .2s;
+}
+.btn-voice-rec:hover { opacity: .88; }
+.btn-voice-stop {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.75rem;
+  font-family: var(--font-sans);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: var(--touch);
+  transition: opacity .2s;
+}
+.btn-voice-stop:hover { opacity: .88; }
+.voice-hint { font-size: .78rem; color: var(--text-light); font-style: italic; margin: 0; }
+.voice-pulse {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: #e53935;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.4rem;
+  animation: voicePulse 1s ease-in-out infinite;
+}
+@keyframes voicePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,.5); }
+  50%       { box-shadow: 0 0 0 14px rgba(229,57,53,0); }
+}
+.voice-timer {
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #e53935;
+  letter-spacing: .06em;
+}
+.voice-audio-player, .wish-audio-player {
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--radius-sm);
+  margin: .35rem 0;
+  display: block;
+}
+
+/* ── Photo upload ── */
+.photo-drop-zone {
+  position: relative;
+  border: 2px dashed rgba(200,169,110,.45);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), background var(--transition);
+}
+.photo-drop-zone.hidden { display: none; }
+.photo-drop-zone:hover { border-color: var(--gold); background: rgba(200,169,110,.04); }
+.photo-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.photo-drop-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  padding: 2rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  color: var(--text-light);
+  pointer-events: none;
+}
+.photo-drop-label i { font-size: 2rem; color: var(--gold); }
+.photo-drop-label span { font-size: .92rem; font-weight: 500; color: var(--text); }
+.photo-drop-label small { font-size: .72rem; opacity: .7; }
+.photo-preview { text-align: center; }
+.photo-preview.hidden { display: none; }
+.photo-preview img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+.photo-change-btn { margin: .65rem auto 0; display: inline-flex; }
+
+/* ── Wish card variants ── */
+.wish-meta-row {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  flex-wrap: wrap;
+  margin-bottom: .2rem;
+}
+.wish-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .22rem;
+  font-size: .6rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .17rem .55rem;
+  border-radius: 30px;
+}
+.wish-badge-doa   { background: rgba(200,169,110,.18); color: var(--gold-dark); }
+.wish-badge-voice { background: rgba(229,57,53,.12);   color: #c62828; }
+.wish-badge-photo { background: rgba(33,150,243,.12);  color: #1565c0; }
+
+.wish-avatar-doa {
+  background: linear-gradient(135deg, #f9e4c8, #c8a96e);
+  font-size: 1.2rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Photo card */
+.wish-card-photo {
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.wish-photo-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+.wish-card-photo .wish-body { padding: .85rem 1rem 1rem; }
+.wish-avatar-sm {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  font-size: .72rem;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color: var(--white);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wish-caption {
+  font-size: .85rem;
+  color: var(--text-light);
+  margin: .2rem 0 .15rem;
+  font-style: italic;
+}
+
+/* Voice note card */
+.wish-card-voice .wish-audio-player { width: 100%; margin: .3rem 0 .1rem; }
+
+/* Doa card — warm gold tint */
+.wish-card-doa {
+  background: linear-gradient(135deg, rgba(200,169,110,.07), rgba(200,169,110,.03));
+  border: 1px solid rgba(200,169,110,.22);
+}
+
 /* ---------- MAP / LOCATION ---------- */
 #location {
   padding: 3.5rem 0;

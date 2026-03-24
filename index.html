@@ -315,21 +315,110 @@
         <!-- Wishes Wall panel -->
         <div id="wishes-panel" class="engage-panel" role="tabpanel">
           <div class="panel-card">
-            <p class="panel-card-hint">Your wishes will be displayed publicly on the wall below</p>
+            <p class="panel-card-hint">Leave your blessings, a voice note, or a photo memory</p>
+
+            <!-- Entry type selector -->
+            <div class="gb-type-tabs" role="tablist" aria-label="Type of entry">
+              <button class="gb-type-btn active" data-type="wish" role="tab" aria-selected="true">
+                <span class="gb-type-icon">💬</span><span>Wish</span>
+              </button>
+              <button class="gb-type-btn" data-type="doa" role="tab" aria-selected="false">
+                <span class="gb-type-icon">🤲</span><span>Doa</span>
+              </button>
+              <button class="gb-type-btn" data-type="voice" role="tab" aria-selected="false">
+                <span class="gb-type-icon">🎤</span><span>Voice</span>
+              </button>
+              <button class="gb-type-btn" data-type="photo" role="tab" aria-selected="false">
+                <span class="gb-type-icon">📸</span><span>Photo</span>
+              </button>
+            </div>
+
             <form id="wishes-form" novalidate>
+              <!-- Name always shown -->
               <div class="form-group">
                 <label for="wish-name">Your Name <span>*</span></label>
                 <input type="text" id="wish-name" placeholder="Your name" required />
               </div>
-              <div class="form-group">
-                <label for="wish-text">Your Wish <span>*</span></label>
-                <textarea id="wish-text" rows="3" placeholder="Your wishes for Muhsin &amp; Syaqiela…" required></textarea>
+
+              <!-- Wish -->
+              <div id="gb-field-wish" class="gb-type-field">
+                <div class="form-group">
+                  <label for="wish-text">Your Wish <span>*</span></label>
+                  <textarea id="wish-text" rows="3" placeholder="Your wishes for Muhsin &amp; Syaqiela…"></textarea>
+                </div>
               </div>
-              <button type="submit" class="btn-primary" style="width:100%;">
-                <i class="fas fa-paper-plane"></i> Post Wish
+
+              <!-- Doa -->
+              <div id="gb-field-doa" class="gb-type-field" hidden>
+                <div class="form-group">
+                  <label>Quick Doa <span class="label-opt">(tap to fill)</span></label>
+                  <div class="doa-presets">
+                    <button type="button" class="doa-preset-btn">Barakallahu lakuma wa baraka 'alaykuma wa jama'a baynakuma fi khayr. 🤍</button>
+                    <button type="button" class="doa-preset-btn">Semoga rumah tangga kalian diberkati Allah, sakinah mawaddah warahmah. 💛</button>
+                    <button type="button" class="doa-preset-btn">May Allah bless your union and fill your home with love, peace, and joy. 🌸</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="doa-text">Your Doa <span>*</span></label>
+                  <textarea id="doa-text" rows="3" placeholder="Write or edit your doa here…"></textarea>
+                </div>
+              </div>
+
+              <!-- Voice Note -->
+              <div id="gb-field-voice" class="gb-type-field" hidden>
+                <div class="voice-recorder">
+                  <div id="voice-idle" class="voice-state">
+                    <button type="button" id="voice-start-btn" class="btn-voice-rec">
+                      <i class="fas fa-microphone"></i> Start Recording
+                    </button>
+                    <p class="voice-hint">Max 30 seconds &bull; Tap to record</p>
+                  </div>
+                  <div id="voice-recording" class="voice-state hidden">
+                    <div class="voice-pulse"><i class="fas fa-microphone"></i></div>
+                    <div id="voice-timer" class="voice-timer">0:00</div>
+                    <button type="button" id="voice-stop-btn" class="btn-voice-stop">
+                      <i class="fas fa-stop-circle"></i> Stop
+                    </button>
+                  </div>
+                  <div id="voice-preview-state" class="voice-state hidden">
+                    <audio id="voice-playback" controls class="voice-audio-player"></audio>
+                    <button type="button" id="voice-retake-btn" class="btn-outline" style="margin-top:.6rem;width:100%;">
+                      <i class="fas fa-redo"></i> Re-record
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Photo Memory -->
+              <div id="gb-field-photo" class="gb-type-field" hidden>
+                <div class="form-group">
+                  <div id="photo-drop-zone" class="photo-drop-zone">
+                    <input type="file" id="photo-input" accept="image/*" capture="environment" class="photo-file-input" />
+                    <label for="photo-input" class="photo-drop-label">
+                      <i class="fas fa-camera"></i>
+                      <span>Tap to choose or take a photo</span>
+                      <small>Max 5 MB &bull; JPG, PNG, WEBP</small>
+                    </label>
+                  </div>
+                  <div id="photo-preview" class="photo-preview hidden">
+                    <img id="photo-preview-img" alt="Selected photo preview" />
+                    <button type="button" id="photo-change-btn" class="btn-outline photo-change-btn">
+                      <i class="fas fa-camera"></i> Change Photo
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="photo-caption">Caption <span class="label-opt">(optional)</span></label>
+                  <input type="text" id="photo-caption" placeholder="A memory from today…" maxlength="120" />
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width:100%;margin-top:.5rem;">
+                <i class="fas fa-paper-plane"></i> <span id="gb-submit-label">Post Wish</span>
               </button>
             </form>
           </div>
+
           <div class="wishes-wall" id="wishes-wall">
             <div class="wish-card">
               <div class="wish-avatar">A</div>
@@ -339,11 +428,11 @@
                 <span class="wish-time">Just now</span>
               </div>
             </div>
-            <div class="wish-card">
-              <div class="wish-avatar">F</div>
+            <div class="wish-card wish-card-doa">
+              <div class="wish-avatar wish-avatar-doa">🤲</div>
               <div class="wish-body">
-                <strong>Fatimah</strong>
-                <p>Wishing you both a lifetime of love, laughter, and happiness together!</p>
+                <div class="wish-meta-row"><strong>Fatimah</strong><span class="wish-badge wish-badge-doa">Doa</span></div>
+                <p>Semoga rumah tangga kalian diberkati Allah, sakinah mawaddah warahmah. 💛</p>
                 <span class="wish-time">2 mins ago</span>
               </div>
             </div>
@@ -351,7 +440,7 @@
               <div class="wish-avatar">Z</div>
               <div class="wish-body">
                 <strong>Zainab</strong>
-                <p>May Allah bless your union and fill your home with peace and joy. Congrats Muhsin & Syaqiela! 💛</p>
+                <p>May Allah bless your union and fill your home with peace and joy. Congrats Muhsin &amp; Syaqiela! 💛</p>
                 <span class="wish-time">5 mins ago</span>
               </div>
             </div>
