@@ -1,0 +1,25 @@
+{
+  "name": "Muhsin & Syaqiela Wedding",
+  "short_name": "M & S Wedding",
+  "description": "Wedding invitation for Muhsin & Syaqiela — 12 April 2026 at Dewan Delima, Kajang",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf6f0",
+  "theme_color": "#C8A96E",
+  "lang": "ms",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=192&h=192&fit=crop&fm=webp&q=80",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=512&h=512&fit=crop&fm=webp&q=80",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "maskable"
+    }
+  ]
+}

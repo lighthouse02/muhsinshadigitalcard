@@ -86,9 +86,15 @@
       },
       events: {
         onReady: function () { ytReady = true; },
+        onError: function () { musicBtn.style.display = 'none'; },
       },
     });
   };
+
+  // Hide music button if YouTube fails to load within 10 seconds
+  setTimeout(function () {
+    if (!ytReady) musicBtn.style.display = 'none';
+  }, 10000);
 
   musicBtn.addEventListener('click', () => {
     if (musicOn) {
@@ -130,6 +136,17 @@
     petalsContainer.appendChild(p);
   }
 
+  // Pause petal animation when the tab is not visible (saves battery/CPU)
+  document.addEventListener('visibilitychange', function () {
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+    if (document.hidden) {
+      hero.classList.add('paused');
+    } else {
+      hero.classList.remove('paused');
+    }
+  });
+
   /* =============================================
      3. COUNTDOWN TIMER
   ============================================= */
@@ -141,7 +158,11 @@
 
     if (diff <= 0) {
       document.getElementById('countdown').innerHTML =
-        '<span style="color:var(--gold-light);font-family:var(--font-script);font-size:2rem;">The day has arrived! 🤍</span>';
+        '<div style="text-align:center;padding:1rem 0;">' +
+        '<span style="color:var(--gold-light);font-family:var(--font-script);font-size:2rem;font-style:italic;display:block;margin-bottom:.75rem;">Hari Yang Dinanti Telah Tiba! 🤍</span>' +
+        '<span style="color:rgba(255,255,255,.85);font-family:var(--font-serif);font-style:italic;font-size:1.1rem;display:block;">Alhamdulillah — terima kasih kerana hadir menyempurnakan majlis kami.</span>' +
+        '<span style="color:rgba(255,255,255,.6);font-family:var(--font-sans);font-size:.88rem;display:block;margin-top:.6rem;">Muhsin &amp; Syaqiela &middot; 12 April 2026</span>' +
+        '</div>';
       return;
     }
 
@@ -473,13 +494,20 @@
   function flashError(inputId, msg) {
     const el = document.getElementById(inputId);
     if (!el) return;
+    // derive companion error span: rsvp-name → name-error, rsvp-phone → phone-error
+    const errId = inputId.replace('rsvp-', '') + '-error';
+    const errEl = document.getElementById(errId);
     const orig = el.placeholder;
     el.style.borderColor = '#e53935';
     el.placeholder = msg;
+    el.setAttribute('aria-invalid', 'true');
+    if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); }
     el.focus();
     setTimeout(() => {
       el.style.borderColor = '';
       el.placeholder = orig;
+      el.removeAttribute('aria-invalid');
+      if (errEl) errEl.classList.add('hidden');
     }, 2500);
   }
 
