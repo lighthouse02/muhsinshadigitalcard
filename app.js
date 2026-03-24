@@ -65,7 +65,6 @@
   ============================================= */
   const musicBtn      = document.getElementById('music-btn');
   const musicIcon     = document.getElementById('music-icon');
-  const musicInfo     = document.getElementById('music-info');
   const musicCurrent  = document.getElementById('music-current');
   const musicDuration = document.getElementById('music-duration');
   const musicFill     = document.getElementById('music-progress-fill');
@@ -125,16 +124,34 @@
       events: {
         onReady: function (event) {
           ytReady = true;
-          // Try to read the video title from the player data
           try {
             const data  = event.target.getVideoData();
             const title = data && data.title;
-            if (title && musicTitle) musicTitle.textContent = title;
+            if (title && musicTitle) {
+              // Split "Title - Artist" if separator present
+              const sep = title.indexOf(' - ');
+              if (sep > -1) {
+                musicTitle.textContent = title.slice(0, sep);
+                const artistEl = document.querySelector('.mp-artist');
+                if (artistEl) artistEl.textContent = title.slice(sep + 3);
+              } else {
+                musicTitle.textContent = title;
+              }
+              // Marquee if title overflows its container
+              requestAnimationFrame(() => {
+                const wrap = musicTitle.parentElement;
+                if (wrap && musicTitle.scrollWidth > wrap.clientWidth + 2) {
+                  const overflow = -(musicTitle.scrollWidth - wrap.clientWidth + 16);
+                  musicTitle.style.setProperty('--mp-overflow', `${overflow}px`);
+                  musicTitle.classList.add('marquee');
+                }
+              });
+            }
           } catch (_) { /* title stays hardcoded fallback */ }
         },
         onError: function () {
-          if (musicBtn) musicBtn.style.display = 'none';
-          if (musicInfo) musicInfo.hidden = true;
+          const mp = document.getElementById('music-player');
+          if (mp) mp.style.display = 'none';
         },
         onStateChange: function (event) {
           // YT.PlayerState.ENDED = 0 — requeue for loop safety
@@ -144,28 +161,27 @@
     });
   };
 
-  // Hide music button if YouTube fails to load within 10 seconds
+  // Hide player if YouTube fails to load within 10 seconds
   setTimeout(function () {
     if (!ytReady) {
-      if (musicBtn)  musicBtn.style.display  = 'none';
-      if (musicInfo) musicInfo.hidden = true;
+      const mp = document.getElementById('music-player');
+      if (mp) mp.style.display = 'none';
     }
   }, 10000);
 
   musicBtn.addEventListener('click', () => {
+    const mpArt = document.getElementById('mp-art');
     if (musicOn) {
       if (ytReady) ytPlayer.pauseVideo();
       stopProgress();
-      if (musicIcon) { musicIcon.className = 'fas fa-music'; }
-      if (musicInfo) musicInfo.hidden = true;
-      musicBtn.style.background = 'linear-gradient(135deg, #aaa, #777)';
+      if (musicIcon) musicIcon.className = 'fas fa-play';
+      if (mpArt) mpArt.classList.remove('playing');
       musicBtn.setAttribute('aria-label', 'Play background music');
     } else {
       if (ytReady) ytPlayer.playVideo();
       startProgress();
-      if (musicIcon) { musicIcon.className = 'fas fa-pause'; }
-      if (musicInfo) musicInfo.hidden = false;
-      musicBtn.style.background = '';
+      if (musicIcon) musicIcon.className = 'fas fa-pause';
+      if (mpArt) mpArt.classList.add('playing');
       musicBtn.setAttribute('aria-label', 'Pause background music');
     }
     musicOn = !musicOn;

@@ -47,19 +47,32 @@
   </nav>
 
   <!-- ========== MUSIC PLAYER ========== -->
-  <div id="music-player">
-    <button id="music-btn" aria-label="Play background music" title="Toggle music">
-      <i class="fas fa-music" id="music-icon"></i>
-    </button>
-    <div id="music-info" class="music-info" aria-hidden="true" hidden>
-      <div class="music-song-title" id="music-song-title">Di Pintu Syurga</div>
-      <div class="music-time-row">
-        <span id="music-current">0:00</span>
-        <div class="music-progress-bar" id="music-progress-bar">
-          <div class="music-progress-fill" id="music-progress-fill"></div>
-        </div>
-        <span id="music-duration">--:--</span>
+  <div id="music-player" role="region" aria-label="Music mini player">
+    <div class="mp-body">
+      <!-- Album art placeholder -->
+      <div class="mp-art" id="mp-art" aria-hidden="true">
+        <i class="fas fa-music"></i>
       </div>
+      <!-- Track info -->
+      <div class="mp-track">
+        <div class="mp-title-wrap">
+          <span class="mp-title" id="music-song-title">Di Pintu Syurga</span>
+        </div>
+        <span class="mp-artist">Raihan</span>
+      </div>
+      <!-- Play / Pause -->
+      <button id="music-btn" class="mp-playpause" aria-label="Play background music" title="Toggle music">
+        <i class="fas fa-play" id="music-icon"></i>
+      </button>
+    </div>
+    <!-- Seekbar — full card width -->
+    <div class="mp-seekbar" id="music-progress-bar" aria-label="Song progress">
+      <div class="mp-seekfill" id="music-progress-fill"></div>
+    </div>
+    <!-- Time display — visible on hover -->
+    <div class="mp-times" aria-hidden="true">
+      <span id="music-current">0:00</span>
+      <span id="music-duration">--:--</span>
     </div>
     <!-- Hidden YouTube player — audio only, visually invisible -->
     <div id="yt-player" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
