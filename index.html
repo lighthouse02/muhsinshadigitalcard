@@ -310,7 +310,19 @@
 
               <button type="submit" class="btn-primary" style="width:100%;margin-top:.5rem;">Send RSVP</button>
               <div id="rsvp-success" class="form-success hidden">
-                <i class="fas fa-check-circle"></i> Thank you! We look forward to celebrating with you.
+                <div class="success-top">
+                  <i class="fas fa-check-circle"></i>
+                  <p id="rsvp-success-msg">Thank you! We look forward to celebrating with you.</p>
+                </div>
+                <div id="rsvp-card-section" class="rsvp-card-section hidden">
+                  <p class="rsvp-card-hint"><i class="fas fa-id-card"></i> Your attendance card &mdash; save it as a keepsake</p>
+                  <div class="rsvp-card-canvas-wrap">
+                    <canvas id="rsvp-card-canvas" width="800" height="500" aria-label="Attendance card preview"></canvas>
+                  </div>
+                  <button id="rsvp-card-dl" class="rsvp-card-dl-btn" type="button">
+                    <i class="fas fa-download"></i> Download Card
+                  </button>
+                </div>
               </div>
             </form>
           </div>

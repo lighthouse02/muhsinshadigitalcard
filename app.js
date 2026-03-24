@@ -395,18 +395,160 @@
     if (!name)                         { flashError('rsvp-name',  'Please enter your name'); return; }
     if (!isValidMalaysianPhone(phone)) { flashError('rsvp-phone', 'Please enter a valid phone number'); return; }
 
-    const rsvpBtn = rsvpForm.querySelector('.btn-primary');
+    const rsvpBtn    = rsvpForm.querySelector('.btn-primary');
+    const attendingVal = attendance.value;
     rsvpBtn.disabled = true;
     rsvpBtn.textContent = 'Sending…';
 
     setTimeout(() => {
       document.getElementById('rsvp-success').classList.remove('hidden');
+      document.getElementById('rsvp-success-msg').textContent = attendingVal === 'yes'
+        ? 'Thank you! We look forward to celebrating with you.'
+        : 'We understand and appreciate you letting us know.';
+      const cardSection = document.getElementById('rsvp-card-section');
+      if (attendingVal === 'yes') {
+        cardSection.classList.remove('hidden');
+        document.fonts.ready.then(() => drawAttendanceCard(name));
+      } else {
+        cardSection.classList.add('hidden');
+      }
       rsvpForm.reset();
       guestsGroup.style.display  = 'none';
       rsvpBtn.disabled = false;
       rsvpBtn.textContent = 'Send RSVP';
     }, 1000);
   });
+
+  // Attendance card — download
+  document.getElementById('rsvp-card-dl').addEventListener('click', () => {
+    const canvas = document.getElementById('rsvp-card-canvas');
+    const link   = document.createElement('a');
+    link.download = 'muhsin-syaqiela-attendance.png';
+    link.href    = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  function drawAttendanceCard(guestName) {
+    const canvas = document.getElementById('rsvp-card-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = 800, H = 500;
+    canvas.width  = W;
+    canvas.height = H;
+    const gold  = '#C8A96E';
+    const ink   = '#2a2018';
+    const muted = '#6b5c48';
+    const cream = '#fdf8ef';
+
+    // Background
+    ctx.fillStyle = cream;
+    ctx.fillRect(0, 0, W, H);
+    // Subtle corner gradient
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0,  'rgba(200,169,110,.07)');
+    bg.addColorStop(.5, 'rgba(253,248,239,0)');
+    bg.addColorStop(1,  'rgba(200,169,110,.07)');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Outer border
+    ctx.strokeStyle = gold;
+    ctx.lineWidth   = 2.5;
+    ctx.strokeRect(12, 12, W - 24, H - 24);
+    // Inner border
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(22, 22, W - 44, H - 44);
+
+    // Corner dots
+    [[30, 30], [W - 30, 30], [30, H - 30], [W - 30, H - 30]].forEach(([cx, cy]) => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = gold;
+      ctx.fill();
+    });
+
+    // Header ornament lines + diamond
+    ctx.strokeStyle = gold;
+    ctx.lineWidth   = 0.8;
+    ctx.beginPath(); ctx.moveTo(50, 64); ctx.lineTo(W / 2 - 42, 64); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 + 42, 64); ctx.lineTo(W - 50, 64); ctx.stroke();
+    ctx.save();
+    ctx.translate(W / 2, 64); ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = gold; ctx.fillRect(-6.5, -6.5, 13, 13);
+    ctx.restore();
+
+    // "WEDDING INVITATION"
+    ctx.fillStyle    = gold;
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('W E D D I N G   I N V I T A T I O N', W / 2, 88);
+
+    // Bismillah
+    ctx.fillStyle = muted;
+    ctx.font = '15px serif';
+    ctx.fillText('\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650', W / 2, 116);
+
+    // Couple names
+    ctx.fillStyle = ink;
+    ctx.font = 'italic bold 58px "Playfair Display", Georgia, "Times New Roman", serif';
+    ctx.fillText('Muhsin & Syaqiela', W / 2, 184);
+
+    // Date · Venue
+    ctx.fillStyle = muted;
+    ctx.font = '400 17px "EB Garamond", Georgia, serif';
+    ctx.fillText('Saturday, 12 April 2026  \u00b7  Dewan Delima, Kajang', W / 2, 214);
+
+    // Middle divider
+    ctx.strokeStyle = gold; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(120, 237); ctx.lineTo(W / 2 - 20, 237); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 + 20, 237); ctx.lineTo(W - 120, 237); ctx.stroke();
+    ctx.beginPath(); ctx.arc(W / 2, 237, 5, 0, Math.PI * 2);
+    ctx.fillStyle = gold; ctx.fill();
+
+    // "CONFIRMED ATTENDANCE"
+    ctx.fillStyle = muted;
+    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('C O N F I R M E D   A T T E N D A N C E', W / 2, 271);
+
+    // Guest name — auto-shrink to fit
+    const maxNameW = W - 160;
+    let fs = 40;
+    ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
+    while (ctx.measureText(guestName).width > maxNameW && fs > 18) {
+      fs -= 2;
+      ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
+    }
+    ctx.fillStyle = ink;
+    ctx.fillText(guestName, W / 2, 328);
+
+    // Gold underline under name
+    const nw = ctx.measureText(guestName).width;
+    ctx.strokeStyle = gold; ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - nw / 2, 337);
+    ctx.lineTo(W / 2 + nw / 2, 337);
+    ctx.stroke();
+
+    // Blessing
+    ctx.fillStyle = muted;
+    ctx.font = 'italic 15px "EB Garamond", Georgia, serif';
+    ctx.fillText('We are deeply honoured by your presence. Barakallahu lak\u016bm\u0101.', W / 2, 374);
+
+    // Bottom ornament + diamond
+    ctx.strokeStyle = gold; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(50, 428); ctx.lineTo(W / 2 - 72, 428); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 + 72, 428); ctx.lineTo(W - 50, 428); ctx.stroke();
+    ctx.save();
+    ctx.translate(W / 2, 428); ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = gold; ctx.fillRect(-5.5, -5.5, 11, 11);
+    ctx.restore();
+
+    // Footer URL
+    ctx.fillStyle = gold;
+    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('muhsinshaweddingcard.netlify.app', W / 2, 463);
+  }
 
   /* =============================================
      7. SIGNATURE PAD + PRIVATE MESSAGE
