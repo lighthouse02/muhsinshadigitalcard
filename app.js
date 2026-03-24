@@ -504,11 +504,6 @@
 
     ctx.restore(); // end hero clip
 
-    // top ornament
-    ctx.strokeStyle = 'rgba(200,169,110,.55)'; ctx.lineWidth = 0.8;
-    hline(60, W/2 - 54, 36); hline(W/2 + 54, W - 60, 36);
-    diamond(W/2, 36, 5.5);
-
     // "WEDDING INVITATION"
     ctx.fillStyle = gold; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
@@ -542,12 +537,6 @@
     const mg = ctx.createLinearGradient(0, 185, 0, 375);
     mg.addColorStop(0, 'rgba(200,169,110,.07)'); mg.addColorStop(1, 'rgba(200,169,110,0)');
     ctx.fillStyle = mg; ctx.fillRect(0, 185, W, 190);
-
-    // divider ornament
-    ctx.strokeStyle = gold; ctx.lineWidth = 0.7;
-    hline(100, W/2 - 30, 214); hline(W/2 + 30, W - 100, 214);
-    ctx.beginPath(); ctx.arc(W/2, 214, 5.5, 0, Math.PI * 2);
-    ctx.fillStyle = gold; ctx.fill();
 
     // "CONFIRMED ATTENDANCE" label
     ctx.fillStyle = muted;
@@ -618,11 +607,7 @@
     ctx.fillStyle = cream;
     ctx.fillRect(0, 488, W, 92);
 
-    ctx.strokeStyle = gold; ctx.lineWidth = 0.7;
-    hline(60, W/2 - 66, 524); hline(W/2 + 66, W - 60, 524);
-    diamond(W/2, 524, 5);
-
-    ctx.fillStyle = gold;
+    ctx.fillStyle = 'rgba(200,169,110,.45)';
     ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('muhsinshaweddingcard.netlify.app', W/2, 552);
@@ -641,24 +626,46 @@
 
     /* ══════════════════════════════════════════
        CONFIRMED STAMP — top-right of cream zone
-       Rotated ~-20°, semi-transparent
+       Green seal, rotated -18°
     ════════════════════════════════════════════ */
-    const sx = W - 80, sy = 278, oR = 54, iR = 44, tR = 35;
+    const sGreen      = 'rgba(34,139,68,.90)';
+    const sGreenDark  = 'rgba(24,100,50,.95)';
+    const sGreenFill  = 'rgba(34,139,68,.10)';
+    const sGreenMid   = 'rgba(34,139,68,.55)';
+    const sx = W - 82, sy = 275, oR = 60, iR = 48, tR = 38;
+
     ctx.save();
     ctx.translate(sx, sy);
-    ctx.rotate(-20 * Math.PI / 180);
+    ctx.rotate(-18 * Math.PI / 180);
 
-    // outer + inner rings
-    ctx.strokeStyle = 'rgba(200,169,110,.78)'; ctx.lineWidth = 2.2;
+    // soft filled background
+    ctx.beginPath(); ctx.arc(0, 0, oR, 0, Math.PI * 2);
+    ctx.fillStyle = sGreenFill; ctx.fill();
+
+    // outer ring — thick
+    ctx.strokeStyle = sGreen; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(0, 0, oR, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = 1.2;
+
+    // inner ring — thin
+    ctx.strokeStyle = sGreenMid; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(0, 0, iR, 0, Math.PI * 2); ctx.stroke();
 
+    // small tick dashes on inner ring (12 positions like a clock)
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      const r1 = iR - 2, r2 = iR + 3;
+      ctx.strokeStyle = sGreenMid; ctx.lineWidth = i % 3 === 0 ? 1.4 : 0.7;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * r1, Math.sin(a) * r1);
+      ctx.lineTo(Math.cos(a) * r2, Math.sin(a) * r2);
+      ctx.stroke();
+    }
+
     // arc text "CONFIRMED" — top half
-    ctx.fillStyle = 'rgba(200,169,110,.90)';
-    ctx.font = 'bold 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillStyle = sGreenDark;
+    ctx.font = 'bold 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
     const cText = 'CONFIRMED';
-    const cAngle = Math.PI * 0.72, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
+    const cAngle = Math.PI * 0.70, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
     for (let i = 0; i < cText.length; i++) {
       const a = cStart + i * cStep;
       ctx.save();
@@ -670,7 +677,7 @@
 
     // arc text "ATTENDANCE" — bottom half
     const aText = 'ATTENDANCE';
-    const aAngle = Math.PI * 0.82, aStart = Math.PI/2 - aAngle/2, aStep = aAngle / (aText.length - 1);
+    const aAngle = Math.PI * 0.80, aStart = Math.PI/2 - aAngle/2, aStep = aAngle / (aText.length - 1);
     for (let i = 0; i < aText.length; i++) {
       const a = aStart + i * aStep;
       ctx.save();
@@ -680,17 +687,15 @@
       ctx.restore();
     }
 
-    // centre diamond
-    ctx.save(); ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = 'rgba(200,169,110,.78)';
-    ctx.fillRect(-8, -8, 16, 16);
-    ctx.restore();
-
-    // tick dots at N / E / S / W on inner ring
-    [0, Math.PI/2, Math.PI, 3*Math.PI/2].forEach(a => {
-      ctx.beginPath(); ctx.arc(Math.cos(a) * iR, Math.sin(a) * iR, 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(200,169,110,.78)'; ctx.fill();
-    });
+    // centre checkmark ✓
+    ctx.strokeStyle = sGreen; ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-11, 1);
+    ctx.lineTo(-3,  9);
+    ctx.lineTo(12, -8);
+    ctx.stroke();
+    ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
 
     ctx.restore(); // end stamp transform
   }
