@@ -486,62 +486,6 @@ img { display: block; max-width: 100%; }
   border-color: var(--white);
 }
 
-/* Hero story strip */
-.hero-story {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  margin-top: 1.5rem;
-  margin-bottom: .25rem;
-}
-.hero-story-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .25rem;
-  min-width: 64px;
-}
-.hss-dot {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.12);
-  border: 2px solid rgba(255,255,255,.35);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--gold-light);
-  font-size: .95rem;
-  transition: var(--transition);
-}
-.hss-active .hss-dot {
-  background: var(--gold);
-  border-color: var(--gold-light);
-  box-shadow: 0 0 0 4px rgba(200,169,110,.35);
-  color: var(--white);
-}
-.hero-story-step span {
-  font-size: .68rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.75);
-  font-family: var(--font-sans);
-  font-weight: 600;
-}
-.hero-story-step small {
-  font-size: .62rem;
-  color: var(--gold-light);
-  font-family: var(--font-serif);
-  font-style: italic;
-}
-.hss-line {
-  flex: 1;
-  min-width: 24px;
-  height: 2px;
-  background: linear-gradient(to right, rgba(255,255,255,.2), rgba(255,255,255,.5), rgba(255,255,255,.2));
-  margin-bottom: 1.5rem;
-}
-@media (min-width: 480px) {
-  .hss-line { min-width: 40px; }
-}
 
 
 /* Animate-in */
