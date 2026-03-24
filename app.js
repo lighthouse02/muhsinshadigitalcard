@@ -267,14 +267,12 @@
   ============================================= */
   const rsvpForm         = document.getElementById('rsvp-form');
   const guestsGroup      = document.getElementById('guests-group');
-  const dietaryGroup     = document.getElementById('dietary-group');
   const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
 
   attendanceRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       const attending = radio.value === 'yes';
       guestsGroup.style.display  = attending ? '' : 'none';
-      dietaryGroup.style.display = attending ? '' : 'none';
       clearInlineError('attendance-error');
     });
   });
@@ -304,7 +302,6 @@
       document.getElementById('rsvp-success').classList.remove('hidden');
       rsvpForm.reset();
       guestsGroup.style.display  = 'none';
-      dietaryGroup.style.display = 'none';
       rsvpBtn.disabled = false;
       rsvpBtn.textContent = 'Send RSVP';
     }, 1000);
