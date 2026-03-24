@@ -661,28 +661,40 @@
       ctx.stroke();
     }
 
-    // arc text "CONFIRMED" — top half
+    // arc text "CONFIRMED" — top half, letters upright along upper arc
     ctx.fillStyle = sGreenDark;
     ctx.font = 'bold 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
     const cText = 'CONFIRMED';
-    const cAngle = Math.PI * 0.70, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
+    const cAngle = Math.PI * 0.68, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
     for (let i = 0; i < cText.length; i++) {
       const a = cStart + i * cStep;
       ctx.save();
       ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
-      ctx.rotate(a + Math.PI / 2);
+      ctx.rotate(a + Math.PI / 2);  // upright: tangent points outward
       ctx.fillText(cText[i], -3.5, 4);
       ctx.restore();
     }
 
-    // arc text "ATTENDANCE" — bottom half
+    // star separator dots between CONFIRMED and ATTENDANCE
+    const starAngles = [-Math.PI/2 - 0.08, Math.PI/2 + 0.08]; // just past each word end
+    starAngles.forEach(a => {
+      ctx.fillStyle = sGreen;
+      ctx.beginPath(); ctx.arc(Math.cos(a) * tR, Math.sin(a) * tR, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // arc text "ATTENDANCE" — bottom half, letters upright along lower arc
+    // For bottom arc: letters must be rotated so baseline faces inward (flip by π)
     const aText = 'ATTENDANCE';
-    const aAngle = Math.PI * 0.80, aStart = Math.PI/2 - aAngle/2, aStep = aAngle / (aText.length - 1);
+    const aAngle = Math.PI * 0.78;
+    // start angle at bottom-left, sweep clockwise to bottom-right
+    const aStart = Math.PI/2 + aAngle/2;   // start right-side (index 0 = leftmost letter)
+    const aStep  = -aAngle / (aText.length - 1);  // sweep counter-clockwise so text reads left→right along bottom
     for (let i = 0; i < aText.length; i++) {
       const a = aStart + i * aStep;
       ctx.save();
       ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
-      ctx.rotate(a - Math.PI / 2);
+      ctx.rotate(a - Math.PI / 2);  // flip so letters face outward on bottom
       ctx.fillText(aText[i], -3.5, 4);
       ctx.restore();
     }
