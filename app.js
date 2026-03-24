@@ -432,122 +432,227 @@
     const canvas = document.getElementById('rsvp-card-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const W = 800, H = 500;
+    const W = 800, H = 580;
     canvas.width  = W;
     canvas.height = H;
-    const gold  = '#C8A96E';
-    const ink   = '#2a2018';
-    const muted = '#6b5c48';
-    const cream = '#fdf8ef';
 
-    // Background
-    ctx.fillStyle = cream;
-    ctx.fillRect(0, 0, W, H);
-    // Subtle corner gradient
-    const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0,  'rgba(200,169,110,.07)');
-    bg.addColorStop(.5, 'rgba(253,248,239,0)');
-    bg.addColorStop(1,  'rgba(200,169,110,.07)');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
+    const gold     = '#C8A96E';
+    const ink      = '#2a2018';
+    const muted    = '#6b5c48';
+    const cream    = '#fdf8ef';
+    const heroBg   = '#1e1510';
 
-    // Outer border
-    ctx.strokeStyle = gold;
-    ctx.lineWidth   = 2.5;
-    ctx.strokeRect(12, 12, W - 24, H - 24);
-    // Inner border
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(22, 22, W - 44, H - 44);
+    /* ── tiny helpers ─────────────────────────── */
+    function diamond(x, y, s) {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = gold; ctx.fillRect(-s, -s, s * 2, s * 2);
+      ctx.restore();
+    }
+    function hline(x1, x2, y) {
+      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
+    }
 
-    // Corner dots
-    [[30, 30], [W - 30, 30], [30, H - 30], [W - 30, H - 30]].forEach(([cx, cy]) => {
-      ctx.beginPath();
-      ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = gold;
-      ctx.fill();
-    });
+    /* ══════════════════════════════════════════
+       ZONE 1 — HERO BAND  (Y 0 – 185)
+       Dark mocha, big couple names
+    ════════════════════════════════════════════ */
+    ctx.fillStyle = heroBg;
+    ctx.fillRect(0, 0, W, 185);
+    const hg = ctx.createLinearGradient(0, 0, W, 185);
+    hg.addColorStop(0,   'rgba(200,169,110,.20)');
+    hg.addColorStop(0.5, 'rgba(200,169,110,.03)');
+    hg.addColorStop(1,   'rgba(200,169,110,.20)');
+    ctx.fillStyle = hg; ctx.fillRect(0, 0, W, 185);
 
-    // Header ornament lines + diamond
-    ctx.strokeStyle = gold;
-    ctx.lineWidth   = 0.8;
-    ctx.beginPath(); ctx.moveTo(50, 64); ctx.lineTo(W / 2 - 42, 64); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(W / 2 + 42, 64); ctx.lineTo(W - 50, 64); ctx.stroke();
-    ctx.save();
-    ctx.translate(W / 2, 64); ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = gold; ctx.fillRect(-6.5, -6.5, 13, 13);
-    ctx.restore();
+    // top ornament
+    ctx.strokeStyle = 'rgba(200,169,110,.55)'; ctx.lineWidth = 0.8;
+    hline(60, W/2 - 54, 36); hline(W/2 + 54, W - 60, 36);
+    diamond(W/2, 36, 5.5);
 
     // "WEDDING INVITATION"
-    ctx.fillStyle    = gold;
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'alphabetic';
-    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('W E D D I N G   I N V I T A T I O N', W / 2, 88);
+    ctx.fillStyle = gold; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('W E D D I N G   I N V I T A T I O N', W/2, 55);
 
     // Bismillah
-    ctx.fillStyle = muted;
-    ctx.font = '15px serif';
-    ctx.fillText('\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650', W / 2, 116);
+    ctx.fillStyle = 'rgba(232,212,168,.72)';
+    ctx.font = '14px serif';
+    ctx.fillText('\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650', W/2, 77);
 
-    // Couple names
-    ctx.fillStyle = ink;
-    ctx.font = 'italic bold 58px "Playfair Display", Georgia, "Times New Roman", serif';
-    ctx.fillText('Muhsin & Syaqiela', W / 2, 184);
+    // BIG couple names
+    ctx.fillStyle = '#f8edd8';
+    ctx.font = 'italic bold 66px "Playfair Display", Georgia, serif';
+    ctx.fillText('Muhsin & Syaqiela', W/2, 148);
 
-    // Date · Venue
-    ctx.fillStyle = muted;
-    ctx.font = '400 17px "EB Garamond", Georgia, serif';
-    ctx.fillText('Saturday, 12 April 2026  \u00b7  Dewan Delima, Kajang', W / 2, 214);
+    // subtitle
+    ctx.fillStyle = 'rgba(200,169,110,.82)';
+    ctx.font = '300 10.5px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('T O G E T H E R   W I T H   T H E I R   F A M I L I E S', W/2, 171);
 
-    // Middle divider
-    ctx.strokeStyle = gold; ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(120, 237); ctx.lineTo(W / 2 - 20, 237); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(W / 2 + 20, 237); ctx.lineTo(W - 120, 237); ctx.stroke();
-    ctx.beginPath(); ctx.arc(W / 2, 237, 5, 0, Math.PI * 2);
+    // hero bottom rule
+    ctx.strokeStyle = gold; ctx.lineWidth = 1.5;
+    hline(0, W, 185);
+
+    /* ══════════════════════════════════════════
+       ZONE 2 — CONFIRMED SECTION  (Y 185 – 375)
+       Cream, guest name, blessing
+    ════════════════════════════════════════════ */
+    ctx.fillStyle = cream;
+    ctx.fillRect(0, 185, W, 190);
+    const mg = ctx.createLinearGradient(0, 185, 0, 375);
+    mg.addColorStop(0, 'rgba(200,169,110,.07)'); mg.addColorStop(1, 'rgba(200,169,110,0)');
+    ctx.fillStyle = mg; ctx.fillRect(0, 185, W, 190);
+
+    // divider ornament
+    ctx.strokeStyle = gold; ctx.lineWidth = 0.7;
+    hline(100, W/2 - 30, 214); hline(W/2 + 30, W - 100, 214);
+    ctx.beginPath(); ctx.arc(W/2, 214, 5.5, 0, Math.PI * 2);
     ctx.fillStyle = gold; ctx.fill();
 
-    // "CONFIRMED ATTENDANCE"
+    // "CONFIRMED ATTENDANCE" label
     ctx.fillStyle = muted;
-    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('C O N F I R M E D   A T T E N D A N C E', W / 2, 271);
+    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.fillText('C O N F I R M E D   A T T E N D A N C E', W/2, 241);
 
-    // Guest name — auto-shrink to fit
-    const maxNameW = W - 160;
-    let fs = 40;
+    // guest name — auto-shrink so it stays left of the stamp
+    const maxNameW = W - 260;
+    let fs = 44;
     ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
-    while (ctx.measureText(guestName).width > maxNameW && fs > 18) {
+    while (ctx.measureText(guestName).width > maxNameW && fs > 16) {
       fs -= 2;
       ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
     }
     ctx.fillStyle = ink;
-    ctx.fillText(guestName, W / 2, 328);
+    ctx.textAlign = 'center';
+    ctx.fillText(guestName, W/2 - 30, 308);
 
-    // Gold underline under name
+    // gold underline
     const nw = ctx.measureText(guestName).width;
     ctx.strokeStyle = gold; ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - nw / 2, 337);
-    ctx.lineTo(W / 2 + nw / 2, 337);
+    ctx.moveTo(W/2 - 30 - nw/2, 318); ctx.lineTo(W/2 - 30 + nw/2, 318);
     ctx.stroke();
 
-    // Blessing
+    // blessing
     ctx.fillStyle = muted;
-    ctx.font = 'italic 15px "EB Garamond", Georgia, serif';
-    ctx.fillText('We are deeply honoured by your presence. Barakallahu lak\u016bm\u0101.', W / 2, 374);
+    ctx.font = 'italic 14px "EB Garamond", Georgia, serif';
+    ctx.fillText('We are deeply honoured by your presence.  Barakallahu lak\u016bm\u0101.', W/2, 353);
 
-    // Bottom ornament + diamond
-    ctx.strokeStyle = gold; ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(50, 428); ctx.lineTo(W / 2 - 72, 428); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(W / 2 + 72, 428); ctx.lineTo(W - 50, 428); ctx.stroke();
+    /* ══════════════════════════════════════════
+       ZONE 3 — EVENT DETAILS BAND  (Y 375 – 488)
+       Three columns: Date | Time | Location
+    ════════════════════════════════════════════ */
+    ctx.fillStyle = '#f2e6d4';
+    ctx.fillRect(0, 375, W, 113);
+    ctx.strokeStyle = gold; ctx.lineWidth = 1;
+    hline(0, W, 375); hline(0, W, 488);
+
+    // column dividers
+    ctx.strokeStyle = 'rgba(200,169,110,.30)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(W/3, 388); ctx.lineTo(W/3, 480); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(2*W/3, 388); ctx.lineTo(2*W/3, 480); ctx.stroke();
+
+    const details = [
+      { x: W/6,      label: 'DATE',     v1: 'Saturday, 12 April 2026', v2: '' },
+      { x: W/2,      label: 'TIME',     v1: '10:00 AM',                v2: 'Akad Nikah · Bersanding' },
+      { x: 5*W/6,    label: 'LOCATION', v1: 'Dewan Delima',            v2: 'Kajang, Selangor' },
+    ];
+    details.forEach(d => {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = gold;
+      ctx.font = '600 9.5px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+      ctx.fillText(d.label, d.x, 402);
+      ctx.fillStyle = ink;
+      ctx.font = '600 14.5px "Playfair Display", Georgia, serif';
+      ctx.fillText(d.v1, d.x, 430);
+      if (d.v2) {
+        ctx.fillStyle = muted;
+        ctx.font = '400 12.5px "EB Garamond", Georgia, serif';
+        ctx.fillText(d.v2, d.x, 452);
+      }
+    });
+
+    /* ══════════════════════════════════════════
+       ZONE 4 — FOOTER  (Y 488 – 580)
+    ════════════════════════════════════════════ */
+    ctx.fillStyle = cream;
+    ctx.fillRect(0, 488, W, 92);
+
+    ctx.strokeStyle = gold; ctx.lineWidth = 0.7;
+    hline(60, W/2 - 66, 524); hline(W/2 + 66, W - 60, 524);
+    diamond(W/2, 524, 5);
+
+    ctx.fillStyle = gold;
+    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('muhsinshaweddingcard.netlify.app', W/2, 552);
+
+    /* ══════════════════════════════════════════
+       BORDERS — drawn over everything
+    ════════════════════════════════════════════ */
+    ctx.strokeStyle = gold; ctx.lineWidth = 2.5;
+    ctx.strokeRect(10, 10, W - 20, H - 20);
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(20, 20, W - 40, H - 40);
+    [[28, 28], [W-28, 28], [28, H-28], [W-28, H-28]].forEach(([cx, cy]) => {
+      ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = gold; ctx.fill();
+    });
+
+    /* ══════════════════════════════════════════
+       CONFIRMED STAMP — top-right of cream zone
+       Rotated ~-20°, semi-transparent
+    ════════════════════════════════════════════ */
+    const sx = W - 80, sy = 278, oR = 54, iR = 44, tR = 35;
     ctx.save();
-    ctx.translate(W / 2, 428); ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = gold; ctx.fillRect(-5.5, -5.5, 11, 11);
+    ctx.translate(sx, sy);
+    ctx.rotate(-20 * Math.PI / 180);
+
+    // outer + inner rings
+    ctx.strokeStyle = 'rgba(200,169,110,.78)'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.arc(0, 0, oR, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(0, 0, iR, 0, Math.PI * 2); ctx.stroke();
+
+    // arc text "CONFIRMED" — top half
+    ctx.fillStyle = 'rgba(200,169,110,.90)';
+    ctx.font = 'bold 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
+    const cText = 'CONFIRMED';
+    const cAngle = Math.PI * 0.72, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
+    for (let i = 0; i < cText.length; i++) {
+      const a = cStart + i * cStep;
+      ctx.save();
+      ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
+      ctx.rotate(a + Math.PI / 2);
+      ctx.fillText(cText[i], -3.5, 4);
+      ctx.restore();
+    }
+
+    // arc text "ATTENDANCE" — bottom half
+    const aText = 'ATTENDANCE';
+    const aAngle = Math.PI * 0.82, aStart = Math.PI/2 - aAngle/2, aStep = aAngle / (aText.length - 1);
+    for (let i = 0; i < aText.length; i++) {
+      const a = aStart + i * aStep;
+      ctx.save();
+      ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
+      ctx.rotate(a - Math.PI / 2);
+      ctx.fillText(aText[i], -3.5, 4);
+      ctx.restore();
+    }
+
+    // centre diamond
+    ctx.save(); ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = 'rgba(200,169,110,.78)';
+    ctx.fillRect(-8, -8, 16, 16);
     ctx.restore();
 
-    // Footer URL
-    ctx.fillStyle = gold;
-    ctx.font = '400 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('muhsinshaweddingcard.netlify.app', W / 2, 463);
+    // tick dots at N / E / S / W on inner ring
+    [0, Math.PI/2, Math.PI, 3*Math.PI/2].forEach(a => {
+      ctx.beginPath(); ctx.arc(Math.cos(a) * iR, Math.sin(a) * iR, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,169,110,.78)'; ctx.fill();
+    });
+
+    ctx.restore(); // end stamp transform
   }
 
   /* =============================================
