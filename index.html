@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muhsin & Sha — Wedding Invitation</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Signature pad -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ========== MUSIC PLAYER ========== -->
+  <div id="music-player">
+    <button id="music-btn" title="Toggle music">
+      <i class="fas fa-music"></i>
+    </button>
+    <audio id="bg-music" loop>
+      <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+
+  <!-- ========== HERO ========== -->
+  <section id="hero">
+    <div class="hero-overlay"></div>
+    <div class="petals-container" id="petals"></div>
+    <div class="hero-content">
+      <p class="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
+      <p class="hero-subtitle fade-in-up delay-1">Together with their families</p>
+      <h1 class="hero-names fade-in-up delay-2">Muhsin <span>&</span> Sha</h1>
+      <p class="hero-announce fade-in-up delay-3">cordially invite you to celebrate their wedding</p>
+      <div class="hero-date fade-in-up delay-4">
+        <span>Saturday</span>
+        <span class="hero-date-main">12 · 04 · 2026</span>
+        <span>10:00 AM</span>
+      </div>
+      <a href="#rsvp" class="btn-primary fade-in-up delay-5">RSVP Now</a>
+    </div>
+    <div class="scroll-down">
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- ========== COUNTDOWN ========== -->
+  <section id="countdown-section">
+    <h2 class="section-title">Counting Down To Our Big Day</h2>
+    <div id="countdown">
+      <div class="count-box"><span id="days">00</span><label>Days</label></div>
+      <div class="count-sep">:</div>
+      <div class="count-box"><span id="hours">00</span><label>Hours</label></div>
+      <div class="count-sep">:</div>
+      <div class="count-box"><span id="minutes">00</span><label>Minutes</label></div>
+      <div class="count-sep">:</div>
+      <div class="count-box"><span id="seconds">00</span><label>Seconds</label></div>
+    </div>
+  </section>
+
+  <!-- ========== OUR STORY ========== -->
+  <section id="story">
+    <div class="container">
+      <h2 class="section-title">Our Story</h2>
+      <div class="story-timeline">
+        <div class="story-item left">
+          <div class="story-card">
+            <i class="fas fa-heart story-icon"></i>
+            <h3>First Meeting</h3>
+            <span class="story-year">2021</span>
+            <p>Two souls crossed paths, unaware that fate had already written their story together.</p>
+          </div>
+        </div>
+        <div class="story-item right">
+          <div class="story-card">
+            <i class="fas fa-ring story-icon"></i>
+            <h3>Engagement</h3>
+            <span class="story-year">2025</span>
+            <p>He got down on one knee, and she said yes. The journey to forever began.</p>
+          </div>
+        </div>
+        <div class="story-item left">
+          <div class="story-card">
+            <i class="fas fa-mosque story-icon"></i>
+            <h3>The Wedding</h3>
+            <span class="story-year">2026</span>
+            <p>In the presence of loved ones, they will begin their new chapter as husband and wife.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CALENDAR / SAVE THE DATE ========== -->
+  <section id="calendar-section">
+    <div class="container">
+      <h2 class="section-title">Save the Date</h2>
+      <p class="section-sub">Mark your calendar — you won't want to miss this!</p>
+      <div class="calendar-widget">
+        <div class="cal-header">
+          <button id="cal-prev"><i class="fas fa-chevron-left"></i></button>
+          <span id="cal-month-year">April 2026</span>
+          <button id="cal-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="cal-days-header">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span class="cal-marked-dot"></span> Wedding Day — 12 April 2026
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ITINERARY ========== -->
+  <section id="itinerary">
+    <div class="container">
+      <h2 class="section-title">Wedding Itinerary</h2>
+      <div class="itinerary-list">
+        <div class="itinerary-item">
+          <div class="itinerary-time">09:00 AM</div>
+          <div class="itinerary-dot"></div>
+          <div class="itinerary-desc">
+            <h3>Guest Arrival</h3>
+            <p>Welcome reception &amp; refreshments</p>
+          </div>
+        </div>
+        <div class="itinerary-item">
+          <div class="itinerary-time">10:00 AM</div>
+          <div class="itinerary-dot"></div>
+          <div class="itinerary-desc">
+            <h3>Akad Nikah</h3>
+            <p>The sacred wedding ceremony</p>
+          </div>
+        </div>
+        <div class="itinerary-item">
+          <div class="itinerary-time">11:00 AM</div>
+          <div class="itinerary-dot"></div>
+          <div class="itinerary-desc">
+            <h3>Bersanding</h3>
+            <p>Bride &amp; groom on the pelamin</p>
+          </div>
+        </div>
+        <div class="itinerary-item">
+          <div class="itinerary-time">12:00 PM</div>
+          <div class="itinerary-dot"></div>
+          <div class="itinerary-desc">
+            <h3>Wedding Feast (Walimah)</h3>
+            <p>Lunch &amp; celebration with family and friends</p>
+          </div>
+        </div>
+        <div class="itinerary-item">
+          <div class="itinerary-time">03:00 PM</div>
+          <div class="itinerary-dot"></div>
+          <div class="itinerary-desc">
+            <h3>End of Event</h3>
+            <p>Thank you for celebrating with us!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DRESS CODE ========== -->
+  <section id="dresscode">
+    <div class="container">
+      <h2 class="section-title">Dress Code</h2>
+      <p class="section-sub">Please dress in our wedding palette</p>
+      <div class="dress-swatches">
+        <div class="swatch" style="background:#C8A96E;"><span>Gold</span></div>
+        <div class="swatch" style="background:#FFFFFF; border:1px solid #ddd;"><span style="color:#999;">Ivory</span></div>
+        <div class="swatch" style="background:#8B7355;"><span>Mocha</span></div>
+        <div class="swatch" style="background:#D4C1A1;"><span>Champagne</span></div>
+      </div>
+      <p class="dresscode-note">Smart casual / traditional attire preferred. Please avoid wearing white or black.</p>
+    </div>
+  </section>
+
+  <!-- ========== GALLERY ========== -->
+  <section id="gallery">
+    <div class="container">
+      <h2 class="section-title">Our Moments</h2>
+      <p class="section-sub">A glimpse into our love story</p>
+      <div class="gallery-grid">
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800">
+          <img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800">
+          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800">
+          <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=800">
+          <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+        <div class="gallery-item" data-src="https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?w=800">
+          <img src="https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?w=400" alt="Wedding moment" loading="lazy" />
+          <div class="gallery-overlay"><i class="fas fa-expand"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox hidden">
+    <button class="lightbox-close"><i class="fas fa-times"></i></button>
+    <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
+    <img id="lightbox-img" src="" alt="Gallery image" />
+    <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
+  </div>
+
+  <!-- ========== RSVP ========== -->
+  <section id="rsvp">
+    <div class="container">
+      <h2 class="section-title">RSVP</h2>
+      <p class="section-sub">Kindly let us know by <strong>1 April 2026</strong></p>
+      <form id="rsvp-form" class="rsvp-form" novalidate>
+        <div class="form-group">
+          <label for="rsvp-name">Full Name <span>*</span></label>
+          <input type="text" id="rsvp-name" name="name" placeholder="Your full name" required />
+        </div>
+        <div class="form-group">
+          <label for="rsvp-email">Email <span>*</span></label>
+          <input type="email" id="rsvp-email" name="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label for="rsvp-phone">Phone Number</label>
+          <input type="tel" id="rsvp-phone" name="phone" placeholder="+60 1X-XXXXXXX" />
+        </div>
+        <div class="form-group">
+          <label>Attendance <span>*</span></label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="attendance" value="yes" required /> Joyfully Accepts
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="attendance" value="no" /> Regretfully Declines
+            </label>
+          </div>
+        </div>
+        <div class="form-group" id="guests-group">
+          <label for="rsvp-guests">Number of Guests <span>*</span></label>
+          <select id="rsvp-guests" name="guests">
+            <option value="1">1 person</option>
+            <option value="2">2 persons</option>
+            <option value="3">3 persons</option>
+            <option value="4">4 persons</option>
+            <option value="5">5+ persons</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rsvp-dietary">Dietary Requirements</label>
+          <input type="text" id="rsvp-dietary" name="dietary" placeholder="e.g. vegetarian, halal only, allergies" />
+        </div>
+        <button type="submit" class="btn-primary">Send RSVP</button>
+        <div id="rsvp-success" class="form-success hidden">
+          <i class="fas fa-check-circle"></i> Thank you! We look forward to celebrating with you.
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ========== PRIVATE MESSAGE & SIGNATURE ========== -->
+  <section id="message-section">
+    <div class="container">
+      <h2 class="section-title">Leave a Private Message</h2>
+      <p class="section-sub">Send Muhsin a personal message — only he will read it <i class="fas fa-lock"></i></p>
+      <form id="message-form" class="message-form" novalidate>
+        <div class="form-group">
+          <label for="msg-name">Your Name <span>*</span></label>
+          <input type="text" id="msg-name" name="msg-name" placeholder="Your name" required />
+        </div>
+        <div class="form-group">
+          <label for="msg-text">Your Private Message <span>*</span></label>
+          <textarea id="msg-text" name="msg-text" rows="5" placeholder="Write your heartfelt message to Muhsin..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Your Signature <span>*</span></label>
+          <div class="sig-wrapper">
+            <canvas id="signature-canvas"></canvas>
+            <div class="sig-actions">
+              <button type="button" id="sig-clear" class="btn-outline">
+                <i class="fas fa-eraser"></i> Clear
+              </button>
+            </div>
+          </div>
+          <p class="sig-hint">Sign above using your mouse or finger</p>
+        </div>
+        <button type="submit" class="btn-primary">Send Private Message</button>
+        <div id="msg-success" class="form-success hidden">
+          <i class="fas fa-envelope-open-text"></i> Your message has been delivered privately to Muhsin.
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ========== WISHES WALL ========== -->
+  <section id="wishes">
+    <div class="container">
+      <h2 class="section-title">Wishes Wall</h2>
+      <p class="section-sub">Share your blessings and well-wishes publicly</p>
+      <form id="wishes-form" class="wishes-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="wish-name" placeholder="Your name *" required />
+          </div>
+          <div class="form-group">
+            <input type="text" id="wish-text" placeholder="Your wishes for Muhsin & Sha *" required />
+          </div>
+          <button type="submit" class="btn-primary wishes-submit">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </form>
+      <div class="wishes-wall" id="wishes-wall">
+        <!-- Pre-loaded wishes -->
+        <div class="wish-card">
+          <div class="wish-avatar">A</div>
+          <div class="wish-body">
+            <strong>Ahmad</strong>
+            <p>Barakallahu lakuma wa baraka 'alaykuma wa jama'a baynakuma fi khayr. Congratulations! 🤍</p>
+            <span class="wish-time">Just now</span>
+          </div>
+        </div>
+        <div class="wish-card">
+          <div class="wish-avatar">F</div>
+          <div class="wish-body">
+            <strong>Fatimah</strong>
+            <p>Wishing you both a lifetime of love, laughter, and happiness together!</p>
+            <span class="wish-time">2 mins ago</span>
+          </div>
+        </div>
+        <div class="wish-card">
+          <div class="wish-avatar">Z</div>
+          <div class="wish-body">
+            <strong>Zainab</strong>
+            <p>May Allah bless your union and fill your home with peace and joy. Congrats Muhsin & Sha! 💛</p>
+            <span class="wish-time">5 mins ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MAP ========== -->
+  <section id="location">
+    <div class="container">
+      <h2 class="section-title">Venue & Location</h2>
+      <div class="location-card">
+        <div class="location-info">
+          <i class="fas fa-map-marker-alt location-icon"></i>
+          <h3>Dewan Delima</h3>
+          <p>Jalan Cempaka 5, Taman Seri Maju<br />43000 Kajang, Selangor, Malaysia</p>
+          <div class="location-btns">
+            <a href="https://maps.google.com/?q=Kajang,Selangor,Malaysia" target="_blank" rel="noopener" class="btn-primary">
+              <i class="fas fa-directions"></i> Get Directions
+            </a>
+            <a href="https://waze.com/ul?ll=2.9836,101.7884&navigate=yes" target="_blank" rel="noopener" class="btn-outline">
+              <i class="fas fa-road"></i> Open in Waze
+            </a>
+          </div>
+        </div>
+        <div class="map-frame">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.0!2d101.7884!3d2.9836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cdb5e9f9999999%3A0x0!2sKajang%2C+Selangor!5e0!3m2!1sen!2smy!4v1700000000000"
+            width="100%"
+            height="350"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Wedding venue location"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== GIFT REGISTRY ========== -->
+  <section id="gift">
+    <div class="container">
+      <h2 class="section-title">Wedding Gift</h2>
+      <p class="section-sub">Your presence is the greatest gift. However, if you wish to bless us:</p>
+      <div class="gift-cards">
+        <div class="gift-card">
+          <i class="fas fa-mobile-alt gift-icon"></i>
+          <h3>DuitNow / Bank Transfer</h3>
+          <div class="gift-info">
+            <p><strong>Bank:</strong> Maybank</p>
+            <p><strong>Account Name:</strong> Muhsin Bin Abdullah</p>
+            <p><strong>Account No:</strong> 1234-5678-9012</p>
+          </div>
+          <button class="btn-outline copy-btn" data-copy="1234567890012">
+            <i class="fas fa-copy"></i> Copy Account No
+          </button>
+        </div>
+        <div class="gift-card">
+          <i class="fas fa-qrcode gift-icon"></i>
+          <h3>Scan to Pay</h3>
+          <div class="qr-placeholder">
+            <i class="fas fa-qrcode" style="font-size:80px; color:#C8A96E;"></i>
+            <p>DuitNow QR</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer id="footer">
+    <div class="footer-flowers"></div>
+    <div class="footer-content">
+      <h2 class="footer-names">Muhsin <span>&</span> Sha</h2>
+      <p class="footer-date">12 · 04 · 2026</p>
+      <p class="footer-dua">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا</p>
+      <p class="footer-dua-trans">"And of His signs is that He created for you from yourselves mates that you may find tranquillity in them." — Ar-Rum 30:21</p>
+      <p class="footer-credit">Made with <i class="fas fa-heart" style="color:#C8A96E;"></i> for Muhsin & Sha</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
