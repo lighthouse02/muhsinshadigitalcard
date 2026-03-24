@@ -565,7 +565,7 @@
     // blessing
     ctx.fillStyle = muted;
     ctx.font = 'italic 14px "EB Garamond", Georgia, serif';
-    ctx.fillText('We are deeply honoured by your presence.  Barakallahu lak\u016bm\u0101.', W/2, 353);
+    ctx.fillText('We are deeply honoured by your presence.', W/2, 353);
 
     /* ══════════════════════════════════════════
        ZONE 3 — EVENT DETAILS BAND  (Y 375 – 488)
