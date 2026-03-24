@@ -953,6 +953,11 @@ img { display: block; max-width: 100%; }
   background-size: 8px;
   color: var(--text-light) !important;
 }
+/* Dim the placeholder option */
+.salutation-select:has(option[value=""]:checked) {
+  color: #aaa !important;
+}
+.salutation-select option { color: var(--text); }
 .name-row input {
   flex: 1;
   min-width: 0;
