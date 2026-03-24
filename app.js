@@ -61,7 +61,7 @@
 
   /* =============================================
      1. MUSIC PLAYER — YouTube IFrame API
-        Song: https://www.youtube.com/watch?v=4ptRrq6qA8A
+        Song: https://www.youtube.com/watch?v=1-wpZS9AePY
   ============================================= */
   const musicBtn      = document.getElementById('music-btn');
   const musicIcon     = document.getElementById('music-icon');
@@ -108,11 +108,11 @@
   // YouTube IFrame API calls this globally when the script has loaded
   window.onYouTubeIframeAPIReady = function () {
     ytPlayer = new YT.Player('yt-player', {
-      videoId: '4ptRrq6qA8A',
+      videoId: '1-wpZS9AePY',
       playerVars: {
         autoplay:        0,
         loop:            1,
-        playlist:        '4ptRrq6qA8A', // required for loop to work
+        playlist:        '1-wpZS9AePY', // required for loop to work
         controls:        0,
         disablekb:       1,
         fs:              0,
