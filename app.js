@@ -273,47 +273,68 @@
   });
 
   /* =============================================
-     6. RSVP FORM
+     6. ENGAGE TABS (RSVP · Message · Wishes)
   ============================================= */
-  const rsvpForm     = document.getElementById('rsvp-form');
-  const guestsGroup  = document.getElementById('guests-group');
+  const engageTabs   = document.querySelectorAll('.engage-tab');
+  const engagePanels = document.querySelectorAll('.engage-panel');
+
+  engageTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      engageTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      engagePanels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+      // Re-initialise signature canvas if switching to message panel
+      if (tab.dataset.tab === 'msg-panel') resizeCanvas();
+    });
+  });
+
+  /* =============================================
+     7. RSVP FORM
+  ============================================= */
+  const rsvpForm         = document.getElementById('rsvp-form');
+  const guestsGroup      = document.getElementById('guests-group');
+  const dietaryGroup     = document.getElementById('dietary-group');
   const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
 
   attendanceRadios.forEach(radio => {
     radio.addEventListener('change', () => {
-      guestsGroup.style.display = radio.value === 'no' ? 'none' : '';
+      const attending = radio.value === 'yes';
+      guestsGroup.style.display  = attending ? '' : 'none';
+      dietaryGroup.style.display = attending ? '' : 'none';
       clearInlineError('attendance-error');
     });
   });
 
+  function isValidMalaysianPhone(p) {
+    return /^(\+?60|0)[1-9]\d{7,9}$/.test(p.replace(/[\s\-]/g, ''));
+  }
+
   rsvpForm.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const name       = document.getElementById('rsvp-name').value.trim();
-    const email      = document.getElementById('rsvp-email').value.trim();
-    const attendance = rsvpForm.querySelector('input[name="attendance"]:checked');
-
-    // Hide any previous success
     document.getElementById('rsvp-success').classList.add('hidden');
 
-    // Validation
-    if (!name) { flashError('rsvp-name', 'Please enter your name'); return; }
-    if (!isValidEmail(email)) { flashError('rsvp-email', 'Please enter a valid email'); return; }
-    if (!attendance) { showInlineError('attendance-error', 'Please select your attendance'); return; }
-    clearInlineError('attendance-error');
+    const attendance = rsvpForm.querySelector('input[name="attendance"]:checked');
+    const name       = document.getElementById('rsvp-name').value.trim();
+    const phone      = document.getElementById('rsvp-phone').value.trim();
 
-    // Simulate submission
-    const successEl = document.getElementById('rsvp-success');
+    if (!attendance)                   { showInlineError('attendance-error', 'Please select your attendance'); return; }
+    clearInlineError('attendance-error');
+    if (!name)                         { flashError('rsvp-name',  'Please enter your name'); return; }
+    if (!isValidMalaysianPhone(phone)) { flashError('rsvp-phone', 'Please enter a valid phone number'); return; }
+
     const rsvpBtn = rsvpForm.querySelector('.btn-primary');
     rsvpBtn.disabled = true;
-    rsvpBtn.textContent = 'Sending...';
+    rsvpBtn.textContent = 'Sending…';
 
     setTimeout(() => {
-      successEl.classList.remove('hidden');
+      document.getElementById('rsvp-success').classList.remove('hidden');
       rsvpForm.reset();
+      guestsGroup.style.display  = 'none';
+      dietaryGroup.style.display = 'none';
       rsvpBtn.disabled = false;
       rsvpBtn.textContent = 'Send RSVP';
-      guestsGroup.style.display = '';
     }, 1000);
   });
 
@@ -448,7 +469,7 @@
   const revealEls = document.querySelectorAll(
     '#story .story-card, #countdown-section, #calendar-section .calendar-widget, ' +
     '#itinerary .itinerary-item, .gallery-item, ' +
-    '#rsvp .rsvp-form, #message-section .message-form, #wishes .wish-card, ' +
+    '#rsvp .engage-tabs, #rsvp .panel-card, ' +
     '#location .location-card, #gift .gift-card'
   );
 
@@ -481,10 +502,6 @@
   /* =============================================
      HELPERS
   ============================================= */
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
   function flashError(inputId, msg) {
     const el = document.getElementById(inputId);
     if (!el) return;
