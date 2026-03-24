@@ -610,7 +610,6 @@
     ctx.fillStyle = 'rgba(200,169,110,.45)';
     ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('muhsinshaweddingcard.netlify.app', W/2, 552);
 
     /* ══════════════════════════════════════════
        BORDERS — drawn over everything
