@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Wishes Wall — Muhsin &amp; Sha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #C8A96E;
+      --gold-light: #e8d5a3;
+      --gold-dark:  #9a7a42;
+      --ivory:      #FDFAF4;
+      --text:       #2a2018;
+      --text-light: #5c4f3d;
+      --bg:         #1a1108;
+      --bg-card:    #251c0e;
+      --bg-card2:   #2c2010;
+      --radius:     14px;
+    }
+
+    /* ── Page ── */
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--ivory);
+      font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.6rem;
+      padding: 1.1rem 2.4rem;
+      background: linear-gradient(to bottom, rgba(26,17,8,1) 70%, rgba(26,17,8,0));
+    }
+
+    .header-ornament {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dark));
+      opacity: .55;
+    }
+    .header-ornament.right {
+      background: linear-gradient(to left, transparent, var(--gold-dark));
+    }
+
+    .header-inner {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .header-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(.72rem, 1.1vw, .88rem);
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: .9;
+      margin-bottom: .25rem;
+    }
+
+    .header-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 3.6vw, 3.2rem);
+      font-weight: 400;
+      color: var(--ivory);
+      line-height: 1;
+      letter-spacing: .02em;
+    }
+
+    .header-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .header-sub {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(.8rem, 1.3vw, 1rem);
+      color: var(--gold);
+      opacity: .75;
+      margin-top: .3rem;
+      letter-spacing: .06em;
+    }
+
+    /* ── Scrolling wall ── */
+    #wall {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      padding-top: 120px;
+      padding-bottom: 40px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+      overflow: hidden;
+    }
+
+    /* ── Masonry columns ── */
+    #mosaic {
+      columns: 3 360px;
+      column-gap: 1.4rem;
+      /* inner scroll driven by JS */
+    }
+
+    @media (max-width: 900px) {
+      #mosaic { columns: 2 280px; }
+    }
+
+    /* ── Card base ── */
+    .wc {
+      break-inside: avoid;
+      margin-bottom: 1.4rem;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 1px solid rgba(200,169,110,.14);
+      padding: 1.3rem 1.5rem 1.2rem;
+      box-shadow: 0 6px 28px rgba(0,0,0,.45);
+      animation: fadeUp .55s ease both;
+      cursor: default;
+    }
+
+    /* slight alternating tint for visual mosaic feel */
+    .wc:nth-child(3n+2) { background: var(--bg-card2); }
+    .wc:nth-child(5n+4) { background: #1f1709; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Avatar ── */
+    .wc-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: var(--bg);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .wc-avatar-doa {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(200,169,110,.12);
+      border: 1.5px solid rgba(200,169,110,.3);
+      font-size: 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Meta row ── */
+    .wc-meta {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: .75rem;
+    }
+
+    .wc-name {
+      font-weight: 600;
+      font-size: clamp(.9rem, 1.5vw, 1.05rem);
+      color: var(--gold-light);
+      flex: 1;
+    }
+
+    .wc-badge {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      padding: .18rem .6rem;
+      border-radius: 30px;
+      text-transform: uppercase;
+    }
+
+    .wc-badge-photo {
+      background: rgba(200,169,110,.15);
+      color: var(--gold);
+      border: 1px solid rgba(200,169,110,.3);
+    }
+
+    .wc-badge-doa {
+      background: rgba(120,200,150,.12);
+      color: #88d9a0;
+      border: 1px solid rgba(120,200,150,.25);
+    }
+
+    /* ── Text ── */
+    .wc-text {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      color: rgba(253,250,244,.88);
+      line-height: 1.6;
+      margin-bottom: .65rem;
+    }
+
+    .wc-caption {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(.9rem, 1.5vw, 1.1rem);
+      color: rgba(253,250,244,.72);
+      line-height: 1.55;
+      margin-top: .55rem;
+      margin-bottom: .5rem;
+    }
+
+    .wc-time {
+      font-size: clamp(.72rem, 1.1vw, .82rem);
+      color: rgba(200,169,110,.55);
+      letter-spacing: .03em;
+    }
+
+    /* ── Photo card ── */
+    .wc-photo img {
+      width: 100%;
+      border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+      display: block;
+      max-height: 320px;
+      object-fit: cover;
+      margin: -1.3rem -1.5rem 1rem;
+      width: calc(100% + 3rem);
+    }
+
+    /* ── Quote mark accent on wish cards ── */
+    .wc-quote-icon {
+      font-size: 2.8rem;
+      line-height: 1;
+      color: rgba(200,169,110,.15);
+      font-family: 'Playfair Display', serif;
+      float: left;
+      margin-right: .4rem;
+      margin-top: -.15rem;
+      user-select: none;
+    }
+
+    /* ── Divider accent ── */
+    .wc-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,169,110,.2), transparent);
+      margin: .7rem 0;
+    }
+
+    /* ── Empty state ── */
+    #empty {
+      display: none;
+      text-align: center;
+      padding: 5rem 2rem;
+    }
+
+    #empty.visible { display: block; }
+
+    .empty-icon {
+      font-size: 3rem;
+      color: rgba(200,169,110,.35);
+      margin-bottom: 1rem;
+    }
+
+    .empty-msg {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: rgba(253,250,244,.45);
+    }
+
+    /* ── Bottom fade gradient ── */
+    .wall-fade-bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(to top, var(--bg), transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* ── Live badge ── */
+    .live-badge {
+      position: fixed;
+      bottom: 1.4rem;
+      right: 1.8rem;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      background: rgba(26,17,8,.85);
+      border: 1px solid rgba(200,169,110,.25);
+      border-radius: 30px;
+      padding: .35rem .85rem;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(200,169,110,.7);
+      backdrop-filter: blur(8px);
+    }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #5dd97a;
+      box-shadow: 0 0 0 0 rgba(93,217,122,.5);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(93,217,122,.5); }
+      70%  { box-shadow: 0 0 0 6px rgba(93,217,122,0); }
+      100% { box-shadow: 0 0 0 0 rgba(93,217,122,0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="header-ornament"></div>
+    <div class="header-inner">
+      <div class="header-eyebrow">Wedding Wishes Wall</div>
+      <h1 class="header-title"><em>Muhsin</em> &amp; <em>Sha</em></h1>
+      <p class="header-sub">Messages from the hearts of our beloved guests</p>
+    </div>
+    <div class="header-ornament right"></div>
+  </header>
+
+  <!-- ── Wall ── -->
+  <div id="wall">
+    <div id="mosaic" aria-live="polite" aria-label="Guest wishes"></div>
+    <div id="empty">
+      <div class="empty-icon"><i class="far fa-comment-dots"></i></div>
+      <p class="empty-msg">Wishes will appear here as guests send them&hellip;</p>
+    </div>
+  </div>
+
+  <!-- ── Bottom fade ── -->
+  <div class="wall-fade-bottom"></div>
+
+  <!-- ── Live indicator ── -->
+  <div class="live-badge" title="Auto-refreshes every 10 seconds">
+    <span class="live-dot"></span> Live
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const GB_KEY  = 'muhsin_syaqiela_guestbook';
+      const mosaic  = document.getElementById('mosaic');
+      const empty   = document.getElementById('empty');
+
+      // ── Escape HTML ──
+      function esc(s) {
+        if (!s) return '';
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // ── Load entries ──
+      function load() {
+        try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; }
+        catch { return []; }
+      }
+
+      // ── Relative time ──
+      function relTime(ts) {
+        if (!ts) return 'Just now';
+        const d = Math.floor((Date.now() - ts) / 1000);
+        if (d < 60)    return 'Just now';
+        if (d < 3600)  return Math.floor(d / 60) + ' min ago';
+        if (d < 86400) return Math.floor(d / 3600) + ' hr ago';
+        return new Date(ts).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
+      }
+
+      // ── Build card HTML ──
+      function buildCard(entry) {
+        const initial = esc((entry.name || '?').charAt(0).toUpperCase());
+        const name    = esc(entry.name || 'Guest');
+        const time    = esc(relTime(entry.time));
+
+        if (entry.type === 'photo') {
+          return `<div class="wc wc-photo">
+            <img src="${esc(entry.photoDataUrl)}" alt="Photo by ${name}" />
+            <div class="wc-meta">
+              <div class="wc-avatar">${initial}</div>
+              <span class="wc-name">${name}</span>
+              <span class="wc-badge wc-badge-photo"><i class="fas fa-camera"></i> Photo</span>
+            </div>
+            ${entry.caption ? `<p class="wc-caption">${esc(entry.caption)}</p>` : ''}
+            <span class="wc-time">${time}</span>
+          </div>`;
+        }
+
+        if (entry.type === 'doa') {
+          return `<div class="wc">
+            <div class="wc-meta">
+              <div class="wc-avatar-doa">🤲</div>
+              <span class="wc-name">${name}</span>
+              <span class="wc-badge wc-badge-doa">Doa</span>
+            </div>
+            <div class="wc-divider"></div>
+            <p class="wc-text">${esc(entry.text)}</p>
+            <span class="wc-time">${time}</span>
+          </div>`;
+        }
+
+        // default: wish
+        return `<div class="wc">
+          <div class="wc-meta">
+            <div class="wc-avatar">${initial}</div>
+            <span class="wc-name">${name}</span>
+          </div>
+          <p class="wc-text"><span class="wc-quote-icon">&ldquo;</span>${esc(entry.text)}</p>
+          <span class="wc-time">${time}</span>
+        </div>`;
+      }
+
+      // ── Render all entries ──
+      let lastCount = -1;
+
+      function render() {
+        const entries = load();
+
+        if (entries.length === lastCount) return; // nothing changed
+        lastCount = entries.length;
+
+        if (!entries.length) {
+          mosaic.innerHTML = '';
+          empty.classList.add('visible');
+          return;
+        }
+
+        empty.classList.remove('visible');
+        // newest first
+        const html = entries.slice().reverse().map(buildCard).join('');
+        mosaic.innerHTML = html;
+      }
+
+      // ── Slow auto-scroll (TV marquee effect) ──
+      let scrollY     = 0;
+      let maxScroll   = 0;
+      let direction   = 1;      // 1 = down, -1 = up
+      const SPEED     = 0.45;   // px per frame
+      const PAUSE_MS  = 3000;   // pause at top/bottom
+      let paused      = false;
+      let pauseTimer  = null;
+
+      function scrollLoop() {
+        const wall    = document.getElementById('wall');
+        const content = document.getElementById('mosaic');
+        maxScroll = Math.max(0, content.scrollHeight - wall.clientHeight + 40);
+
+        if (!paused && maxScroll > 0) {
+          scrollY += SPEED * direction;
+
+          if (scrollY >= maxScroll) {
+            scrollY   = maxScroll;
+            direction = -1;
+            paused    = true;
+            clearTimeout(pauseTimer);
+            pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
+          } else if (scrollY <= 0) {
+            scrollY   = 0;
+            direction = 1;
+            paused    = true;
+            clearTimeout(pauseTimer);
+            pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
+          }
+
+          content.style.transform = `translateY(-${scrollY}px)`;
+        }
+
+        requestAnimationFrame(scrollLoop);
+      }
+
+      // ── Init ──
+      render();
+      requestAnimationFrame(scrollLoop);
+
+      // Poll localStorage every 10 s for new entries
+      setInterval(render, 10_000);
+    })();
+  </script>
+</body>
+</html>
