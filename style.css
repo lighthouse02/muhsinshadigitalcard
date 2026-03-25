@@ -783,6 +783,67 @@ img { display: block; max-width: 100%; }
   .salutation-card { padding: 4.5rem 4.5rem 4rem; }
 }
 
+/* ---------- SHARE BUTTON ---------- */
+.sal-share-row {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(200,169,110,.25);
+}
+.sal-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  font-family: var(--font-sans);
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  border-radius: 50px;
+  padding: .65rem 1.6rem;
+  min-height: var(--touch);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.sal-share-btn:hover {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: 0 6px 22px rgba(200,169,110,.42);
+  transform: translateY(-2px);
+}
+.sal-share-btn:active  { transform: translateY(0); opacity: .85; }
+.sal-share-btn:focus-visible { outline: 3px solid var(--gold-light); outline-offset: 3px; }
+
+/* Share toast notification */
+.share-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(2rem);
+  background: var(--text);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: .88rem;
+  letter-spacing: .04em;
+  padding: .75rem 1.5rem;
+  border-radius: 50px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.22);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1100;
+  transition: opacity .3s ease, transform .3s ease;
+  white-space: nowrap;
+}
+.share-toast.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ---------- COUNTDOWN + SAVE THE DATE ---------- */
 #countdown-section {
   background: linear-gradient(135deg, var(--gold-dark) 0%, var(--mocha) 100%);

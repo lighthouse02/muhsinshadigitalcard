@@ -1076,4 +1076,67 @@
     return str.replace(/<[^>]*>/g, '');
   }
 
+  /* =============================================
+     SHARE INVITATION
+  ============================================= */
+  const shareBtn   = document.getElementById('share-btn');
+  const shareToast = document.getElementById('share-toast');
+  let toastTimer   = null;
+
+  const SHARE_URL     = window.location.href.split('#')[0];
+  const SHARE_CAPTION =
+`Assalamualaikum w.b.t.,
+
+Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke majlis perkahwinan anakanda kami:
+
+💍 Muhammad Muhsin bin Haji Shukri
+    dengan pilihan hatinya
+    Syaqiela Amirah Syafiqah binti Syaiful Azlan
+
+📅 Sabtu, 30 Mei 2026
+⏰ 10:00 pagi
+📍 Masjid Bandar Baru Senawang
+
+Kehadiran Tuan/Puan amat kami sanjungi dan menjadi rahmat kepada majlis kami.
+
+🔗 Jemputan digital: ${SHARE_URL}
+
+Wassalamualaikum w.b.t.`;
+
+  function showToast(msg) {
+    if (!shareToast) return;
+    shareToast.textContent = msg;
+    shareToast.classList.add('toast-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => shareToast.classList.remove('toast-visible'), 3200);
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      // 1. Try native Web Share API (mobile-first)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Muhsin & Syaqiela — Jemputan Perkahwinan',
+            text:  SHARE_CAPTION,
+            url:   SHARE_URL
+          });
+          return;
+        } catch (err) {
+          // User cancelled — silently ignore
+          if (err.name === 'AbortError') return;
+        }
+      }
+      // 2. Fallback: copy full caption + URL to clipboard
+      try {
+        await navigator.clipboard.writeText(SHARE_CAPTION);
+        showToast('✓ Teks jemputan telah disalin!');
+      } catch {
+        // 3. Last resort: prompt with prefilled text
+        const msg = window.prompt('Salin teks jemputan di bawah:', SHARE_CAPTION);
+        if (msg !== null) showToast('✓ Terima kasih telah berkongsi!');
+      }
+    });
+  }
+
 })();
