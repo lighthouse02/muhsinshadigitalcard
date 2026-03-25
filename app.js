@@ -1117,7 +1117,7 @@ Wassalamualaikum w.b.t.`;
       if (navigator.share) {
         try {
           await navigator.share({
-            title: 'Muhsin & Syaqiela — Jemputan Majlis Walimah',
+            title: 'Muhsin & Syaqiela — Jemputan Majlis Kesyukuran',
             text:  SHARE_CAPTION,
             url:   SHARE_URL
           });
