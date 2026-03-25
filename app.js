@@ -267,7 +267,7 @@
       '&text=Muhsin+%26+Syaqiela+%E2%80%94+Majlis+Kesyukuran+Perkahwinan' +
       '&dates=20260530T030000Z%2F20260530T080000Z' +
       '&details=Anda+dijemput+hadir+ke+Majlis+Kesyukuran+Perkahwinan+Muhammad+Muhsin+bin+Haji+Shukri+%26+Syaqiela+Amirah+Syafiqah.' +
-      '&location=Perkarangan+Masjid+Bandar+Baru+Senawang%2C+70450+Seremban%2C+Negeri+Sembilan';
+      '&location=Pekarangan+Masjid+Bandar+Baru+Senawang%2C+70450+Seremban%2C+Negeri+Sembilan';
     document.getElementById('cal-google').href = gcal;
 
     // ICS content
@@ -280,7 +280,7 @@
       'DTEND:20260530T160000',
       'SUMMARY:Muhsin & Syaqiela — Majlis Kesyukuran Perkahwinan',
       'DESCRIPTION:Anda dijemput hadir ke Majlis Kesyukuran Perkahwinan Muhammad Muhsin bin Haji Shukri & Syaqiela Amirah Syafiqah. Jamuan: 11.00 pagi - 4.00 petang.',
-      'LOCATION:Perkarangan Masjid Bandar Baru Senawang\, 70450 Seremban\, Negeri Sembilan',
+      'LOCATION:Pekarangan Masjid Bandar Baru Senawang\, 70450 Seremban\, Negeri Sembilan',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n');
@@ -1098,9 +1098,9 @@ Syaqiela Amirah Syafiqah binti Syaiful Azlan
 
 📅 Sabtu, 30 Mei 2026
 🍽️ Jamuan: 11.00 pagi – 4.00 petang
-📍 Perkarangan Masjid Bandar Baru Senawang, 70450 Seremban, Negeri Sembilan
+📍 Pekarangan Masjid Bandar Baru Senawang, 70450 Seremban, Negeri Sembilan
 
-Kehadiran Tuan/Puan amat kami sanjungi dan menjadi rahmat kepada majlis kami.
+Kehadiran Tuan/Puan amat kami hargai dan menjadi rahmat kepada majlis kami.
 
 🔗 ${SHARE_URL}
 
