@@ -704,10 +704,15 @@
       }
 
       /* ─────────────────── Render wall ─────────────────── */
-      let lastCount = -1;
+      let lastCount  = -1;
+      let wallApiData = null; // populated from Neon; null = fall back to localStorage
+
+      function getCurrentEntries() {
+        return wallApiData || load();
+      }
 
       function render(forceReset) {
-        const entries = load();
+        const entries = getCurrentEntries();
         if (!forceReset && entries.length === lastCount) return;
         lastCount = entries.length;
 
@@ -864,6 +869,14 @@
         entries.push(entry);
         save(entries);
 
+        // Optimistic update for API-backed display + sync to Neon
+        if (wallApiData) wallApiData.push(entry);
+        fetch('/.netlify/functions/wishes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        }).catch(() => {});
+
         // Reset form
         form.reset();
         typeBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
@@ -908,11 +921,27 @@
         try { localStorage.setItem(GB_KEY, JSON.stringify(demos)); } catch { /* quota */ }
       }
 
+      /* ─────────────────── API refresh ─────────────────── */
+      async function refreshFromApi() {
+        try {
+          const res = await fetch('/.netlify/functions/wishes');
+          if (!res.ok) return false;
+          const data = await res.json();
+          if (Array.isArray(data) && data.length) { wallApiData = data; return true; }
+          return false;
+        } catch { return false; }
+      }
+
       /* ─────────────────── Init ─────────────────── */
-      seedDemo();
-      render();
-      requestAnimationFrame(scrollLoop);
-      setInterval(render, 10_000);
+      (async () => {
+        const hasApi = await refreshFromApi();
+        if (!hasApi) seedDemo();
+        render(true);
+        requestAnimationFrame(scrollLoop);
+        // Poll Neon every 30 s for wishes submitted from other devices
+        setInterval(async () => { if (await refreshFromApi()) render(true); }, 30_000);
+        setInterval(render, 10_000);
+      })();
     })();
   </script>
 </body>

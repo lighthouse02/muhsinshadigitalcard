@@ -1,0 +1,9 @@
+{
+  "name": "muhsin-syaqiela-majlis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Majlis Kesyukuran Perkahwinan Muhsin & Syaqiela — serverless backend",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
+}

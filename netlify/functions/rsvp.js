@@ -1,0 +1,78 @@
+'use strict';
+const { getDb } = require('./db');
+
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'muhsin2026admin';
+
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+  'Content-Type': 'application/json',
+};
+
+function sanitize(s, max) {
+  return String(s || '').replace(/<[^>]*>/g, '').trim().slice(0, max || 200);
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: CORS, body: '' };
+
+  const sql = getDb();
+
+  try {
+    // ── POST: submit RSVP (public) ──────────────────────────────
+    if (event.httpMethod === 'POST') {
+      const body     = JSON.parse(event.body || '{}');
+      const name     = sanitize(body.name, 100);
+      const phone    = sanitize(body.phone, 30);
+      const attending = body.attending === 'yes' ? 'yes' : 'no';
+      const guests    = Math.min(20, Math.max(0, parseInt(body.guests) || 0));
+
+      if (!name || !phone) {
+        return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Missing name or phone' }) };
+      }
+
+      await sql`
+        INSERT INTO rsvp (name, phone, attending, guests)
+        VALUES (${name}, ${phone}, ${attending}, ${guests})
+      `;
+      return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
+    }
+
+    // ── GET: list all RSVPs (admin only) ────────────────────────
+    if (event.httpMethod === 'GET') {
+      if ((event.headers['x-admin-key'] || '') !== ADMIN_SECRET) {
+        return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+      }
+      const rows = await sql`
+        SELECT id, name, phone, attending, guests, created_at
+        FROM rsvp ORDER BY created_at ASC
+      `;
+      const mapped = rows.map(r => ({
+        id:        r.id,
+        name:      r.name,
+        phone:     r.phone,
+        attending: r.attending,
+        guests:    r.guests,
+        time:      new Date(r.created_at).getTime(),
+      }));
+      return { statusCode: 200, headers: CORS, body: JSON.stringify(mapped) };
+    }
+
+    // ── DELETE: remove RSVP by id (admin only) ──────────────────
+    if (event.httpMethod === 'DELETE') {
+      if ((event.headers['x-admin-key'] || '') !== ADMIN_SECRET) {
+        return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
+      }
+      const id = parseInt((event.queryStringParameters || {}).id);
+      if (!id) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Missing id' }) };
+      await sql`DELETE FROM rsvp WHERE id = ${id}`;
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ ok: true }) };
+    }
+
+    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'Method not allowed' }) };
+  } catch (err) {
+    console.error('rsvp error:', err);
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'Database error' }) };
+  }
+};

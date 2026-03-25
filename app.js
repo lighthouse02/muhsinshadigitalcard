@@ -408,6 +408,13 @@
       rsvpList.push({ name, phone, attending: attendingVal, guests: attendingVal === 'yes' ? guests : 0, time: Date.now() });
       try { localStorage.setItem(RSVP_KEY, JSON.stringify(rsvpList)); } catch { /* quota */ }
 
+      // Sync to Neon (fire-and-forget — localStorage is the local fallback)
+      fetch('/.netlify/functions/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, attending: attendingVal, guests: attendingVal === 'yes' ? guests : 0 })
+      }).catch(() => {});
+
       document.getElementById('rsvp-success').classList.remove('hidden');
       document.getElementById('rsvp-success-msg').textContent = attendingVal === 'yes'
         ? 'Thank you! We look forward to celebrating with you.'
@@ -796,8 +803,16 @@
       // Persist private message to localStorage
       const MSG_KEY  = 'muhsin_syaqiela_messages';
       const msgList  = (() => { try { return JSON.parse(localStorage.getItem(MSG_KEY)) || []; } catch { return []; } })();
-      msgList.push({ name: document.getElementById('msg-name').value.trim(), text: document.getElementById('msg-text').value.trim(), sig: sigPad.toDataURL(), time: Date.now() });
+      const sigData  = sigPad.toDataURL();
+      msgList.push({ name, text, sig: sigData, time: Date.now() });
       try { localStorage.setItem(MSG_KEY, JSON.stringify(msgList)); } catch { /* quota */ }
+
+      // Sync to Neon
+      fetch('/.netlify/functions/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, text, sig: sigData })
+      }).catch(() => {});
 
       successEl.classList.remove('hidden');
       msgForm.reset();
@@ -971,6 +986,14 @@
     }
 
     const saved = gbLoad(); saved.push(entry); gbSave(saved);
+
+    // Sync to Neon
+    fetch('/.netlify/functions/wishes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    }).catch(() => {});
+
     const card = buildWishCard(entry);
     if (wishesWall) {
       wishesWall.insertBefore(card, wishesWall.firstChild);

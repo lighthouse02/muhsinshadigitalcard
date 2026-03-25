@@ -472,16 +472,23 @@
   'use strict';
 
   /* ── Config ── */
-  const ADMIN_PASSWORD = 'muhsin2026admin'; // change before going live
-  const CAPACITY       = 500;
-  const RSVP_KEY       = 'muhsin_syaqiela_rsvp';
-  const GB_KEY         = 'muhsin_syaqiela_guestbook';
-  const MSG_KEY        = 'muhsin_syaqiela_messages';
-  const SESSION_KEY    = 'admin_authed';
+  const ADMIN_PASSWORD    = 'muhsin2026admin'; // change before going live
+  const CAPACITY          = 500;
+  const RSVP_KEY          = 'muhsin_syaqiela_rsvp';
+  const GB_KEY            = 'muhsin_syaqiela_guestbook';
+  const MSG_KEY           = 'muhsin_syaqiela_messages';
+  const SESSION_KEY       = 'admin_authed';
+  const SESSION_ADMIN_KEY = 'admin_key';
 
-  /* ── Helpers ── */
-  function load(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
-  function save(key, arr) { try { localStorage.setItem(key, JSON.stringify(arr)); } catch { /* quota */ } }
+  /* ── State ── */
+  let adminKey     = '';
+  let cachedRsvp   = [];
+  let cachedWishes = [];
+  let cachedMsgs   = [];
+
+  /* ── Local storage helpers ── */
+  function loadLocal(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+  function saveLocal(key, arr) { try { localStorage.setItem(key, JSON.stringify(arr)); } catch { /* quota */ } }
   function esc(s) {
     if (s == null) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -502,24 +509,57 @@
     URL.revokeObjectURL(url);
   }
 
+  /* ── API helpers ── */
+  function apiFetch(path, opts) {
+    return fetch(path, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Key': adminKey,
+        ...((opts || {}).headers || {})
+      }
+    });
+  }
+
+  async function fetchAll() {
+    try {
+      const [r, w, m] = await Promise.all([
+        apiFetch('/.netlify/functions/rsvp'),
+        apiFetch('/.netlify/functions/wishes'),
+        apiFetch('/.netlify/functions/messages'),
+      ]);
+      cachedRsvp   = r.ok ? await r.json() : loadLocal(RSVP_KEY);
+      cachedWishes = w.ok ? await w.json() : loadLocal(GB_KEY);
+      cachedMsgs   = m.ok ? await m.json() : loadLocal(MSG_KEY);
+    } catch {
+      cachedRsvp   = loadLocal(RSVP_KEY);
+      cachedWishes = loadLocal(GB_KEY);
+      cachedMsgs   = loadLocal(MSG_KEY);
+    }
+  }
+
   /* ── Auth ── */
   const loginScreen = document.getElementById('login-screen');
   const dashboard   = document.getElementById('dashboard');
   const loginError  = document.getElementById('login-error');
   const adminPw     = document.getElementById('admin-pw');
 
-  function showDashboard() {
+  async function showDashboard() {
     loginScreen.style.display = 'none';
     dashboard.style.display = 'block';
-    renderAll();
+    await renderAll();
   }
 
-  // Persist login within session (sessionStorage only — cleared on tab close)
-  if (sessionStorage.getItem(SESSION_KEY) === 'yes') showDashboard();
+  if (sessionStorage.getItem(SESSION_KEY) === 'yes') {
+    adminKey = sessionStorage.getItem(SESSION_ADMIN_KEY) || ADMIN_PASSWORD;
+    showDashboard();
+  }
 
   document.getElementById('login-btn').addEventListener('click', () => {
     if (adminPw.value === ADMIN_PASSWORD) {
+      adminKey = adminPw.value;
       sessionStorage.setItem(SESSION_KEY, 'yes');
+      sessionStorage.setItem(SESSION_ADMIN_KEY, adminPw.value);
       loginError.textContent = '';
       showDashboard();
     } else {
@@ -532,6 +572,7 @@
 
   document.getElementById('logout-btn').addEventListener('click', () => {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_ADMIN_KEY);
     location.reload();
   });
 
@@ -546,21 +587,19 @@
   });
 
   /* ── Render all ── */
-  function renderAll() {
+  async function renderAll() {
+    await fetchAll();
     renderStats();
     renderRsvp();
-    renderWishes();
+    renderWishesInternal();
     renderMessages();
   }
 
   /* ── Stats ── */
   function renderStats() {
-    const rsvps    = load(RSVP_KEY);
-    const attending = rsvps.filter(r => r.attending === 'yes');
+    const attending = cachedRsvp.filter(r => r.attending === 'yes');
     const seats     = attending.reduce((sum, r) => sum + (parseInt(r.guests) || 1), 0);
-    const notComing = rsvps.filter(r => r.attending === 'no');
-    const wishes    = load(GB_KEY);
-    const msgs      = load(MSG_KEY);
+    const notComing = cachedRsvp.filter(r => r.attending === 'no');
 
     const pct = Math.min(100, Math.round(seats / CAPACITY * 100));
     const fill = document.getElementById('cap-bar-fill');
@@ -573,7 +612,7 @@
     grid.innerHTML = `
       <div class="stat-card">
         <div class="stat-label"><i class="fas fa-paper-plane"></i> Jumlah RSVP</div>
-        <div class="stat-value">${rsvps.length}</div>
+        <div class="stat-value">${cachedRsvp.length}</div>
         <div class="stat-sub">respons diterima</div>
       </div>
       <div class="stat-card green">
@@ -588,12 +627,12 @@
       </div>
       <div class="stat-card">
         <div class="stat-label"><i class="fas fa-heart"></i> Ucapan</div>
-        <div class="stat-value">${wishes.length}</div>
+        <div class="stat-value">${cachedWishes.length}</div>
         <div class="stat-sub">di papan doa</div>
       </div>
       <div class="stat-card">
         <div class="stat-label"><i class="fas fa-lock"></i> Mesej Peribadi</div>
-        <div class="stat-value">${msgs.length}</div>
+        <div class="stat-value">${cachedMsgs.length}</div>
         <div class="stat-sub">untuk Muhsin</div>
       </div>
       <div class="stat-card">
@@ -605,23 +644,23 @@
   }
 
   /* ── RSVP ── */
-  let rsvpData = [];
-  function renderRsvp(filter, search) {
-    rsvpData = load(RSVP_KEY);
-    let rows = [...rsvpData].reverse();
-    if (filter && filter !== 'all') rows = rows.filter(r => r.attending === filter);
-    if (search) {
-      const q = search.toLowerCase();
+  let rsvpFilter = 'all', rsvpSearch = '';
+  function renderRsvp() {
+    let rows = [...cachedRsvp].reverse();
+    if (rsvpFilter !== 'all') rows = rows.filter(r => r.attending === rsvpFilter);
+    if (rsvpSearch) {
+      const q = rsvpSearch.toLowerCase();
       rows = rows.filter(r => (r.name||'').toLowerCase().includes(q) || (r.phone||'').includes(q));
     }
-    document.getElementById('rsvp-count-label').textContent = `${rsvpData.length} respons`;
+    document.getElementById('rsvp-count-label').textContent = `${cachedRsvp.length} respons`;
     const tbody = document.getElementById('rsvp-tbody');
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i>Tiada rekod dijumpai.</div></td></tr>';
       return;
     }
-    tbody.innerHTML = rows.map((r, i) => `
-      <tr>
+    tbody.innerHTML = rows.map((r, i) => {
+      const rowId = r.id != null ? r.id : 'ls_' + (cachedRsvp.length - 1 - i);
+      return `<tr>
         <td class="time-cell">${i + 1}</td>
         <td><strong>${esc(r.name)}</strong></td>
         <td>${esc(r.phone)}</td>
@@ -629,171 +668,178 @@
         <td>${r.attending === 'yes' ? (r.guests || 1) : '—'}</td>
         <td class="time-cell">${fmtDate(r.time)}</td>
         <td>
-          <button class="action-btn del" title="Padam" onclick="deleteRsvp(${rsvpData.length - 1 - i})">
+          <button class="action-btn del" title="Padam" onclick="deleteRsvp('${rowId}')">
             <i class="fas fa-trash"></i>
           </button>
         </td>
-      </tr>
-    `).join('');
+      </tr>`;
+    }).join('');
   }
 
-  window.deleteRsvp = function(idx) {
+  window.deleteRsvp = async function(id) {
     if (!confirm('Padam rekod RSVP ini?')) return;
-    const arr = load(RSVP_KEY);
-    arr.splice(idx, 1);
-    save(RSVP_KEY, arr);
-    renderAll();
+    if (String(id).startsWith('ls_')) {
+      const idx = parseInt(id.replace('ls_', ''));
+      const arr = loadLocal(RSVP_KEY); arr.splice(idx, 1); saveLocal(RSVP_KEY, arr);
+    } else {
+      await apiFetch(`/.netlify/functions/rsvp?id=${id}`, { method: 'DELETE' }).catch(() => {});
+    }
+    await renderAll();
   };
 
   document.getElementById('rsvp-search').addEventListener('input', function() {
-    renderRsvp(document.getElementById('rsvp-filter').value, this.value);
+    rsvpSearch = this.value; renderRsvp();
   });
   document.getElementById('rsvp-filter').addEventListener('change', function() {
-    renderRsvp(this.value, document.getElementById('rsvp-search').value);
+    rsvpFilter = this.value; renderRsvp();
   });
 
   document.getElementById('export-rsvp').addEventListener('click', () => {
-    const arr = load(RSVP_KEY);
     const header = ['Nama', 'Telefon', 'Status', 'Bilangan Tetamu', 'Tarikh'];
-    const rows = arr.map(r => [r.name, r.phone, r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', r.attending === 'yes' ? (r.guests || 1) : 0, fmtDate(r.time)]);
+    const rows = cachedRsvp.map(r => [r.name, r.phone, r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', r.attending === 'yes' ? (r.guests || 1) : 0, fmtDate(r.time)]);
     downloadCSV('rsvp-muhsin-syaqiela.csv', [header, ...rows]);
   });
 
   /* ── Wishes ── */
-  let wishesData = [];
-  function renderWishes(filter, search) {
-    wishesData = load(GB_KEY);
-    let rows = [...wishesData].reverse();
-    if (filter && filter !== 'all') rows = rows.filter(w => w.type === filter);
-    if (search) {
-      const q = search.toLowerCase();
+  let wishesFilter = 'all', wishesSearch = '';
+  function renderWishesInternal() {
+    let rows = [...cachedWishes].reverse();
+    if (wishesFilter !== 'all') rows = rows.filter(w => w.type === wishesFilter);
+    if (wishesSearch) {
+      const q = wishesSearch.toLowerCase();
       rows = rows.filter(w => (w.name||'').toLowerCase().includes(q) || (w.text||'').toLowerCase().includes(q) || (w.caption||'').toLowerCase().includes(q));
     }
-    document.getElementById('wishes-count-label').textContent = `${wishesData.length} ucapan`;
+    document.getElementById('wishes-count-label').textContent = `${cachedWishes.length} ucapan`;
     const tbody = document.getElementById('wishes-tbody');
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-heart"></i>Tiada ucapan dijumpai.</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map((w, i) => {
-      const realIdx = wishesData.length - 1 - i;
+      const rowId  = w.id != null ? w.id : 'ls_' + (cachedWishes.length - 1 - i);
       const content = w.type === 'photo'
         ? `<div>${w.photoDataUrl ? `<img src="${esc(w.photoDataUrl)}" class="photo-thumb" />` : ''}<small style="color:var(--muted);display:block;margin-top:.3rem;">${esc(w.caption || '')}</small></div>`
-        : `<div class="wish-text-cell">${esc(w.text || '')}</div>`;
-      return `
-        <tr id="wish-row-${realIdx}">
-          <td class="time-cell">${i + 1}</td>
-          <td><strong>${esc(w.name)}</strong></td>
-          <td><span class="badge badge-${w.type === 'photo' ? 'photo' : 'wish'}">${w.type === 'photo' ? 'Foto' : 'Ucapan'}</span></td>
-          <td id="wish-cell-${realIdx}">${content}</td>
-          <td class="time-cell">${fmtDate(w.time)}</td>
-          <td style="white-space:nowrap;">
-            ${w.type !== 'photo' ? `<button class="action-btn" title="Edit" onclick="editWish(${realIdx})"><i class="fas fa-pen"></i></button>` : ''}
-            <button class="action-btn del" title="Padam" onclick="deleteWish(${realIdx})"><i class="fas fa-trash"></i></button>
-          </td>
-        </tr>
-      `;
+        : `<div id="wish-cell-${rowId}">${esc(w.text || '')}</div>`;
+      return `<tr id="wish-row-${rowId}">
+        <td class="time-cell">${i + 1}</td>
+        <td><strong>${esc(w.name)}</strong></td>
+        <td><span class="badge badge-${w.type === 'photo' ? 'photo' : 'wish'}">${w.type === 'photo' ? 'Foto' : 'Ucapan'}</span></td>
+        <td id="wish-cell-${rowId}">${content}</td>
+        <td class="time-cell">${fmtDate(w.time)}</td>
+        <td style="white-space:nowrap;">
+          ${w.type !== 'photo' ? `<button class="action-btn" title="Edit" onclick="editWish('${rowId}', ${JSON.stringify(esc(w.text || ''))})"><i class="fas fa-pen"></i></button>` : ''}
+          <button class="action-btn del" title="Padam" onclick="deleteWish('${rowId}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
     }).join('');
   }
 
-  window.editWish = function(idx) {
-    const arr = load(GB_KEY);
-    const entry = arr[idx];
-    if (!entry) return;
-    const cell = document.getElementById(`wish-cell-${idx}`);
+  /* Global: called from Batal button inside edit mode */
+  window.renderWishes = function() { renderWishesInternal(); };
+
+  window.editWish = async function(id, currentText) {
+    const cell = document.getElementById(`wish-cell-${id}`);
     if (!cell) return;
-    // If already editing, save
     const existingTA = cell.querySelector('textarea');
     if (existingTA) {
-      entry.text = existingTA.value.trim();
-      arr[idx] = entry;
-      save(GB_KEY, arr);
-      renderAll();
+      // Save mode
+      const newText = existingTA.value.trim();
+      if (String(id).startsWith('ls_')) {
+        const idx = parseInt(id.replace('ls_', ''));
+        const arr = loadLocal(GB_KEY);
+        if (arr[idx]) { arr[idx].text = newText; saveLocal(GB_KEY, arr); }
+      } else {
+        await apiFetch(`/.netlify/functions/wishes?id=${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ text: newText })
+        }).catch(() => {});
+      }
+      await renderAll();
       return;
     }
+    // Edit mode — inject textarea
     cell.innerHTML = `
-      <textarea class="wish-text-edit" rows="3">${esc(entry.text || '')}</textarea>
+      <textarea class="wish-text-edit" rows="3">${esc(currentText)}</textarea>
       <div style="margin-top:.35rem;display:flex;gap:.4rem;">
-        <button class="action-btn" onclick="editWish(${idx})" style="background:var(--gold);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;">Simpan</button>
+        <button class="action-btn" onclick="editWish('${id}', '')" style="background:var(--gold);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;">Simpan</button>
         <button class="action-btn" onclick="renderWishes()" style="padding:.3rem .7rem;border-radius:6px;font-size:.78rem;">Batal</button>
       </div>`;
   };
 
-  window.deleteWish = function(idx) {
+  window.deleteWish = async function(id) {
     if (!confirm('Padam ucapan ini?')) return;
-    const arr = load(GB_KEY);
-    arr.splice(idx, 1);
-    save(GB_KEY, arr);
-    renderAll();
+    if (String(id).startsWith('ls_')) {
+      const idx = parseInt(id.replace('ls_', ''));
+      const arr = loadLocal(GB_KEY); arr.splice(idx, 1); saveLocal(GB_KEY, arr);
+    } else {
+      await apiFetch(`/.netlify/functions/wishes?id=${id}`, { method: 'DELETE' }).catch(() => {});
+    }
+    await renderAll();
   };
 
   document.getElementById('wishes-search').addEventListener('input', function() {
-    renderWishes(document.getElementById('wishes-filter').value, this.value);
+    wishesSearch = this.value; renderWishesInternal();
   });
   document.getElementById('wishes-filter').addEventListener('change', function() {
-    renderWishes(this.value, document.getElementById('wishes-search').value);
+    wishesFilter = this.value; renderWishesInternal();
   });
 
   document.getElementById('export-wishes').addEventListener('click', () => {
-    const arr = load(GB_KEY);
     const header = ['Nama', 'Jenis', 'Ucapan/Kapsyen', 'Tarikh'];
-    const rows = arr.map(w => [w.name, w.type, w.type === 'photo' ? (w.caption || '') : (w.text || ''), fmtDate(w.time)]);
+    const rows = cachedWishes.map(w => [w.name, w.type, w.type === 'photo' ? (w.caption || '') : (w.text || ''), fmtDate(w.time)]);
     downloadCSV('ucapan-muhsin-syaqiela.csv', [header, ...rows]);
   });
 
   /* ── Private Messages ── */
-  let msgsData = [];
-  function renderMessages(search) {
-    msgsData = load(MSG_KEY);
-    let rows = [...msgsData].reverse();
-    if (search) {
-      const q = search.toLowerCase();
+  let msgSearch = '';
+  function renderMessages() {
+    let rows = [...cachedMsgs].reverse();
+    if (msgSearch) {
+      const q = msgSearch.toLowerCase();
       rows = rows.filter(m => (m.name||'').toLowerCase().includes(q) || (m.text||'').toLowerCase().includes(q));
     }
-    document.getElementById('msg-count-label').textContent = `${msgsData.length} mesej`;
+    document.getElementById('msg-count-label').textContent = `${cachedMsgs.length} mesej`;
     const tbody = document.getElementById('msg-tbody');
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-lock"></i>Tiada mesej peribadi lagi.</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map((m, i) => {
-      const realIdx = msgsData.length - 1 - i;
-      return `
-        <tr>
-          <td class="time-cell">${i + 1}</td>
-          <td><strong>${esc(m.name)}</strong></td>
-          <td style="max-width:280px;word-break:break-word;">${esc(m.text)}</td>
-          <td>${m.sig ? `<img src="${esc(m.sig)}" class="sig-thumb" alt="Tandatangan" />` : '—'}</td>
-          <td class="time-cell">${fmtDate(m.time)}</td>
-          <td>
-            <button class="action-btn del" title="Padam" onclick="deleteMsg(${realIdx})">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `;
+      const rowId = m.id != null ? m.id : 'ls_' + (cachedMsgs.length - 1 - i);
+      return `<tr>
+        <td class="time-cell">${i + 1}</td>
+        <td><strong>${esc(m.name)}</strong></td>
+        <td style="max-width:280px;word-break:break-word;">${esc(m.text)}</td>
+        <td>${m.sig ? `<img src="${esc(m.sig)}" class="sig-thumb" alt="Tandatangan" />` : '—'}</td>
+        <td class="time-cell">${fmtDate(m.time)}</td>
+        <td>
+          <button class="action-btn del" title="Padam" onclick="deleteMsg('${rowId}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>`;
     }).join('');
   }
 
-  window.deleteMsg = function(idx) {
+  window.deleteMsg = async function(id) {
     if (!confirm('Padam mesej peribadi ini?')) return;
-    const arr = load(MSG_KEY);
-    arr.splice(idx, 1);
-    save(MSG_KEY, arr);
-    renderAll();
+    if (String(id).startsWith('ls_')) {
+      const idx = parseInt(id.replace('ls_', ''));
+      const arr = loadLocal(MSG_KEY); arr.splice(idx, 1); saveLocal(MSG_KEY, arr);
+    } else {
+      await apiFetch(`/.netlify/functions/messages?id=${id}`, { method: 'DELETE' }).catch(() => {});
+    }
+    await renderAll();
   };
 
   document.getElementById('msg-search').addEventListener('input', function() {
-    renderMessages(this.value);
+    msgSearch = this.value; renderMessages();
   });
 
-  /* ── Make renderWishes global for batal button ── */
-  window.renderWishes = function(filter, search) {
-    renderWishes(filter, search);
-  };
-
   // Auto-refresh every 30 seconds when dashboard is open
-  setInterval(() => { if (sessionStorage.getItem(SESSION_KEY) === 'yes') renderAll(); }, 30000);
+  setInterval(async () => {
+    if (sessionStorage.getItem(SESSION_KEY) === 'yes') await renderAll();
+  }, 30000);
 
 })();
 </script>
