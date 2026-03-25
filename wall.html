@@ -881,29 +881,23 @@
       function seedDemo() {
         if (load().length > 0) return; // real data exists — skip
 
-        // Tiny 1×1 transparent PNG as stand-in for photo entries
-        const PLACEHOLDER_IMG = 'data:image/svg+xml;base64,' + btoa(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">' +
-          '<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">' +
-          '<stop offset="0%" style="stop-color:#3b2a1a"/>' +
-          '<stop offset="100%" style="stop-color:#1a1108"/>' +
-          '</linearGradient></defs>' +
-          '<rect width="800" height="400" fill="url(#g)"/>' +
-          '<text x="400" y="190" font-family="serif" font-size="52" fill="rgba(200,169,110,.4)" text-anchor="middle">\uD83D\uDCF8</text>' +
-          '<text x="400" y="255" font-family="sans-serif" font-size="22" fill="rgba(200,169,110,.3)" text-anchor="middle">Photo Memory</text>' +
-          '</svg>'
-        );
+        // Free-to-use Unsplash wedding/celebration photos (no auth required)
+        const PHOTOS = [
+          'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&fm=webp&q=75',
+          'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&fm=webp&q=75',
+          'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&fm=webp&q=75',
+        ];
 
         const now = Date.now();
         const demos = [
           { type: 'wish',  name: 'Ahmad Faris',    text: 'Barakallahu lakuma wa baraka \'alaykuma wa jama\'a baynakuma fi khayr. Congratulations to both of you! 🤍', time: now - 600000 },
           { type: 'doa',   name: 'Fatimah Zahra',  text: 'Semoga rumah tangga kalian diberkati Allah, sakinah mawaddah warahmah. Semoga kekal hingga ke syurga. 💛', time: now - 480000 },
-          { type: 'photo', name: 'Zainab',          photoDataUrl: PLACEHOLDER_IMG, caption: 'Such a beautiful ceremony, so happy to witness this blessed day!', time: now - 360000 },
+          { type: 'photo', name: 'Zainab',          photoDataUrl: PHOTOS[0], caption: 'Such a beautiful ceremony, so happy to witness this blessed day!', time: now - 360000 },
           { type: 'wish',  name: 'Dr. Hakim',       text: 'May Allah shower your union with endless blessings, love and happiness. Wishing you both a lifetime of joy together.', time: now - 300000 },
-          { type: 'photo', name: 'Nurul Ain',        photoDataUrl: PLACEHOLDER_IMG, caption: '', time: now - 240000 },
+          { type: 'photo', name: 'Nurul Ain',        photoDataUrl: PHOTOS[1], caption: '', time: now - 240000 },
           { type: 'doa',   name: 'Ustaz Ridhwan',   text: 'اللَّهُمَّ بَارِكْ لَهُمَا وَبَارِكْ عَلَيْهِمَا وَاجْمَعْ بَيْنَهُمَا فِي خَيْرٍ. Aamiin ya Rabbal \'Aalamin.', time: now - 180000 },
           { type: 'wish',  name: 'Hafizuddin',      text: 'Tahniah kepada Muhsin & Syaqiela! Semoga majlis ini penuh barakah dan menjadi kenangan indah buat selamanya. 🌙', time: now - 120000 },
-          { type: 'photo', name: 'Rania & family',  photoDataUrl: PLACEHOLDER_IMG, caption: 'Came all the way from Kedah — so worth it! Love you both!', time: now - 60000 },
+          { type: 'photo', name: 'Rania & family',  photoDataUrl: PHOTOS[2], caption: 'Came all the way from Kedah — so worth it! Love you both!', time: now - 60000 },
           { type: 'wish',  name: 'Encik Azlan',     text: 'Congratulations! May your home always be filled with laughter, patience and endless love for one another. 💐', time: now - 30000 },
           { type: 'wish',  name: 'Syafiqah',        text: 'Sha, you look absolutely radiant today! Wishing you and Muhsin the most wonderful life ahead. 🌸', time: now - 10000 },
         ];
