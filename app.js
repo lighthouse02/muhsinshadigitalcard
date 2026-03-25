@@ -1090,17 +1090,16 @@
 Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke Majlis Kesyukuran Perkahwinan anak lelaki kami:
 
 💍 Muhammad Muhsin bin Haji Shukri
-    dengan pilihan hatinya
-    Syaqiela Amirah Syafiqah binti Syaiful Azlan
+dengan pilihan hatinya,
+Syaqiela Amirah Syafiqah binti Syaiful Azlan
 
 📅 Sabtu, 30 Mei 2026
 🍽️ Jamuan: 11.00 pagi – 4.00 petang
-📍 Perkarangan Masjid Bandar Baru Senawang,
-   70450 Seremban, Negeri Sembilan
+📍 Perkarangan Masjid Bandar Baru Senawang, 70450 Seremban, Negeri Sembilan
 
 Kehadiran Tuan/Puan amat kami sanjungi dan menjadi rahmat kepada majlis kami.
 
-🔗 Jemputan digital: ${SHARE_URL}
+🔗 ${SHARE_URL}
 
 Wassalamualaikum w.b.t.`;
 
@@ -1148,8 +1147,7 @@ Wassalamualaikum w.b.t.`;
       if (navigator.share) {
         const shareData = {
           title: 'Muhsin & Syaqiela — Jemputan Kesyukuran Perkahwinan',
-          text:  SHARE_CAPTION,
-          url:   SHARE_URL
+          text:  SHARE_CAPTION
         };
         // Attach image if the browser supports file sharing
         if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
