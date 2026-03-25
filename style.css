@@ -651,6 +651,116 @@ img { display: block; max-width: 100%; }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 .paused .petal { animation-play-state: paused; }
 
+/* ---------- FORMAL SALUTATION ---------- */
+#salutation {
+  background: var(--ivory);
+  padding: 3.5rem 1rem;
+}
+.salutation-card {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--gold-light);
+  border-radius: 2px;
+  padding: 2.75rem 2rem;
+  text-align: center;
+  box-shadow: 0 6px 32px rgba(200,169,110,.13), 0 1px 4px rgba(200,169,110,.08);
+}
+/* Corner bracket ornaments */
+.sal-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+.sal-tl { top: 10px; left: 10px;  border-width: 2px 0 0 2px; }
+.sal-tr { top: 10px; right: 10px;  border-width: 2px 2px 0 0; }
+.sal-bl { bottom: 10px; left: 10px;  border-width: 0 0 2px 2px; }
+.sal-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+.sal-salam {
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  letter-spacing: .2em;
+  color: var(--gold-dark);
+  margin-bottom: 1.1rem;
+}
+.sal-parents { margin: 0 0 .9rem; }
+.sal-parent-name {
+  font-family: var(--font-script);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .03em;
+  line-height: 1.45;
+}
+.sal-ampersand {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--gold);
+  line-height: 1.2;
+  margin: .15rem 0;
+}
+.sal-ornament {
+  font-size: .65rem;
+  color: var(--gold);
+  letter-spacing: .1em;
+  margin: .8rem 0;
+  opacity: .7;
+}
+.sal-invite-text {
+  font-family: var(--font-sans);
+  font-size: .68rem;
+  letter-spacing: .14em;
+  color: var(--text-light);
+  margin-bottom: .4rem;
+}
+.sal-honorifics {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-alt);
+  border: 1px solid var(--gold-light);
+  border-radius: 2rem;
+  padding: .28rem .9rem;
+  letter-spacing: .04em;
+  margin: .3rem 0 .9rem;
+}
+.sal-family-text {
+  font-family: var(--font-sans);
+  font-size: .68rem;
+  letter-spacing: .13em;
+  color: var(--text-light);
+  line-height: 1.8;
+  margin-bottom: .9rem;
+}
+.sal-names-block { margin-top: .5rem; }
+.sal-child-name,
+.sal-partner-name {
+  font-family: var(--font-script);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .03em;
+  line-height: 1.4;
+}
+.sal-with {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--gold-dark);
+  letter-spacing: .05em;
+  margin: .45rem 0;
+}
+@media (min-width: 640px) {
+  .salutation-card { padding: 3rem 3.5rem; }
+  .sal-parent-name { font-size: 1.15rem; }
+  .sal-child-name, .sal-partner-name { font-size: 1.3rem; }
+}
+
 /* ---------- COUNTDOWN + SAVE THE DATE ---------- */
 #countdown-section {
   background: linear-gradient(135deg, var(--gold-dark) 0%, var(--mocha) 100%);
