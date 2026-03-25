@@ -228,7 +228,7 @@
   /* =============================================
      3. COUNTDOWN TIMER
   ============================================= */
-  const WEDDING_DATE = new Date('2026-05-30T10:00:00');
+  const WEDDING_DATE = new Date('2026-05-30T11:00:00');
 
   function updateCountdown() {
     const now  = new Date();
@@ -262,12 +262,12 @@
      4. ADD TO CALENDAR BUTTONS
   ============================================= */
   (function setupCalendarLinks() {
-    // Google Calendar URL
+    // Google Calendar URL — 11:00 AM–4:00 PM MYT (UTC+8) = 03:00–08:00 UTC
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-      '&text=Muhsin+%26+Syaqiela+Wedding' +
-      '&dates=20260530T020000Z%2F20260530T090000Z' +
-      '&details=You+are+invited+to+the+wedding+of+Muhsin+%26+Syaqiela.' +
-      '&location=Masjid+Bandar+Baru+Senawang%2C+Seremban';
+      '&text=Muhsin+%26+Syaqiela+%E2%80%94+Majlis+Kesyukuran+Perkahwinan' +
+      '&dates=20260530T030000Z%2F20260530T080000Z' +
+      '&details=Anda+dijemput+hadir+ke+Majlis+Kesyukuran+Perkahwinan+Muhammad+Muhsin+bin+Haji+Shukri+%26+Syaqiela+Amirah+Syafiqah.' +
+      '&location=Perkarangan+Masjid+Bandar+Baru+Senawang%2C+70450+Seremban%2C+Negeri+Sembilan';
     document.getElementById('cal-google').href = gcal;
 
     // ICS content
@@ -276,11 +276,11 @@
       'VERSION:2.0',
       'PRODID:-//Muhsin & Syaqiela Wedding//EN',
       'BEGIN:VEVENT',
-      'DTSTART:20260530T100000',
-      'DTEND:20260530T150000',
-      'SUMMARY:Muhsin & Syaqiela Wedding',
-      'DESCRIPTION:You are invited to the wedding of Muhsin & Syaqiela.',
-      'LOCATION:Masjid Bandar Baru Senawang\, Seremban',
+      'DTSTART:20260530T110000',
+      'DTEND:20260530T160000',
+      'SUMMARY:Muhsin & Syaqiela — Majlis Kesyukuran Perkahwinan',
+      'DESCRIPTION:Anda dijemput hadir ke Majlis Kesyukuran Perkahwinan Muhammad Muhsin bin Haji Shukri & Syaqiela Amirah Syafiqah. Jamuan: 11.00 pagi - 4.00 petang.',
+      'LOCATION:Perkarangan Masjid Bandar Baru Senawang\, 70450 Seremban\, Negeri Sembilan',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n');
@@ -583,7 +583,7 @@
 
     const details = [
       { x: W/6,      label: 'DATE',     v1: 'Saturday, 30 May 2026', v2: '' },
-      { x: W/2,      label: 'TIME',     v1: '10:00 AM',                v2: 'Akad Nikah · Bersanding' },
+      { x: W/2,      label: 'TIME',     v1: '11:00 AM – 4:00 PM',      v2: 'Jamuan · Walimah' },
       { x: 5*W/6,    label: 'LOCATION', v1: 'Masjid Bandar Baru',     v2: 'Senawang, N. Sembilan' },
     ];
     details.forEach(d => {
@@ -1114,26 +1114,68 @@ Wassalamualaikum w.b.t.`;
 
   if (shareBtn) {
     shareBtn.addEventListener('click', async () => {
-      // 1. Try native Web Share API (mobile-first)
-      if (navigator.share) {
+      const card = document.querySelector('.salutation-card');
+
+      // --- Capture salutation card as PNG image ---
+      let imageFile = null;
+      if (typeof html2canvas !== 'undefined' && card) {
         try {
-          await navigator.share({
-            title: 'Muhsin & Syaqiela — Jemputan Kesyukuran Perkahwinan',
-            text:  SHARE_CAPTION,
-            url:   SHARE_URL
+          // Temporarily hide the share row so it doesn't appear in the image
+          const shareRow = card.querySelector('.sal-share-row');
+          if (shareRow) shareRow.style.visibility = 'hidden';
+
+          const canvas = await html2canvas(card, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#fef9ee',
+            logging: false
           });
+
+          if (shareRow) shareRow.style.visibility = '';
+
+          const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+          if (blob) {
+            imageFile = new File([blob], 'jemputan-muhsin-syaqiela.png', { type: 'image/png' });
+          }
+        } catch (e) {
+          // Restore visibility on error
+          const shareRow = card.querySelector('.sal-share-row');
+          if (shareRow) shareRow.style.visibility = '';
+        }
+      }
+
+      // --- 1. Native Web Share API with image (best on mobile) ---
+      if (navigator.share) {
+        const shareData = {
+          title: 'Muhsin & Syaqiela — Jemputan Kesyukuran Perkahwinan',
+          text:  SHARE_CAPTION,
+          url:   SHARE_URL
+        };
+        // Attach image if the browser supports file sharing
+        if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+          shareData.files = [imageFile];
+        }
+        try {
+          await navigator.share(shareData);
           return;
         } catch (err) {
-          // User cancelled — silently ignore
           if (err.name === 'AbortError') return;
         }
       }
-      // 2. Fallback: copy full caption + URL to clipboard
+
+      // --- 2. Clipboard fallback (desktop) ---
       try {
-        await navigator.clipboard.writeText(SHARE_CAPTION);
-        showToast('✓ Teks jemputan telah disalin!');
+        // Try to copy image + text; image-only clipboard needs ClipboardItem API
+        if (imageFile && typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
+          const clipItem = new ClipboardItem({ 'image/png': imageFile });
+          await navigator.clipboard.write([clipItem]);
+          showToast('✓ Kad jemputan disalin ke clipboard!');
+        } else {
+          await navigator.clipboard.writeText(SHARE_CAPTION);
+          showToast('✓ Teks jemputan telah disalin!');
+        }
       } catch {
-        // 3. Last resort: prompt with prefilled text
+        // --- 3. Last resort ---
         const msg = window.prompt('Salin teks jemputan di bawah:', SHARE_CAPTION);
         if (msg !== null) showToast('✓ Terima kasih telah berkongsi!');
       }
