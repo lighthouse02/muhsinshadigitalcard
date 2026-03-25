@@ -877,9 +877,12 @@
         showToast('✓  Your message is on the wall!');
       });
 
-      /* ─────────────────── Demo seed (only when wall is empty) ─────────────────── */
+      /* ─────────────────── Demo seed (only when wall is empty or has old placeholder) ─────────────────── */
       function seedDemo() {
-        if (load().length > 0) return; // real data exists — skip
+        const existing = load();
+        // Skip if real data exists (no stale SVG placeholders)
+        const hasOldSvg = existing.some(e => e.photoDataUrl && e.photoDataUrl.startsWith('data:image/svg'));
+        if (existing.length > 0 && !hasOldSvg) return;
 
         // Free-to-use Unsplash wedding/celebration photos (no auth required)
         const PHOTOS = [
