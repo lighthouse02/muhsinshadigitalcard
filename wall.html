@@ -321,6 +321,216 @@
       70%  { box-shadow: 0 0 0 6px rgba(93,217,122,0); }
       100% { box-shadow: 0 0 0 0 rgba(93,217,122,0); }
     }
+
+    /* ── "Leave a Wish" floating trigger ── */
+    .wish-fab {
+      position: fixed;
+      bottom: 1.4rem;
+      left: 1.8rem;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: var(--bg);
+      border: none;
+      border-radius: 50px;
+      padding: .65rem 1.4rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(200,169,110,.4);
+      transition: transform .18s, box-shadow .18s;
+    }
+    .wish-fab:hover { transform: translateY(-2px); box-shadow: 0 7px 28px rgba(200,169,110,.5); }
+    .wish-fab:active { transform: scale(.97); }
+
+    /* ── Drawer backdrop ── */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: rgba(10, 7, 2, .72);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Slide-up drawer ── */
+    .wish-drawer {
+      position: fixed;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      z-index: 40;
+      width: min(520px, 96vw);
+      background: #1e1508;
+      border-radius: 24px 24px 0 0;
+      border-top: 1px solid rgba(200,169,110,.22);
+      border-left: 1px solid rgba(200,169,110,.12);
+      border-right: 1px solid rgba(200,169,110,.12);
+      padding: 0 2rem 2rem;
+      box-shadow: 0 -12px 60px rgba(0,0,0,.7);
+      transition: transform .36s cubic-bezier(.22,.68,0,1.2);
+    }
+    .wish-drawer.open {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* drag handle */
+    .drawer-handle {
+      width: 40px; height: 4px;
+      background: rgba(200,169,110,.3);
+      border-radius: 2px;
+      margin: 1rem auto .8rem;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+
+    .drawer-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--gold-light);
+    }
+
+    .drawer-close {
+      background: none;
+      border: 1px solid rgba(200,169,110,.2);
+      color: rgba(200,169,110,.7);
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background .15s, color .15s;
+    }
+    .drawer-close:hover { background: rgba(200,169,110,.12); color: var(--gold); }
+
+    /* Type tabs */
+    .d-type-tabs {
+      display: flex;
+      gap: .6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .d-type-btn {
+      flex: 1;
+      padding: .55rem .5rem;
+      background: rgba(200,169,110,.07);
+      border: 1px solid rgba(200,169,110,.18);
+      border-radius: 10px;
+      color: rgba(253,250,244,.65);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: .4rem;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .d-type-btn.active {
+      background: rgba(200,169,110,.18);
+      border-color: rgba(200,169,110,.55);
+      color: var(--gold-light);
+    }
+
+    /* Form fields */
+    .d-form-group { margin-bottom: 1rem; }
+
+    .d-form-group label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: rgba(200,169,110,.75);
+      text-transform: uppercase;
+      margin-bottom: .4rem;
+    }
+
+    .d-form-group input,
+    .d-form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(200,169,110,.22);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      color: var(--ivory);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border-color .15s;
+      resize: none;
+    }
+    .d-form-group input::placeholder,
+    .d-form-group textarea::placeholder { color: rgba(253,250,244,.3); }
+    .d-form-group input:focus,
+    .d-form-group textarea:focus { border-color: rgba(200,169,110,.6); }
+
+    .d-error {
+      font-size: .8rem;
+      color: #e07b7b;
+      margin-top: .3rem;
+      display: none;
+    }
+    .d-error.visible { display: block; }
+
+    /* Submit */
+    .d-submit {
+      width: 100%;
+      padding: .85rem;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: var(--bg);
+      border: none;
+      border-radius: 50px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: .5rem;
+      margin-top: .5rem;
+      transition: opacity .15s, transform .15s;
+    }
+    .d-submit:hover { opacity: .92; transform: translateY(-1px); }
+    .d-submit:active { transform: scale(.98); }
+    .d-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Toast ── */
+    .wish-toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 50;
+      background: rgba(34,139,68,.92);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+      padding: .7rem 1.6rem;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+    }
+    .wish-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -353,15 +563,71 @@
     <span class="live-dot"></span> Live
   </div>
 
+  <!-- ── Leave a Wish FAB ── -->
+  <button class="wish-fab" id="wish-fab" aria-label="Leave a wish" aria-haspopup="dialog">
+    <i class="fas fa-feather-alt"></i> Leave a Wish
+  </button>
+
+  <!-- ── Backdrop ── -->
+  <div class="drawer-backdrop" id="drawer-backdrop" aria-hidden="true"></div>
+
+  <!-- ── Wish input drawer ── -->
+  <div class="wish-drawer" id="wish-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="drawer-handle" aria-hidden="true"></div>
+    <div class="drawer-header">
+      <span class="drawer-title" id="drawer-title">Your Message for Muhsin &amp; Sha</span>
+      <button class="drawer-close" id="drawer-close" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Type selector -->
+    <div class="d-type-tabs" role="tablist" aria-label="Wish type">
+      <button class="d-type-btn active" data-type="wish" role="tab" aria-selected="true">
+        <span>💬</span> Wish
+      </button>
+      <button class="d-type-btn" data-type="doa" role="tab" aria-selected="false">
+        <span>🤲</span> Doa
+      </button>
+    </div>
+
+    <form id="wall-wish-form" novalidate>
+      <div class="d-form-group">
+        <label for="w-name">Your Name *</label>
+        <input type="text" id="w-name" placeholder="Your name" maxlength="60" autocomplete="off" />
+        <div class="d-error" id="w-name-err">Please enter your name.</div>
+      </div>
+
+      <div class="d-form-group" id="w-wish-group">
+        <label for="w-text">Your Wish *</label>
+        <textarea id="w-text" rows="3" placeholder="Your wishes for Muhsin &amp; Syaqiela…" maxlength="400"></textarea>
+        <div class="d-error" id="w-text-err">Please write your wish.</div>
+      </div>
+
+      <div class="d-form-group" id="w-doa-group" hidden>
+        <label for="w-doa">Your Doa *</label>
+        <textarea id="w-doa" rows="3" placeholder="Your doa for the couple…" maxlength="400"></textarea>
+        <div class="d-error" id="w-doa-err">Please write your doa.</div>
+      </div>
+
+      <button type="submit" class="d-submit" id="w-submit">
+        <i class="fas fa-paper-plane"></i> Post to Wall
+      </button>
+    </form>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div class="wish-toast" id="wish-toast" role="status" aria-live="polite"></div>
+
   <script>
     (() => {
       'use strict';
 
+      /* ─────────────────── Constants ─────────────────── */
       const GB_KEY  = 'muhsin_syaqiela_guestbook';
+      const GB_MAX  = 30;
       const mosaic  = document.getElementById('mosaic');
       const empty   = document.getElementById('empty');
 
-      // ── Escape HTML ──
+      /* ─────────────────── Helpers ─────────────────── */
       function esc(s) {
         if (!s) return '';
         return String(s)
@@ -372,13 +638,20 @@
           .replace(/'/g, '&#39;');
       }
 
-      // ── Load entries ──
+      function sanitize(s) {
+        // Strip tags, trim, collapse whitespace
+        return String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 400);
+      }
+
       function load() {
         try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; }
         catch { return []; }
       }
 
-      // ── Relative time ──
+      function save(entries) {
+        try { localStorage.setItem(GB_KEY, JSON.stringify(entries.slice(-GB_MAX))); } catch { /* quota */ }
+      }
+
       function relTime(ts) {
         if (!ts) return 'Just now';
         const d = Math.floor((Date.now() - ts) / 1000);
@@ -388,7 +661,7 @@
         return new Date(ts).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
       }
 
-      // ── Build card HTML ──
+      /* ─────────────────── Card builder ─────────────────── */
       function buildCard(entry) {
         const initial = esc((entry.name || '?').charAt(0).toUpperCase());
         const name    = esc(entry.name || 'Guest');
@@ -420,7 +693,6 @@
           </div>`;
         }
 
-        // default: wish
         return `<div class="wc">
           <div class="wc-meta">
             <div class="wc-avatar">${initial}</div>
@@ -431,13 +703,12 @@
         </div>`;
       }
 
-      // ── Render all entries ──
+      /* ─────────────────── Render wall ─────────────────── */
       let lastCount = -1;
 
-      function render() {
+      function render(forceReset) {
         const entries = load();
-
-        if (entries.length === lastCount) return; // nothing changed
+        if (!forceReset && entries.length === lastCount) return;
         lastCount = entries.length;
 
         if (!entries.length) {
@@ -447,53 +718,168 @@
         }
 
         empty.classList.remove('visible');
-        // newest first
-        const html = entries.slice().reverse().map(buildCard).join('');
-        mosaic.innerHTML = html;
+        // Reset scroll when re-rendering so new card at top is visible
+        scrollY   = 0;
+        direction = 1;
+        mosaic.style.transform = 'translateY(0)';
+        mosaic.innerHTML = entries.slice().reverse().map(buildCard).join('');
       }
 
-      // ── Slow auto-scroll (TV marquee effect) ──
-      let scrollY     = 0;
-      let maxScroll   = 0;
-      let direction   = 1;      // 1 = down, -1 = up
-      const SPEED     = 0.45;   // px per frame
-      const PAUSE_MS  = 3000;   // pause at top/bottom
-      let paused      = false;
-      let pauseTimer  = null;
+      /* ─────────────────── Auto-scroll ─────────────────── */
+      let scrollY    = 0;
+      let direction  = 1;
+      const SPEED    = 0.45;
+      const PAUSE_MS = 3000;
+      let paused     = false;
+      let scrollPaused = false; // paused by drawer
+      let pauseTimer = null;
 
       function scrollLoop() {
-        const wall    = document.getElementById('wall');
-        const content = document.getElementById('mosaic');
-        maxScroll = Math.max(0, content.scrollHeight - wall.clientHeight + 40);
+        if (!scrollPaused) {
+          const wall    = document.getElementById('wall');
+          const content = document.getElementById('mosaic');
+          const maxScroll = Math.max(0, content.scrollHeight - wall.clientHeight + 40);
 
-        if (!paused && maxScroll > 0) {
-          scrollY += SPEED * direction;
+          if (!paused && maxScroll > 0) {
+            scrollY += SPEED * direction;
 
-          if (scrollY >= maxScroll) {
-            scrollY   = maxScroll;
-            direction = -1;
-            paused    = true;
-            clearTimeout(pauseTimer);
-            pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
-          } else if (scrollY <= 0) {
-            scrollY   = 0;
-            direction = 1;
-            paused    = true;
-            clearTimeout(pauseTimer);
-            pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
+            if (scrollY >= maxScroll) {
+              scrollY   = maxScroll;
+              direction = -1;
+              paused    = true;
+              clearTimeout(pauseTimer);
+              pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
+            } else if (scrollY <= 0) {
+              scrollY   = 0;
+              direction = 1;
+              paused    = true;
+              clearTimeout(pauseTimer);
+              pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
+            }
+
+            content.style.transform = `translateY(-${scrollY}px)`;
           }
-
-          content.style.transform = `translateY(-${scrollY}px)`;
         }
-
         requestAnimationFrame(scrollLoop);
       }
 
-      // ── Init ──
+      /* ─────────────────── Drawer ─────────────────── */
+      const fab      = document.getElementById('wish-fab');
+      const drawer   = document.getElementById('wish-drawer');
+      const backdrop = document.getElementById('drawer-backdrop');
+      const closeBtn = document.getElementById('drawer-close');
+      const form     = document.getElementById('wall-wish-form');
+
+      const typeBtns    = drawer.querySelectorAll('.d-type-btn');
+      const wishGroup   = document.getElementById('w-wish-group');
+      const doaGroup    = document.getElementById('w-doa-group');
+      let   currentType = 'wish';
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        backdrop.classList.add('open');
+        backdrop.removeAttribute('aria-hidden');
+        fab.setAttribute('aria-expanded', 'true');
+        scrollPaused = true;
+        document.getElementById('w-name').focus();
+      }
+
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        backdrop.classList.remove('open');
+        backdrop.setAttribute('aria-hidden', 'true');
+        fab.removeAttribute('aria-expanded');
+        scrollPaused = false;
+      }
+
+      fab.addEventListener('click', openDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+      backdrop.addEventListener('click', closeDrawer);
+
+      // Escape key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+      });
+
+      // Type tab switching
+      typeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          typeBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          currentType = btn.dataset.type;
+          if (currentType === 'doa') {
+            wishGroup.hidden = true;
+            doaGroup.hidden  = false;
+          } else {
+            wishGroup.hidden = false;
+            doaGroup.hidden  = true;
+          }
+        });
+      });
+
+      /* ─────────────────── Form submit ─────────────────── */
+      function showErr(id, msg) {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = msg; el.classList.add('visible'); }
+      }
+      function clearErr(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('visible');
+      }
+
+      let toastTimer = null;
+      function showToast(msg) {
+        const toast = document.getElementById('wish-toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+      }
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        let valid = true;
+
+        const nameRaw = document.getElementById('w-name').value;
+        const name    = sanitize(nameRaw);
+        clearErr('w-name-err');
+        if (!name) { showErr('w-name-err', 'Please enter your name.'); valid = false; }
+
+        let text = '';
+        if (currentType === 'doa') {
+          text = sanitize(document.getElementById('w-doa').value);
+          clearErr('w-doa-err');
+          if (!text) { showErr('w-doa-err', 'Please write your doa.'); valid = false; }
+        } else {
+          text = sanitize(document.getElementById('w-text').value);
+          clearErr('w-text-err');
+          if (!text) { showErr('w-text-err', 'Please write your wish.'); valid = false; }
+        }
+
+        if (!valid) return;
+
+        const entry = { type: currentType, name, text, time: Date.now() };
+        const entries = load();
+        entries.push(entry);
+        save(entries);
+
+        // Reset form
+        form.reset();
+        typeBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+        typeBtns[0].classList.add('active'); typeBtns[0].setAttribute('aria-selected', 'true');
+        currentType  = 'wish';
+        wishGroup.hidden = false;
+        doaGroup.hidden  = true;
+
+        closeDrawer();
+        render(true);
+        showToast('✓  Your message is on the wall!');
+      });
+
+      /* ─────────────────── Init ─────────────────── */
       render();
       requestAnimationFrame(scrollLoop);
-
-      // Poll localStorage every 10 s for new entries
       setInterval(render, 10_000);
     })();
   </script>
