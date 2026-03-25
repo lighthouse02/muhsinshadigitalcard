@@ -917,6 +917,7 @@
 
   // ── Load persisted entries on page load (replaces sample cards) ──
   (function () {
+    if (!wishesWall) return;
     const saved = gbLoad();
     if (!saved.length) return;
     wishesWall.innerHTML = '';
@@ -958,9 +959,11 @@
 
     const saved = gbLoad(); saved.push(entry); gbSave(saved);
     const card = buildWishCard(entry);
-    wishesWall.insertBefore(card, wishesWall.firstChild);
+    if (wishesWall) {
+      wishesWall.insertBefore(card, wishesWall.firstChild);
+      wishesWall.scrollTop = 0;
+    }
     nameInput.value = '';
-    wishesWall.scrollTop = 0;
   });
 
   /* =============================================
