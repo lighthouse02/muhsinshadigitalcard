@@ -821,6 +821,25 @@ img { display: block; max-width: 100%; }
   color: var(--gold-dark);
 }
 
+/* Salutation hashtag & closing text */
+.sal-hashtag {
+  font-family: var(--font-sans);
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--gold-dark);
+  letter-spacing: .05em;
+  margin: 1.5rem 0 .5rem;
+}
+.sal-closing {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(.85rem, 2.3vw, .95rem);
+  color: var(--text-light);
+  line-height: 1.7;
+  max-width: 360px;
+  margin: 0 auto 1rem;
+}
+
 /* ---------- SHARE BUTTON ---------- */
 .sal-share-row {
   margin-top: 2rem;
@@ -1867,6 +1886,23 @@ img { display: block; max-width: 100%; }
   font-family: var(--font-serif);
   font-style: italic;
 }
+.footer-hashtag {
+  font-family: var(--font-sans);
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: .05em;
+  margin-bottom: .75rem;
+}
+.footer-closing {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(.8rem, 2.2vw, .95rem);
+  color: rgba(255,255,255,.55);
+  line-height: 1.7;
+  max-width: 460px;
+  margin: 0 auto 1.5rem;
+}
 .footer-credit { font-size: .78rem; color: rgba(255,255,255,.3); }
 
 /* ---------- SCROLL REVEAL ---------- */
@@ -1920,5 +1956,5 @@ img { display: block; max-width: 100%; }
   .map-frame { display: none; }
 
   #footer { background: none; padding: 1rem 0; }
-  .footer-names, .footer-date, .footer-dua, .footer-dua-trans { color: #000; }
+  .footer-names, .footer-date, .footer-dua, .footer-dua-trans, .footer-hashtag, .footer-closing { color: #000; }
 }
