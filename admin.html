@@ -111,6 +111,44 @@
     }
     #logout-btn:hover { background: rgba(255,255,255,.15); }
 
+    /* ── Demo toolbar ── */
+    #demo-bar {
+      background: #2a1a00;
+      border-bottom: 1px solid rgba(200,169,110,.25);
+      padding: .55rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    #demo-bar .demo-label {
+      font-size: .72rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-right: .25rem;
+    }
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .35rem .8rem;
+      border-radius: 6px;
+      border: 1px solid;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 500;
+      transition: opacity .2s;
+    }
+    .demo-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .demo-btn.seed  { background: rgba(200,169,110,.15); border-color: var(--gold);   color: var(--gold); }
+    .demo-btn.flush { background: rgba(192,57,43,.12);   border-color: var(--red);    color: #e05c4b; }
+    .demo-btn.seed:hover:not(:disabled)  { background: rgba(200,169,110,.28); }
+    .demo-btn.flush:hover:not(:disabled) { background: rgba(192,57,43,.28); }
+    #demo-status { font-size: .75rem; color: rgba(255,255,255,.5); margin-left: auto; }
+
     main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
 
     /* ── Stat Cards ── */
@@ -339,6 +377,14 @@
     </div>
     <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</button>
   </header>
+
+  <!-- Demo controls bar -->
+  <div id="demo-bar">
+    <span class="demo-label"><i class="fas fa-flask"></i> Demo</span>
+    <button class="demo-btn seed"  id="seed-btn" ><i class="fas fa-seedling"></i> Seed Demo Data</button>
+    <button class="demo-btn flush" id="flush-btn"><i class="fas fa-trash-alt"></i> Flush All Data</button>
+    <span id="demo-status"></span>
+  </div>
 
   <main>
 
@@ -840,6 +886,56 @@
   setInterval(async () => {
     if (sessionStorage.getItem(SESSION_KEY) === 'yes') await renderAll();
   }, 30000);
+
+  /* ── Demo toolbar ── */
+  const seedBtn    = document.getElementById('seed-btn');
+  const flushBtn   = document.getElementById('flush-btn');
+  const demoStatus = document.getElementById('demo-status');
+
+  function setDemoStatus(msg, isErr) {
+    demoStatus.textContent = msg;
+    demoStatus.style.color = isErr ? '#e05c4b' : 'rgba(200,169,110,.85)';
+    if (msg) setTimeout(() => { demoStatus.textContent = ''; }, 4000);
+  }
+
+  seedBtn.addEventListener('click', async () => {
+    if (!confirm('Tambah data demo ke dalam database?')) return;
+    seedBtn.disabled = flushBtn.disabled = true;
+    setDemoStatus('Seeding…');
+    try {
+      const res = await apiFetch('/.netlify/functions/seed', { method: 'POST', body: '{}' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.status);
+      setDemoStatus(`✓ Seeded — ${data.seeded.rsvp} RSVP, ${data.seeded.wishes} ucapan, ${data.seeded.messages} mesej`);
+      await renderAll();
+    } catch (e) {
+      setDemoStatus('Seed gagal: ' + e.message, true);
+    } finally {
+      seedBtn.disabled = flushBtn.disabled = false;
+    }
+  });
+
+  flushBtn.addEventListener('click', async () => {
+    if (!confirm('⚠️ Ini akan MEMADAM SEMUA DATA dalam database. Teruskan?')) return;
+    if (!confirm('Pasti? Tindakan ini tidak boleh dibatalkan.')) return;
+    seedBtn.disabled = flushBtn.disabled = true;
+    setDemoStatus('Flushing…');
+    try {
+      const res = await apiFetch('/.netlify/functions/flush', { method: 'POST', body: '{}' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.status);
+      setDemoStatus('✓ Semua data dipadam.');
+      // Also clear localStorage
+      localStorage.removeItem(RSVP_KEY);
+      localStorage.removeItem(GB_KEY);
+      localStorage.removeItem(MSG_KEY);
+      await renderAll();
+    } catch (e) {
+      setDemoStatus('Flush gagal: ' + e.message, true);
+    } finally {
+      seedBtn.disabled = flushBtn.disabled = false;
+    }
+  });
 
 })();
 </script>
