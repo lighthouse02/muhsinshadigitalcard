@@ -1087,15 +1087,16 @@
   const SHARE_CAPTION =
 `Assalamualaikum w.b.t.,
 
-Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke majlis perkahwinan anakanda kami:
+Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke Majlis Kesyukuran Perkahwinan anak lelaki kami:
 
 💍 Muhammad Muhsin bin Haji Shukri
     dengan pilihan hatinya
     Syaqiela Amirah Syafiqah binti Syaiful Azlan
 
 📅 Sabtu, 30 Mei 2026
-⏰ 10:00 pagi
-📍 Masjid Bandar Baru Senawang
+🍽️ Jamuan: 11.00 pagi – 4.00 petang
+📍 Perkarangan Masjid Bandar Baru Senawang,
+   70450 Seremban, Negeri Sembilan
 
 Kehadiran Tuan/Puan amat kami sanjungi dan menjadi rahmat kepada majlis kami.
 

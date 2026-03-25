@@ -783,6 +783,44 @@ img { display: block; max-width: 100%; }
   .salutation-card { padding: 4.5rem 4.5rem 4rem; }
 }
 
+/* Event details block inside salutation card */
+.sal-event-details {
+  margin: 1.5rem 0 .5rem;
+  padding: 1.1rem 1.25rem;
+  background: rgba(200,169,110,.07);
+  border: 1px solid rgba(200,169,110,.28);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  text-align: left;
+}
+.sal-detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  font-family: var(--font-serif);
+  font-size: clamp(.88rem, 2.5vw, .98rem);
+  color: var(--text);
+  line-height: 1.65;
+}
+.sal-detail-row i {
+  color: var(--gold-dark);
+  font-size: .95rem;
+  margin-top: .2rem;
+  flex-shrink: 0;
+  width: 1.1rem;
+  text-align: center;
+}
+.sal-detail-row strong {
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
 /* ---------- SHARE BUTTON ---------- */
 .sal-share-row {
   margin-top: 2rem;
