@@ -228,7 +228,7 @@
   /* =============================================
      3. COUNTDOWN TIMER
   ============================================= */
-  const WEDDING_DATE = new Date('2026-04-12T10:00:00');
+  const WEDDING_DATE = new Date('2026-05-30T10:00:00');
 
   function updateCountdown() {
     const now  = new Date();
@@ -239,7 +239,7 @@
         '<div style="text-align:center;padding:1rem 0;">' +
         '<span style="color:var(--gold-light);font-family:var(--font-script);font-size:2rem;font-style:italic;display:block;margin-bottom:.75rem;">Hari Yang Dinanti Telah Tiba! 🤍</span>' +
         '<span style="color:rgba(255,255,255,.85);font-family:var(--font-serif);font-style:italic;font-size:1.1rem;display:block;">Alhamdulillah — terima kasih kerana hadir menyempurnakan majlis kami.</span>' +
-        '<span style="color:rgba(255,255,255,.6);font-family:var(--font-sans);font-size:.88rem;display:block;margin-top:.6rem;">Muhsin &amp; Syaqiela &middot; 12 April 2026</span>' +
+        '<span style="color:rgba(255,255,255,.6);font-family:var(--font-sans);font-size:.88rem;display:block;margin-top:.6rem;">Muhsin &amp; Syaqiela &middot; 30 May 2026</span>' +
         '</div>';
       return;
     }
@@ -265,9 +265,9 @@
     // Google Calendar URL
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
       '&text=Muhsin+%26+Syaqiela+Wedding' +
-      '&dates=20260412T020000Z%2F20260412T090000Z' +
+      '&dates=20260530T020000Z%2F20260530T090000Z' +
       '&details=You+are+invited+to+the+wedding+of+Muhsin+%26+Syaqiela.' +
-      '&location=Dewan+Delima%2C+Kajang';
+      '&location=Masjid+Bandar+Baru+Senawang%2C+Seremban';
     document.getElementById('cal-google').href = gcal;
 
     // ICS content
@@ -276,11 +276,11 @@
       'VERSION:2.0',
       'PRODID:-//Muhsin & Syaqiela Wedding//EN',
       'BEGIN:VEVENT',
-      'DTSTART:20260412T100000',
-      'DTEND:20260412T150000',
+      'DTSTART:20260530T100000',
+      'DTEND:20260530T150000',
       'SUMMARY:Muhsin & Syaqiela Wedding',
       'DESCRIPTION:You are invited to the wedding of Muhsin & Syaqiela.',
-      'LOCATION:Dewan Delima\, Kajang',
+      'LOCATION:Masjid Bandar Baru Senawang\, Seremban',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n');
@@ -582,9 +582,9 @@
     ctx.beginPath(); ctx.moveTo(2*W/3, 388); ctx.lineTo(2*W/3, 480); ctx.stroke();
 
     const details = [
-      { x: W/6,      label: 'DATE',     v1: 'Saturday, 12 April 2026', v2: '' },
+      { x: W/6,      label: 'DATE',     v1: 'Saturday, 30 May 2026', v2: '' },
       { x: W/2,      label: 'TIME',     v1: '10:00 AM',                v2: 'Akad Nikah · Bersanding' },
-      { x: 5*W/6,    label: 'LOCATION', v1: 'Dewan Delima',            v2: 'Kajang, Selangor' },
+      { x: 5*W/6,    label: 'LOCATION', v1: 'Masjid Bandar Baru',     v2: 'Senawang, N. Sembilan' },
     ];
     details.forEach(d => {
       ctx.textAlign = 'center';
