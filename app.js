@@ -401,6 +401,13 @@
     rsvpBtn.textContent = 'Sending…';
 
     setTimeout(() => {
+      // Persist RSVP to localStorage
+      const RSVP_KEY = 'muhsin_syaqiela_rsvp';
+      const rsvpList = (() => { try { return JSON.parse(localStorage.getItem(RSVP_KEY)) || []; } catch { return []; } })();
+      const guests = parseInt(document.getElementById('rsvp-guests')?.value || '1', 10);
+      rsvpList.push({ name, phone, attending: attendingVal, guests: attendingVal === 'yes' ? guests : 0, time: Date.now() });
+      try { localStorage.setItem(RSVP_KEY, JSON.stringify(rsvpList)); } catch { /* quota */ }
+
       document.getElementById('rsvp-success').classList.remove('hidden');
       document.getElementById('rsvp-success-msg').textContent = attendingVal === 'yes'
         ? 'Thank you! We look forward to celebrating with you.'
@@ -786,6 +793,12 @@
     msgBtn.textContent = 'Sending...';
 
     setTimeout(() => {
+      // Persist private message to localStorage
+      const MSG_KEY  = 'muhsin_syaqiela_messages';
+      const msgList  = (() => { try { return JSON.parse(localStorage.getItem(MSG_KEY)) || []; } catch { return []; } })();
+      msgList.push({ name: document.getElementById('msg-name').value.trim(), text: document.getElementById('msg-text').value.trim(), sig: sigPad.toDataURL(), time: Date.now() });
+      try { localStorage.setItem(MSG_KEY, JSON.stringify(msgList)); } catch { /* quota */ }
+
       successEl.classList.remove('hidden');
       msgForm.reset();
       sigPad.clear();

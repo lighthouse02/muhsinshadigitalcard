@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Majlis Muhsin & Syaqiela</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:      #C8A96E;
+      --gold-dk:   #9a7a42;
+      --ivory:     #FDFAF4;
+      --bg:        #F5EFE4;
+      --ink:       #2a2018;
+      --muted:     #7a6a58;
+      --white:     #fff;
+      --red:       #c0392b;
+      --green:     #2e7d5e;
+      --radius:    10px;
+      --shadow:    0 2px 16px rgba(139,115,85,.14);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Login Screen ── */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #1e1a14 0%, #3b3020 100%);
+    }
+    .login-box {
+      background: var(--ivory);
+      border-radius: 14px;
+      padding: 2.5rem 2rem;
+      width: min(360px, 92vw);
+      box-shadow: 0 8px 40px rgba(0,0,0,.35);
+      text-align: center;
+    }
+    .login-box h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold-dk);
+      margin-bottom: .3rem;
+    }
+    .login-box p { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%;
+      padding: .75rem 1rem;
+      border: 1.5px solid #d5c9b4;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: .95rem;
+      background: var(--white);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .login-box input:focus { border-color: var(--gold); }
+    .login-box button {
+      width: 100%;
+      margin-top: 1rem;
+      padding: .8rem;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .login-box button:hover { background: var(--gold-dk); }
+    #login-error { color: var(--red); font-size: .82rem; margin-top: .6rem; min-height: 1.1em; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; }
+
+    header {
+      background: linear-gradient(90deg, #1e1a14 0%, #3b3020 100%);
+      color: var(--white);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); }
+    header p  { font-size: .78rem; color: rgba(255,255,255,.55); }
+    #logout-btn {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      color: rgba(255,255,255,.75);
+      padding: .45rem .9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .8rem;
+      transition: background .2s;
+    }
+    #logout-btn:hover { background: rgba(255,255,255,.15); }
+
+    main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+    /* ── Stat Cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--gold);
+    }
+    .stat-card.red  { border-left-color: var(--red); }
+    .stat-card.green { border-left-color: var(--green); }
+    .stat-label { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: .3rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--ink); line-height: 1; }
+    .stat-sub   { font-size: .78rem; color: var(--muted); margin-top: .3rem; }
+
+    /* ── Tabs ── */
+    .section-tabs { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .section-tab {
+      padding: .5rem 1.1rem;
+      border-radius: 20px;
+      border: 1.5px solid #d5c9b4;
+      background: var(--white);
+      font-family: inherit;
+      font-size: .83rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all .2s;
+    }
+    .section-tab.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    /* ── Panel ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .panel-title { font-size: 1rem; font-weight: 600; color: var(--ink); }
+    .panel-count {
+      background: var(--bg);
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 600;
+      padding: .3rem .75rem;
+      border-radius: 20px;
+    }
+
+    /* ── Search / Filter ── */
+    .filter-row { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-row input, .filter-row select {
+      padding: .5rem .85rem;
+      border: 1.5px solid #d5c9b4;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .83rem;
+      background: var(--white);
+      outline: none;
+      flex: 1 1 160px;
+      min-width: 0;
+    }
+    .filter-row input:focus, .filter-row select:focus { border-color: var(--gold); }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; background: var(--white); }
+    thead { background: #f0e9dc; }
+    th {
+      padding: .75rem 1rem;
+      text-align: left;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    td {
+      padding: .8rem 1rem;
+      font-size: .85rem;
+      border-top: 1px solid #f0e9dc;
+      vertical-align: top;
+    }
+    tr:hover td { background: #fdf8ef; }
+
+    .badge {
+      display: inline-block;
+      padding: .2rem .55rem;
+      border-radius: 12px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .badge-yes  { background: #d4edda; color: var(--green); }
+    .badge-no   { background: #fde8e8; color: var(--red); }
+    .badge-wish { background: #fef3e2; color: #a06820; }
+    .badge-photo { background: #e8f0fe; color: #3455b3; }
+
+    .time-cell { color: var(--muted); font-size: .78rem; white-space: nowrap; }
+
+    /* ── Actions ── */
+    .action-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: .3rem .5rem;
+      border-radius: 5px;
+      font-size: .88rem;
+      color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .action-btn:hover { background: #f0e9dc; color: var(--ink); }
+    .action-btn.del:hover { background: #fde8e8; color: var(--red); }
+
+    /* ── Wish edit cell ── */
+    .wish-text-cell { max-width: 320px; word-break: break-word; }
+    .wish-text-edit {
+      width: 100%;
+      font-family: inherit;
+      font-size: .85rem;
+      padding: .35rem .5rem;
+      border: 1.5px solid var(--gold);
+      border-radius: 6px;
+      resize: vertical;
+    }
+
+    /* ── Photo thumb ── */
+    .photo-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; display: block; }
+
+    /* ── Private message sig ── */
+    .sig-thumb { max-width: 130px; border-radius: 6px; border: 1px solid #eee; display: block; }
+
+    /* ── Capacity bar ── */
+    .cap-bar-wrap {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .cap-bar-label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: .5rem; }
+    .cap-bar-track {
+      background: #f0e9dc;
+      border-radius: 8px;
+      height: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .cap-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #e8b86d);
+      border-radius: 8px;
+      transition: width .6s ease;
+    }
+    .cap-bar-fill.warning { background: linear-gradient(90deg, #e67e22, #f39c12); }
+    .cap-bar-fill.full    { background: linear-gradient(90deg, var(--red), #e74c3c); }
+    .cap-bar-info { font-size: .82rem; color: var(--muted); margin-top: .4rem; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .empty-state i { font-size: 2rem; color: #d5c9b4; display: block; margin-bottom: .75rem; }
+
+    /* ── Export btn ── */
+    .export-btn {
+      padding: .45rem .9rem;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      border-radius: 7px;
+      cursor: pointer;
+      border: 1.5px solid var(--gold);
+      background: var(--white);
+      color: var(--gold-dk);
+      transition: all .2s;
+    }
+    .export-btn:hover { background: var(--gold); color: var(--white); }
+
+    @media (max-width: 600px) {
+      td, th { padding: .6rem .65rem; }
+      .stat-value { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Admin Panel</h1>
+    <p>Muhsin &amp; Syaqiela — Majlis Kesyukuran Perkahwinan</p>
+    <input type="password" id="admin-pw" placeholder="Enter admin password" autocomplete="current-password" />
+    <p id="login-error"></p>
+    <button id="login-btn"><i class="fas fa-unlock-alt"></i> Log In</button>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="dashboard">
+  <header>
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Muhsin &amp; Syaqiela · 30 Mei 2026</p>
+    </div>
+    <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+  </header>
+
+  <main>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid" id="stats-grid">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- Capacity Bar -->
+    <div class="cap-bar-wrap">
+      <div class="cap-bar-label"><i class="fas fa-users"></i> Kapasiti Jemputan</div>
+      <div class="cap-bar-track">
+        <div class="cap-bar-fill" id="cap-bar-fill" style="width:0%"></div>
+      </div>
+      <div class="cap-bar-info" id="cap-bar-info">— / 500 jemputan dikonfirmasi</div>
+    </div>
+
+    <!-- Section tabs -->
+    <div class="section-tabs">
+      <button class="section-tab active" data-panel="panel-rsvp"><i class="fas fa-calendar-check"></i> RSVP</button>
+      <button class="section-tab" data-panel="panel-wishes"><i class="fas fa-heart"></i> Ucapan & Doa</button>
+      <button class="section-tab" data-panel="panel-messages"><i class="fas fa-lock"></i> Mesej Peribadi</button>
+    </div>
+
+    <!-- ── RSVP Panel ── -->
+    <div class="panel active" id="panel-rsvp">
+      <div class="panel-header">
+        <span class="panel-title">Senarai RSVP</span>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <span class="panel-count" id="rsvp-count-label">0 respons</span>
+          <button class="export-btn" id="export-rsvp"><i class="fas fa-download"></i> Export CSV</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="rsvp-search" placeholder="Cari nama atau no. telefon…" />
+        <select id="rsvp-filter">
+          <option value="all">Semua</option>
+          <option value="yes">Hadir</option>
+          <option value="no">Tidak Hadir</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nama</th>
+              <th>Telefon</th>
+              <th>Status</th>
+              <th>Tetamu</th>
+              <th>Tarikh</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rsvp-tbody">
+            <tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i>Tiada rekod RSVP lagi.</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Wishes Panel ── -->
+    <div class="panel" id="panel-wishes">
+      <div class="panel-header">
+        <span class="panel-title">Ucapan &amp; Doa</span>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <span class="panel-count" id="wishes-count-label">0 ucapan</span>
+          <button class="export-btn" id="export-wishes"><i class="fas fa-download"></i> Export CSV</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="wishes-search" placeholder="Cari nama atau teks ucapan…" />
+        <select id="wishes-filter">
+          <option value="all">Semua</option>
+          <option value="wish">Ucapan</option>
+          <option value="photo">Kenangan Foto</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nama</th>
+              <th>Jenis</th>
+              <th>Ucapan / Kapsyen</th>
+              <th>Tarikh</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="wishes-tbody">
+            <tr><td colspan="6"><div class="empty-state"><i class="fas fa-heart"></i>Tiada ucapan lagi.</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Messages Panel ── -->
+    <div class="panel" id="panel-messages">
+      <div class="panel-header">
+        <span class="panel-title">Mesej Peribadi</span>
+        <span class="panel-count" id="msg-count-label">0 mesej</span>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="msg-search" placeholder="Cari nama atau isi mesej…" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nama</th>
+              <th>Mesej</th>
+              <th>Tandatangan</th>
+              <th>Tarikh</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="msg-tbody">
+            <tr><td colspan="6"><div class="empty-state"><i class="fas fa-lock"></i>Tiada mesej peribadi lagi.</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Config ── */
+  const ADMIN_PASSWORD = 'muhsin2026admin'; // change before going live
+  const CAPACITY       = 500;
+  const RSVP_KEY       = 'muhsin_syaqiela_rsvp';
+  const GB_KEY         = 'muhsin_syaqiela_guestbook';
+  const MSG_KEY        = 'muhsin_syaqiela_messages';
+  const SESSION_KEY    = 'admin_authed';
+
+  /* ── Helpers ── */
+  function load(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+  function save(key, arr) { try { localStorage.setItem(key, JSON.stringify(arr)); } catch { /* quota */ } }
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleString('ms-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+  function csvEscape(v) {
+    const s = String(v == null ? '' : v);
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+  }
+  function downloadCSV(filename, rows) {
+    const csv = rows.map(r => r.map(csvEscape).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── Auth ── */
+  const loginScreen = document.getElementById('login-screen');
+  const dashboard   = document.getElementById('dashboard');
+  const loginError  = document.getElementById('login-error');
+  const adminPw     = document.getElementById('admin-pw');
+
+  function showDashboard() {
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    renderAll();
+  }
+
+  // Persist login within session (sessionStorage only — cleared on tab close)
+  if (sessionStorage.getItem(SESSION_KEY) === 'yes') showDashboard();
+
+  document.getElementById('login-btn').addEventListener('click', () => {
+    if (adminPw.value === ADMIN_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, 'yes');
+      loginError.textContent = '';
+      showDashboard();
+    } else {
+      loginError.textContent = 'Kata laluan salah. Cuba semula.';
+      adminPw.value = '';
+      adminPw.focus();
+    }
+  });
+  adminPw.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    location.reload();
+  });
+
+  /* ── Section tabs ── */
+  document.querySelectorAll('.section-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  /* ── Render all ── */
+  function renderAll() {
+    renderStats();
+    renderRsvp();
+    renderWishes();
+    renderMessages();
+  }
+
+  /* ── Stats ── */
+  function renderStats() {
+    const rsvps    = load(RSVP_KEY);
+    const attending = rsvps.filter(r => r.attending === 'yes');
+    const seats     = attending.reduce((sum, r) => sum + (parseInt(r.guests) || 1), 0);
+    const notComing = rsvps.filter(r => r.attending === 'no');
+    const wishes    = load(GB_KEY);
+    const msgs      = load(MSG_KEY);
+
+    const pct = Math.min(100, Math.round(seats / CAPACITY * 100));
+    const fill = document.getElementById('cap-bar-fill');
+    fill.style.width = pct + '%';
+    fill.className = 'cap-bar-fill' + (pct >= 100 ? ' full' : pct >= 80 ? ' warning' : '');
+    document.getElementById('cap-bar-info').textContent =
+      `${seats} / ${CAPACITY} tempat dikonfirmasi (${pct}%)`;
+
+    const grid = document.getElementById('stats-grid');
+    grid.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-paper-plane"></i> Jumlah RSVP</div>
+        <div class="stat-value">${rsvps.length}</div>
+        <div class="stat-sub">respons diterima</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label"><i class="fas fa-check-circle"></i> Hadir</div>
+        <div class="stat-value">${attending.length}</div>
+        <div class="stat-sub">${seats} tempat duduk</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label"><i class="fas fa-times-circle"></i> Tidak Hadir</div>
+        <div class="stat-value">${notComing.length}</div>
+        <div class="stat-sub">memberi tahu</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-heart"></i> Ucapan</div>
+        <div class="stat-value">${wishes.length}</div>
+        <div class="stat-sub">di papan doa</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-lock"></i> Mesej Peribadi</div>
+        <div class="stat-value">${msgs.length}</div>
+        <div class="stat-sub">untuk Muhsin</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-chair"></i> Baki Kapasiti</div>
+        <div class="stat-value">${Math.max(0, CAPACITY - seats)}</div>
+        <div class="stat-sub">daripada ${CAPACITY}</div>
+      </div>
+    `;
+  }
+
+  /* ── RSVP ── */
+  let rsvpData = [];
+  function renderRsvp(filter, search) {
+    rsvpData = load(RSVP_KEY);
+    let rows = [...rsvpData].reverse();
+    if (filter && filter !== 'all') rows = rows.filter(r => r.attending === filter);
+    if (search) {
+      const q = search.toLowerCase();
+      rows = rows.filter(r => (r.name||'').toLowerCase().includes(q) || (r.phone||'').includes(q));
+    }
+    document.getElementById('rsvp-count-label').textContent = `${rsvpData.length} respons`;
+    const tbody = document.getElementById('rsvp-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i>Tiada rekod dijumpai.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((r, i) => `
+      <tr>
+        <td class="time-cell">${i + 1}</td>
+        <td><strong>${esc(r.name)}</strong></td>
+        <td>${esc(r.phone)}</td>
+        <td><span class="badge badge-${r.attending === 'yes' ? 'yes' : 'no'}">${r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir'}</span></td>
+        <td>${r.attending === 'yes' ? (r.guests || 1) : '—'}</td>
+        <td class="time-cell">${fmtDate(r.time)}</td>
+        <td>
+          <button class="action-btn del" title="Padam" onclick="deleteRsvp(${rsvpData.length - 1 - i})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.deleteRsvp = function(idx) {
+    if (!confirm('Padam rekod RSVP ini?')) return;
+    const arr = load(RSVP_KEY);
+    arr.splice(idx, 1);
+    save(RSVP_KEY, arr);
+    renderAll();
+  };
+
+  document.getElementById('rsvp-search').addEventListener('input', function() {
+    renderRsvp(document.getElementById('rsvp-filter').value, this.value);
+  });
+  document.getElementById('rsvp-filter').addEventListener('change', function() {
+    renderRsvp(this.value, document.getElementById('rsvp-search').value);
+  });
+
+  document.getElementById('export-rsvp').addEventListener('click', () => {
+    const arr = load(RSVP_KEY);
+    const header = ['Nama', 'Telefon', 'Status', 'Bilangan Tetamu', 'Tarikh'];
+    const rows = arr.map(r => [r.name, r.phone, r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', r.attending === 'yes' ? (r.guests || 1) : 0, fmtDate(r.time)]);
+    downloadCSV('rsvp-muhsin-syaqiela.csv', [header, ...rows]);
+  });
+
+  /* ── Wishes ── */
+  let wishesData = [];
+  function renderWishes(filter, search) {
+    wishesData = load(GB_KEY);
+    let rows = [...wishesData].reverse();
+    if (filter && filter !== 'all') rows = rows.filter(w => w.type === filter);
+    if (search) {
+      const q = search.toLowerCase();
+      rows = rows.filter(w => (w.name||'').toLowerCase().includes(q) || (w.text||'').toLowerCase().includes(q) || (w.caption||'').toLowerCase().includes(q));
+    }
+    document.getElementById('wishes-count-label').textContent = `${wishesData.length} ucapan`;
+    const tbody = document.getElementById('wishes-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-heart"></i>Tiada ucapan dijumpai.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((w, i) => {
+      const realIdx = wishesData.length - 1 - i;
+      const content = w.type === 'photo'
+        ? `<div>${w.photoDataUrl ? `<img src="${esc(w.photoDataUrl)}" class="photo-thumb" />` : ''}<small style="color:var(--muted);display:block;margin-top:.3rem;">${esc(w.caption || '')}</small></div>`
+        : `<div class="wish-text-cell">${esc(w.text || '')}</div>`;
+      return `
+        <tr id="wish-row-${realIdx}">
+          <td class="time-cell">${i + 1}</td>
+          <td><strong>${esc(w.name)}</strong></td>
+          <td><span class="badge badge-${w.type === 'photo' ? 'photo' : 'wish'}">${w.type === 'photo' ? 'Foto' : 'Ucapan'}</span></td>
+          <td id="wish-cell-${realIdx}">${content}</td>
+          <td class="time-cell">${fmtDate(w.time)}</td>
+          <td style="white-space:nowrap;">
+            ${w.type !== 'photo' ? `<button class="action-btn" title="Edit" onclick="editWish(${realIdx})"><i class="fas fa-pen"></i></button>` : ''}
+            <button class="action-btn del" title="Padam" onclick="deleteWish(${realIdx})"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.editWish = function(idx) {
+    const arr = load(GB_KEY);
+    const entry = arr[idx];
+    if (!entry) return;
+    const cell = document.getElementById(`wish-cell-${idx}`);
+    if (!cell) return;
+    // If already editing, save
+    const existingTA = cell.querySelector('textarea');
+    if (existingTA) {
+      entry.text = existingTA.value.trim();
+      arr[idx] = entry;
+      save(GB_KEY, arr);
+      renderAll();
+      return;
+    }
+    cell.innerHTML = `
+      <textarea class="wish-text-edit" rows="3">${esc(entry.text || '')}</textarea>
+      <div style="margin-top:.35rem;display:flex;gap:.4rem;">
+        <button class="action-btn" onclick="editWish(${idx})" style="background:var(--gold);color:#fff;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;">Simpan</button>
+        <button class="action-btn" onclick="renderWishes()" style="padding:.3rem .7rem;border-radius:6px;font-size:.78rem;">Batal</button>
+      </div>`;
+  };
+
+  window.deleteWish = function(idx) {
+    if (!confirm('Padam ucapan ini?')) return;
+    const arr = load(GB_KEY);
+    arr.splice(idx, 1);
+    save(GB_KEY, arr);
+    renderAll();
+  };
+
+  document.getElementById('wishes-search').addEventListener('input', function() {
+    renderWishes(document.getElementById('wishes-filter').value, this.value);
+  });
+  document.getElementById('wishes-filter').addEventListener('change', function() {
+    renderWishes(this.value, document.getElementById('wishes-search').value);
+  });
+
+  document.getElementById('export-wishes').addEventListener('click', () => {
+    const arr = load(GB_KEY);
+    const header = ['Nama', 'Jenis', 'Ucapan/Kapsyen', 'Tarikh'];
+    const rows = arr.map(w => [w.name, w.type, w.type === 'photo' ? (w.caption || '') : (w.text || ''), fmtDate(w.time)]);
+    downloadCSV('ucapan-muhsin-syaqiela.csv', [header, ...rows]);
+  });
+
+  /* ── Private Messages ── */
+  let msgsData = [];
+  function renderMessages(search) {
+    msgsData = load(MSG_KEY);
+    let rows = [...msgsData].reverse();
+    if (search) {
+      const q = search.toLowerCase();
+      rows = rows.filter(m => (m.name||'').toLowerCase().includes(q) || (m.text||'').toLowerCase().includes(q));
+    }
+    document.getElementById('msg-count-label').textContent = `${msgsData.length} mesej`;
+    const tbody = document.getElementById('msg-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-lock"></i>Tiada mesej peribadi lagi.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((m, i) => {
+      const realIdx = msgsData.length - 1 - i;
+      return `
+        <tr>
+          <td class="time-cell">${i + 1}</td>
+          <td><strong>${esc(m.name)}</strong></td>
+          <td style="max-width:280px;word-break:break-word;">${esc(m.text)}</td>
+          <td>${m.sig ? `<img src="${esc(m.sig)}" class="sig-thumb" alt="Tandatangan" />` : '—'}</td>
+          <td class="time-cell">${fmtDate(m.time)}</td>
+          <td>
+            <button class="action-btn del" title="Padam" onclick="deleteMsg(${realIdx})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.deleteMsg = function(idx) {
+    if (!confirm('Padam mesej peribadi ini?')) return;
+    const arr = load(MSG_KEY);
+    arr.splice(idx, 1);
+    save(MSG_KEY, arr);
+    renderAll();
+  };
+
+  document.getElementById('msg-search').addEventListener('input', function() {
+    renderMessages(this.value);
+  });
+
+  /* ── Make renderWishes global for batal button ── */
+  window.renderWishes = function(filter, search) {
+    renderWishes(filter, search);
+  };
+
+  // Auto-refresh every 30 seconds when dashboard is open
+  setInterval(() => { if (sessionStorage.getItem(SESSION_KEY) === 'yes') renderAll(); }, 30000);
+
+})();
+</script>
+</body>
+</html>
