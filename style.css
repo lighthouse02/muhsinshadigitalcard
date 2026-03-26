@@ -660,37 +660,8 @@ img { display: block; max-width: 100%; }
   position: relative;
   max-width: 580px;
   margin: 0 auto;
-  background: linear-gradient(160deg, #fffef9 0%, #fef9ee 60%, #fdf5e4 100%);
-  border: 1.5px solid var(--gold-light);
-  border-radius: 4px;
-  padding: 3.5rem 2.25rem 3.25rem;
   text-align: center;
-  box-shadow:
-    0 12px 56px rgba(200,169,110,.2),
-    0 2px 10px rgba(200,169,110,.1),
-    inset 0 0 0 10px rgba(200,169,110,.045);
 }
-/* Elegant inner double-border frame */
-.salutation-card::before {
-  content: '';
-  position: absolute;
-  inset: 10px;
-  border: 1px solid rgba(200,169,110,.38);
-  border-radius: 2px;
-  pointer-events: none;
-}
-/* Corner bracket ornaments */
-.sal-corner {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  border-color: var(--gold);
-  border-style: solid;
-}
-.sal-tl { top: 7px;    left: 7px;   border-width: 2px 0 0 2px; }
-.sal-tr { top: 7px;    right: 7px;  border-width: 2px 2px 0 0; }
-.sal-bl { bottom: 7px; left: 7px;   border-width: 0 0 2px 2px; }
-.sal-br { bottom: 7px; right: 7px;  border-width: 0 2px 2px 0; }
 .sal-salam {
   font-family: var(--font-sans);
   font-size: .72rem;
@@ -780,7 +751,6 @@ img { display: block; max-width: 100%; }
   margin: .65rem 0;
 }
 @media (min-width: 640px) {
-  .salutation-card { padding: 4.5rem 4.5rem 4rem; }
 }
 
 /* Event details block inside salutation card */
