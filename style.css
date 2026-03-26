@@ -871,6 +871,167 @@ img { display: block; max-width: 100%; }
   transform: translateX(-50%) translateY(0);
 }
 
+/* ========== SHARE MODAL ========== */
+.share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.share-modal.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.share-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,12,4,.80);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  cursor: pointer;
+}
+.share-modal-box {
+  position: relative;
+  z-index: 1;
+  background: var(--ivory);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 400px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,.38);
+  transform: translateY(18px) scale(.95);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.share-modal.open .share-modal-box {
+  transform: translateY(0) scale(1);
+}
+.share-modal-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.share-modal-ttl {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text);
+  letter-spacing: .03em;
+}
+.share-modal-x {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(200,169,110,.4);
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .78rem;
+  flex-shrink: 0;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.share-modal-x:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* IG square card */
+/* Two-page PDF preview */
+.sig-pages-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.sig-page-label {
+  font-family: var(--font-sans);
+  font-size: .63rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  opacity: .55;
+}
+/* PDF page card — identical frame to original salutation-card */
+.pdf-page {
+  position: relative;
+  background: linear-gradient(160deg, #fffef9 0%, #fef9ee 60%, #fdf5e4 100%);
+  border: 1.5px solid var(--gold-light);
+  border-radius: 4px;
+  padding: 2.5rem 1.75rem 2rem;
+  text-align: center;
+  box-shadow:
+    0 12px 56px rgba(200,169,110,.2),
+    0 2px 10px rgba(200,169,110,.1),
+    inset 0 0 0 10px rgba(200,169,110,.045);
+}
+.pdf-page::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(200,169,110,.38);
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* corner bracket ornaments */
+.sig-c {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: var(--gold);
+  border-style: solid;
+  z-index: 2;
+}
+.sig-tl { top: 6px;    left: 6px;   border-width: 2px 0 0 2px; }
+.sig-tr { top: 6px;    right: 6px;  border-width: 2px 2px 0 0; }
+.sig-bl { bottom: 6px; left: 6px;   border-width: 0 0 2px 2px; }
+.sig-br { bottom: 6px; right: 6px;  border-width: 0 2px 2px 0; }
+/* Action shortcut buttons */
+.share-acts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .6rem;
+  margin-bottom: .65rem;
+}
+.share-act {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  padding: .8rem .4rem .7rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: .73rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  transition: transform .18s, box-shadow .18s, opacity .18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-act i { font-size: 1.35rem; }
+.share-act:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.14); }
+.share-act:active { transform: translateY(0); opacity: .82; }
+.share-act:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+.share-act-dl { background: var(--bg-alt); color: var(--text); border: 1.5px solid rgba(200,169,110,.3); }
+.share-act-wa { background: #25D366; color: #fff; }
+.share-act-tg { background: #0088cc; color: #fff; }
+.share-modal-hint {
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  color: var(--text-light);
+  text-align: center;
+  line-height: 1.55;
+  opacity: .75;
+}
+
 /* ---------- COUNTDOWN + SAVE THE DATE ---------- */
 #countdown-section {
   background: linear-gradient(135deg, var(--gold-dark) 0%, var(--mocha) 100%);

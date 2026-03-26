@@ -1116,13 +1116,19 @@
   }
 
   /* =============================================
-     SHARE INVITATION
+     SHARE INVITATION — Modal + IG Card
   ============================================= */
-  const shareBtn   = document.getElementById('share-btn');
-  const shareToast = document.getElementById('share-toast');
-  let toastTimer   = null;
+  const shareBtn        = document.getElementById('share-btn');
+  const shareModal      = document.getElementById('share-modal');
+  const shareModalClose = document.getElementById('share-modal-close');
+  const shareBackdrop   = document.getElementById('share-modal-backdrop');
+  const shareSaveBtn    = document.getElementById('share-save-btn');
+  const shareWaBtn      = document.getElementById('share-wa-btn');
+  const shareTgBtn      = document.getElementById('share-tg-btn');
+  const shareToast      = document.getElementById('share-toast');
+  let toastTimer = null;
 
-  const SHARE_URL     = window.location.href.split('#')[0];
+  const SHARE_URL = window.location.href.split('#')[0];
   const SHARE_CAPTION =
 `Assalamualaikum w.b.t.,
 
@@ -1150,72 +1156,151 @@ Wassalamualaikum w.b.t.`;
     toastTimer = setTimeout(() => shareToast.classList.remove('toast-visible'), 3200);
   }
 
-  if (shareBtn) {
-    shareBtn.addEventListener('click', async () => {
-      const card = document.querySelector('.salutation-card');
+  function openShareModal() {
+    if (!shareModal) return;
+    shareModal.classList.add('open');
+    shareModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
 
-      // --- Capture salutation card as PNG image ---
-      let imageFile = null;
-      if (typeof html2canvas !== 'undefined' && card) {
-        try {
-          // Temporarily hide the share row so it doesn't appear in the image
-          const shareRow = card.querySelector('.sal-share-row');
-          if (shareRow) shareRow.style.visibility = 'hidden';
+  function closeShareModal() {
+    if (!shareModal) return;
+    shareModal.classList.remove('open');
+    shareModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
 
-          const canvas = await html2canvas(card, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#fef9ee',
-            logging: false
-          });
+  if (shareBtn)        shareBtn.addEventListener('click', openShareModal);
+  if (shareModalClose) shareModalClose.addEventListener('click', closeShareModal);
+  if (shareBackdrop)   shareBackdrop.addEventListener('click', closeShareModal);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && shareModal && shareModal.classList.contains('open')) closeShareModal();
+  });
 
-          if (shareRow) shareRow.style.visibility = '';
+  async function renderPage(id) {
+    const el = document.getElementById(id);
+    if (typeof html2canvas === 'undefined' || !el) return null;
+    // Render directly — element is visible inside the open modal
+    const w = el.offsetWidth || 580;
+    const h = el.offsetHeight;
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#fef9ee',
+      logging: false,
+      width: w,
+      height: h,
+      scrollX: 0,
+      scrollY: 0
+    });
+    const dataUrl = canvas.toDataURL('image/png');
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    return { blob, dataUrl, w: canvas.width, h: canvas.height };
+  }
 
-          const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-          if (blob) {
-            imageFile = new File([blob], 'jemputan-muhsin-syaqiela.png', { type: 'image/png' });
-          }
-        } catch (e) {
-          // Restore visibility on error
-          const shareRow = card.querySelector('.sal-share-row');
-          if (shareRow) shareRow.style.visibility = '';
-        }
+  function triggerDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'jemputan-muhsin-syaqiela.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function buildPdfBlob() {
+    const p1 = await renderPage('share-pdf-p1');
+    const p2 = await renderPage('share-pdf-p2');
+    if (!p1 || !p2) return null;
+    if (typeof window.jspdf === 'undefined') return null;
+    const { jsPDF } = window.jspdf;
+    const mmW = 210;
+    const h1mm = (p1.h / p1.w) * mmW;
+    const h2mm = (p2.h / p2.w) * mmW;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [mmW, h1mm] });
+    pdf.addImage(p1.dataUrl, 'PNG', 0, 0, mmW, h1mm);
+    pdf.addPage([mmW, h2mm]);
+    pdf.addImage(p2.dataUrl, 'PNG', 0, 0, mmW, h2mm);
+    const blob = pdf.output('blob');
+    return blob;
+  }
+
+  async function buildAndSavePdf() {
+    const blob = await buildPdfBlob();
+    if (!blob) {
+      // jsPDF unavailable — fallback to two PNGs
+      const p1 = await renderPage('share-pdf-p1');
+      const p2 = await renderPage('share-pdf-p2');
+      if (p1) triggerDownload(p1.blob, 'jemputan-p1.png');
+      if (p2) triggerDownload(p2.blob, 'jemputan-p2.png');
+      return 'png';
+    }
+    triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
+    return 'pdf';
+  }
+
+  function setActLoading(btn, loading) {
+    if (!btn) return;
+    btn.disabled = loading;
+    const icon  = btn.querySelector('i');
+    const label = btn.querySelector('span');
+    if (loading) {
+      if (icon)  { icon.dataset.orig = icon.className; icon.className = 'fas fa-spinner fa-spin'; }
+      if (label) { label.dataset.orig = label.textContent; label.textContent = '…'; }
+    } else {
+      if (icon  && icon.dataset.orig)  { icon.className = icon.dataset.orig;  delete icon.dataset.orig; }
+      if (label && label.dataset.orig) { label.textContent = label.dataset.orig; delete label.dataset.orig; }
+    }
+  }
+
+  // Download / Save as PDF
+  if (shareSaveBtn) {
+    shareSaveBtn.addEventListener('click', async () => {
+      setActLoading(shareSaveBtn, true);
+      const result = await buildAndSavePdf();
+      setActLoading(shareSaveBtn, false);
+      if (!result) { showToast('⚠ Gagal menjana PDF.'); return; }
+      showToast(result === 'pdf' ? '✓ PDF disimpan!' : '✓ 2 imej disimpan!');
+    });
+  }
+
+  // WhatsApp shortcut
+  if (shareWaBtn) {
+    shareWaBtn.addEventListener('click', async () => {
+      setActLoading(shareWaBtn, true);
+      const blob = await buildPdfBlob();
+      setActLoading(shareWaBtn, false);
+      if (!blob) { showToast('⚠ Gagal menjana PDF.'); return; }
+      const file = new File([blob], 'jemputan-muhsin-syaqiela.pdf', { type: 'application/pdf' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ title: 'Jemputan Muhsin & Syaqiela', text: SHARE_CAPTION, files: [file] }); return; }
+        catch (err) { if (err.name === 'AbortError') return; }
       }
+      // Fallback: download PDF then open WhatsApp
+      triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
+      window.open(`https://wa.me/?text=${encodeURIComponent(SHARE_CAPTION)}`, '_blank', 'noopener');
+      showToast('✓ PDF disimpan. Lampirkan dalam WhatsApp.');
+    });
+  }
 
-      // --- 1. Native Web Share API with image (best on mobile) ---
-      if (navigator.share) {
-        const shareData = {
-          title: 'Muhsin & Syaqiela — Jemputan Kesyukuran Perkahwinan',
-          text:  SHARE_CAPTION
-        };
-        // Attach image if the browser supports file sharing
-        if (imageFile && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
-          shareData.files = [imageFile];
-        }
-        try {
-          await navigator.share(shareData);
-          return;
-        } catch (err) {
-          if (err.name === 'AbortError') return;
-        }
+  // Telegram shortcut
+  if (shareTgBtn) {
+    shareTgBtn.addEventListener('click', async () => {
+      setActLoading(shareTgBtn, true);
+      const blob = await buildPdfBlob();
+      setActLoading(shareTgBtn, false);
+      if (!blob) { showToast('⚠ Gagal menjana PDF.'); return; }
+      const file = new File([blob], 'jemputan-muhsin-syaqiela.pdf', { type: 'application/pdf' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ title: 'Jemputan Muhsin & Syaqiela', text: SHARE_CAPTION, files: [file] }); return; }
+        catch (err) { if (err.name === 'AbortError') return; }
       }
-
-      // --- 2. Clipboard fallback (desktop) ---
-      try {
-        // Try to copy image + text; image-only clipboard needs ClipboardItem API
-        if (imageFile && typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
-          const clipItem = new ClipboardItem({ 'image/png': imageFile });
-          await navigator.clipboard.write([clipItem]);
-          showToast('✓ Kad jemputan disalin ke clipboard!');
-        } else {
-          await navigator.clipboard.writeText(SHARE_CAPTION);
-          showToast('✓ Teks jemputan telah disalin!');
-        }
-      } catch {
-        // --- 3. Last resort ---
-        const msg = window.prompt('Salin teks jemputan di bawah:', SHARE_CAPTION);
-        if (msg !== null) showToast('✓ Terima kasih telah berkongsi!');
-      }
+      // Fallback: download PDF then open Telegram
+      triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(SHARE_CAPTION)}`, '_blank', 'noopener');
+      showToast('✓ PDF disimpan. Lampirkan dalam Telegram.');
     });
   }
 
