@@ -922,24 +922,28 @@
       }
 
       /* ─────────────────── API refresh ─────────────────── */
+      // Returns: true  = API reachable & has data (wallApiData set)
+      //          false = API reachable but empty  (wallApiData set to [])
+      //          null  = API unreachable / error  (wallApiData unchanged)
       async function refreshFromApi() {
         try {
           const res = await fetch('/.netlify/functions/wishes');
-          if (!res.ok) return false;
+          if (!res.ok) return null;
           const data = await res.json();
-          if (Array.isArray(data) && data.length) { wallApiData = data; return true; }
-          return false;
-        } catch { return false; }
+          if (!Array.isArray(data)) return null;
+          wallApiData = data;          // trust the API even when empty
+          return data.length > 0;     // true = has entries, false = empty
+        } catch { return null; }
       }
 
       /* ─────────────────── Init ─────────────────── */
       (async () => {
-        const hasApi = await refreshFromApi();
-        if (!hasApi) seedDemo();
+        const apiResult = await refreshFromApi();
+        if (apiResult === null) seedDemo(); // only seed when API is unreachable
         render(true);
         requestAnimationFrame(scrollLoop);
         // Poll Neon every 30 s for wishes submitted from other devices
-        setInterval(async () => { if (await refreshFromApi()) render(true); }, 30_000);
+        setInterval(async () => { const r = await refreshFromApi(); if (r !== null) render(false); }, 30_000);
         setInterval(render, 10_000);
       })();
     })();
