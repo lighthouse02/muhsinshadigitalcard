@@ -449,7 +449,7 @@
     <!-- ── Wishes Panel ── -->
     <div class="panel" id="panel-wishes">
       <div class="panel-header">
-        <span class="panel-title">Ucapan &amp; Doa</span>
+        <span class="panel-title">Doa Restu &amp; Ucapan</span>
         <div style="display:flex;gap:.5rem;align-items:center;">
           <span class="panel-count" id="wishes-count-label">0 ucapan</span>
           <button class="export-btn" id="export-wishes"><i class="fas fa-download"></i> Export CSV</button>
@@ -485,11 +485,11 @@
     <!-- ── Messages Panel ── -->
     <div class="panel" id="panel-messages">
       <div class="panel-header">
-        <span class="panel-title">Mesej Peribadi</span>
-        <span class="panel-count" id="msg-count-label">0 mesej</span>
+        <span class="panel-title">Perutusan Peribadi</span>
+        <span class="panel-count" id="msg-count-label">0 perutusan</span>
       </div>
       <div class="filter-row">
-        <input type="text" id="msg-search" placeholder="Cari nama atau isi mesej…" />
+        <input type="text" id="msg-search" placeholder="Cari nama atau isi perutusan…" />
       </div>
       <div class="table-wrap">
         <table>
@@ -677,8 +677,8 @@
         <div class="stat-sub">di papan doa</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-lock"></i> Mesej Peribadi</div>
-        <div class="stat-value">${cachedMsgs.length}</div>
+        <div class="stat-label"><i class="fas fa-lock"></i> Perutusan Peribadi</div>
+      <div class="stat-sub">${cachedMsgs.length}</div>
         <div class="stat-sub">untuk Muhsin</div>
       </div>
       <div class="stat-card">
@@ -844,10 +844,10 @@
       const q = msgSearch.toLowerCase();
       rows = rows.filter(m => (m.name||'').toLowerCase().includes(q) || (m.text||'').toLowerCase().includes(q));
     }
-    document.getElementById('msg-count-label').textContent = `${cachedMsgs.length} mesej`;
+    document.getElementById('msg-count-label').textContent = `${cachedMsgs.length} perutusan`;
     const tbody = document.getElementById('msg-tbody');
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-lock"></i>Tiada mesej peribadi lagi.</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-lock"></i>Tiada perutusan peribadi lagi.</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map((m, i) => {
@@ -868,7 +868,7 @@
   }
 
   window.deleteMsg = async function(id) {
-    if (!confirm('Padam mesej peribadi ini?')) return;
+    if (!confirm('Padam perutusan peribadi ini?')) return;
     if (String(id).startsWith('ls_')) {
       const idx = parseInt(id.replace('ls_', ''));
       const arr = loadLocal(MSG_KEY); arr.splice(idx, 1); saveLocal(MSG_KEY, arr);

@@ -541,7 +541,7 @@
     <div class="header-inner">
       <div class="header-eyebrow">Papan Ucapan &amp; Doa</div>
       <h1 class="header-title"><em>Muhsin</em> &amp; <em>Syaqiela</em></h1>
-      <p class="header-sub">Messages from the hearts of our beloved guests</p>
+      <p class="header-sub">Coretan ikhlas dari hati para tetamu yang dirahmati</p>
     </div>
     <div class="header-ornament right"></div>
   </header>
@@ -551,7 +551,7 @@
     <div id="mosaic" aria-live="polite" aria-label="Guest wishes"></div>
     <div id="empty">
       <div class="empty-icon"><i class="far fa-comment-dots"></i></div>
-      <p class="empty-msg">Wishes will appear here as guests send them&hellip;</p>
+      <p class="empty-msg">Doa restu dan ucapan akan terpamer di sini apabila para tetamu mengirimkannya&hellip;</p>
     </div>
   </div>
 
@@ -564,8 +564,8 @@
   </div>
 
   <!-- ── Leave a Wish FAB ── -->
-  <button class="wish-fab" id="wish-fab" aria-label="Leave a wish" aria-haspopup="dialog">
-    <i class="fas fa-feather-alt"></i> Leave a Wish
+  <button class="wish-fab" id="wish-fab" aria-label="Tinggalkan doa restu" aria-haspopup="dialog">
+    <i class="fas fa-feather-alt"></i> Titipkan Doa Restu
   </button>
 
   <!-- ── Backdrop ── -->
@@ -575,14 +575,14 @@
   <div class="wish-drawer" id="wish-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
     <div class="drawer-handle" aria-hidden="true"></div>
     <div class="drawer-header">
-      <span class="drawer-title" id="drawer-title">Your Message for Muhsin &amp; Syaqiela</span>
+      <span class="drawer-title" id="drawer-title">Perutusan Untuk Muhsin &amp; Syaqiela</span>
       <button class="drawer-close" id="drawer-close" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
 
     <!-- Type selector -->
     <div class="d-type-tabs" role="tablist" aria-label="Wish type">
       <button class="d-type-btn active" data-type="wish" role="tab" aria-selected="true">
-        <span>💬</span> Wish
+        <span>💬</span> Doa Restu
       </button>
       <button class="d-type-btn" data-type="doa" role="tab" aria-selected="false">
         <span>🤲</span> Doa
@@ -591,25 +591,25 @@
 
     <form id="wall-wish-form" novalidate>
       <div class="d-form-group">
-        <label for="w-name">Your Name *</label>
-        <input type="text" id="w-name" placeholder="Your name" maxlength="60" autocomplete="off" />
-        <div class="d-error" id="w-name-err">Please enter your name.</div>
+        <label for="w-name">Nama Tuan/Puan *</label>
+        <input type="text" id="w-name" placeholder="Nama anda" maxlength="60" autocomplete="off" />
+        <div class="d-error" id="w-name-err">Sila masukkan nama tuan/puan.</div>
       </div>
 
       <div class="d-form-group" id="w-wish-group">
-        <label for="w-text">Your Wish *</label>
-        <textarea id="w-text" rows="3" placeholder="Your wishes for Muhsin &amp; Syaqiela…" maxlength="400"></textarea>
-        <div class="d-error" id="w-text-err">Please write your wish.</div>
+        <label for="w-text">Doa Restu &amp; Ucapan *</label>
+        <textarea id="w-text" rows="3" placeholder="Doa restu dan ucapan untuk Muhsin &amp; Syaqiela…" maxlength="400"></textarea>
+        <div class="d-error" id="w-text-err">Sila coretkan doa restu tuan/puan.</div>
       </div>
 
       <div class="d-form-group" id="w-doa-group" hidden>
-        <label for="w-doa">Your Doa *</label>
-        <textarea id="w-doa" rows="3" placeholder="Your doa for the couple…" maxlength="400"></textarea>
-        <div class="d-error" id="w-doa-err">Please write your doa.</div>
+        <label for="w-doa">Doa *</label>
+        <textarea id="w-doa" rows="3" placeholder="Doa untuk pasangan pengantin…" maxlength="400"></textarea>
+        <div class="d-error" id="w-doa-err">Sila coretkan doa tuan/puan.</div>
       </div>
 
       <button type="submit" class="d-submit" id="w-submit">
-        <i class="fas fa-paper-plane"></i> Post to Wall
+        <i class="fas fa-paper-plane"></i> Papar di Papan Doa
       </button>
     </form>
   </div>
@@ -653,27 +653,27 @@
       }
 
       function relTime(ts) {
-        if (!ts) return 'Just now';
+        if (!ts) return 'Baru sahaja';
         const d = Math.floor((Date.now() - ts) / 1000);
-        if (d < 60)    return 'Just now';
-        if (d < 3600)  return Math.floor(d / 60) + ' min ago';
-        if (d < 86400) return Math.floor(d / 3600) + ' hr ago';
+        if (d < 60)    return 'Baru sahaja';
+        if (d < 3600)  return Math.floor(d / 60) + ' minit lalu';
+        if (d < 86400) return Math.floor(d / 3600) + ' jam lalu';
         return new Date(ts).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
       }
 
       /* ─────────────────── Card builder ─────────────────── */
       function buildCard(entry) {
         const initial = esc((entry.name || '?').charAt(0).toUpperCase());
-        const name    = esc(entry.name || 'Guest');
+        const name    = esc(entry.name || 'Tetamu');
         const time    = esc(relTime(entry.time));
 
         if (entry.type === 'photo') {
           return `<div class="wc wc-photo">
-            <img src="${esc(entry.photoDataUrl)}" alt="Photo by ${name}" />
+            <img src="${esc(entry.photoDataUrl)}" alt="Gambar oleh ${name}" />
             <div class="wc-meta">
               <div class="wc-avatar">${initial}</div>
               <span class="wc-name">${name}</span>
-              <span class="wc-badge wc-badge-photo"><i class="fas fa-camera"></i> Photo</span>
+              <span class="wc-badge wc-badge-photo"><i class="fas fa-camera"></i> Kenangan</span>
             </div>
             ${entry.caption ? `<p class="wc-caption">${esc(entry.caption)}</p>` : ''}
             <span class="wc-time">${time}</span>
@@ -849,17 +849,17 @@
         const nameRaw = document.getElementById('w-name').value;
         const name    = sanitize(nameRaw);
         clearErr('w-name-err');
-        if (!name) { showErr('w-name-err', 'Please enter your name.'); valid = false; }
+        if (!name) { showErr('w-name-err', 'Sila masukkan nama tuan/puan.'); valid = false; }
 
         let text = '';
         if (currentType === 'doa') {
           text = sanitize(document.getElementById('w-doa').value);
           clearErr('w-doa-err');
-          if (!text) { showErr('w-doa-err', 'Please write your doa.'); valid = false; }
+          if (!text) { showErr('w-doa-err', 'Sila coretkan doa tuan/puan.'); valid = false; }
         } else {
           text = sanitize(document.getElementById('w-text').value);
           clearErr('w-text-err');
-          if (!text) { showErr('w-text-err', 'Please write your wish.'); valid = false; }
+          if (!text) { showErr('w-text-err', 'Sila coretkan doa restu tuan/puan.'); valid = false; }
         }
 
         if (!valid) return;
@@ -887,7 +887,7 @@
 
         closeDrawer();
         render(true);
-        showToast('✓  Your message is on the wall!');
+        showToast('✓  Perutusan tuan/puan telah terpamer di papan doa!');
       });
 
       /* ─────────────────── Demo seed (only when wall is empty or has old placeholder) ─────────────────── */

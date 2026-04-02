@@ -474,10 +474,10 @@
     // Hide any previous success
     document.getElementById('msg-success').classList.add('hidden');
 
-    if (!name) { flashError('msg-name', 'Please enter your name'); return; }
-    if (!text) { flashError('msg-text', 'Please write a message'); return; }
+    if (!name) { flashError('msg-name', 'Sila masukkan nama tuan/puan'); return; }
+    if (!text) { flashError('msg-text', 'Sila coretkan perutusan'); return; }
     if (sigPad.isEmpty()) {
-      showInlineError('sig-error', 'Please add your signature before sending');
+      showInlineError('sig-error', 'Sila tandatangan sebelum menghantar');
       return;
     }
     clearInlineError('sig-error');
@@ -486,7 +486,7 @@
     const successEl = document.getElementById('msg-success');
     const msgBtn = msgForm.querySelector('.btn-primary');
     msgBtn.disabled = true;
-    msgBtn.textContent = 'Sending...';
+    msgBtn.textContent = 'Menghantar…';
 
     setTimeout(() => {
       // Persist private message to localStorage
@@ -507,7 +507,7 @@
       msgForm.reset();
       sigPad.clear();
       msgBtn.disabled = false;
-      msgBtn.textContent = 'Send Private Message';
+      msgBtn.textContent = 'Hantar Perutusan Peribadi';
     }, 1000);
   });
 
@@ -523,7 +523,7 @@
   let currentGbType   = 'wish';
 
   const GB_LABELS = {
-    wish: 'Post Wish', photo: 'Post Photo Memory',
+    wish: 'Hantar Doa Restu', photo: 'Hantar Kenangan Bergambar',
   };
 
   // ── Type tab switching ──
@@ -553,7 +553,7 @@
     const file = photoInput.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      alert('Photo must be under 5 MB. Please choose a smaller image.');
+      alert('Gambar mesti kurang daripada 5 MB. Sila pilih gambar yang lebih kecil.');
       photoInput.value = '';
       return;
     }
@@ -580,11 +580,11 @@
   function gbLoad() { try { return JSON.parse(localStorage.getItem(GB_KEY)) || []; } catch { return []; } }
   function gbSave(entries) { try { localStorage.setItem(GB_KEY, JSON.stringify(entries.slice(-GB_MAX))); } catch { /* quota */ } }
   function gbRelTime(ts) {
-    if (!ts) return 'Just now';
+    if (!ts) return 'Baru sahaja';
     const d = Math.floor((Date.now() - ts) / 1000);
-    if (d < 60)    return 'Just now';
-    if (d < 3600)  return `${Math.floor(d / 60)} min ago`;
-    if (d < 86400) return `${Math.floor(d / 3600)} hr ago`;
+    if (d < 60)    return 'Baru sahaja';
+    if (d < 3600)  return `${Math.floor(d / 60)} minit lalu`;
+    if (d < 86400) return `${Math.floor(d / 3600)} jam lalu`;
     return new Date(ts).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
   }
 
@@ -648,14 +648,14 @@
     e.preventDefault();
     const nameInput = document.getElementById('wish-name');
     const name = sanitize(nameInput.value.trim());
-    if (!name) { flashError('wish-name', 'Please enter your name'); return; }
+    if (!name) { flashError('wish-name', 'Sila masukkan nama tuan/puan'); return; }
 
     const entry = { type: currentGbType, name, time: Date.now() };
 
     if (currentGbType === 'wish') {
       const t = document.getElementById('wish-text');
       const text = sanitize(t.value.trim());
-      if (!text) { flashError('wish-text', 'Please enter your wish'); return; }
+      if (!text) { flashError('wish-text', 'Sila coretkan doa restu'); return; }
       entry.text = text; t.value = '';
 
     } else if (currentGbType === 'photo') {
@@ -819,7 +819,7 @@
 
   const SHARE_URL = window.location.href.split('#')[0];
   const SHARE_CAPTION =
-`Assalamualaikum w.b.t.,
+`Assalamualaikum warahmatullahi wabarakatuh,
 
 Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke Majlis Kesyukuran Perkahwinan anak lelaki kami:
 
@@ -951,7 +951,7 @@ Wassalamualaikum w.b.t.`;
       const result = await buildAndSavePdf();
       setActLoading(shareSaveBtn, false);
       if (!result) { showToast('⚠ Gagal menjana PDF.'); return; }
-      showToast(result === 'pdf' ? '✓ PDF disimpan!' : '✓ 2 imej disimpan!');
+      showToast(result === 'pdf' ? '✓ PDF telah disimpan!' : '✓ 2 imej telah disimpan!');
     });
   }
 
@@ -970,7 +970,7 @@ Wassalamualaikum w.b.t.`;
       // Fallback: download PDF then open WhatsApp
       triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
       window.open(`https://wa.me/?text=${encodeURIComponent(SHARE_CAPTION)}`, '_blank', 'noopener');
-      showToast('✓ PDF disimpan. Lampirkan dalam WhatsApp.');
+      showToast('✓ PDF telah disimpan. Sila lampirkan dalam WhatsApp.');
     });
   }
 
@@ -983,13 +983,13 @@ Wassalamualaikum w.b.t.`;
       if (!blob) { showToast('⚠ Gagal menjana PDF.'); return; }
       const file = new File([blob], 'jemputan-muhsin-syaqiela.pdf', { type: 'application/pdf' });
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ title: 'Jemputan Muhsin & Syaqiela', text: SHARE_CAPTION, files: [file] }); return; }
+        try { await navigator.share({ title: 'Warkah Jemputan Muhsin & Syaqiela', text: SHARE_CAPTION, files: [file] }); return; }
         catch (err) { if (err.name === 'AbortError') return; }
       }
       // Fallback: download PDF then open Telegram
       triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
       window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(SHARE_CAPTION)}`, '_blank', 'noopener');
-      showToast('✓ PDF disimpan. Lampirkan dalam Telegram.');
+      showToast('✓ PDF telah disimpan. Sila lampirkan dalam Telegram.');
     });
   }
 
