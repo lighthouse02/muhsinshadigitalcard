@@ -357,16 +357,21 @@
     item.addEventListener('click', () => openLightbox(i));
   });
 
-  document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
-  document.querySelector('.lightbox-prev').addEventListener('click', prevImage);
-  document.querySelector('.lightbox-next').addEventListener('click', nextImage);
+  const lightboxCloseBtn = document.querySelector('.lightbox-close');
+  const lightboxPrevBtn  = document.querySelector('.lightbox-prev');
+  const lightboxNextBtn  = document.querySelector('.lightbox-next');
+  if (lightboxCloseBtn) lightboxCloseBtn.addEventListener('click', closeLightbox);
+  if (lightboxPrevBtn)  lightboxPrevBtn.addEventListener('click', prevImage);
+  if (lightboxNextBtn)  lightboxNextBtn.addEventListener('click', nextImage);
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
-    if (lightbox.classList.contains('hidden')) return;
+    if (!lightbox || lightbox.classList.contains('hidden')) return;
     if (e.key === 'Escape')      closeLightbox();
     if (e.key === 'ArrowLeft')   prevImage();
     if (e.key === 'ArrowRight')  nextImage();
@@ -409,29 +414,29 @@
   }
   loadRsvpCounts();
 
-  function submitRsvp(attending) {
+  async function submitRsvp(attending) {
     const btn = attending === 'yes' ? rsvpYesBtn : rsvpNoBtn;
     rsvpYesBtn.disabled = true;
     rsvpNoBtn.disabled  = true;
     btn.textContent = 'Menghantar…';
 
-    fetch('/.netlify/functions/rsvp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attending })
-    }).catch(() => {});
+    try {
+      await fetch('/.netlify/functions/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attending })
+      });
+    } catch (_) {}
 
-    setTimeout(() => {
-      document.getElementById('rsvp-success').classList.remove('hidden');
-      document.getElementById('rsvp-success-msg').textContent = attending === 'yes'
-        ? 'Terima kasih! Kami menantikan kehadiran anda.'
-        : 'Terima kasih atas maklum balas anda.';
-      rsvpYesBtn.disabled = false;
-      rsvpNoBtn.disabled  = false;
-      rsvpYesBtn.innerHTML = '<i class="fas fa-heart"></i> Ya';
-      rsvpNoBtn.innerHTML  = '<i class="fas fa-times-circle"></i> Tidak';
-      loadRsvpCounts();
-    }, 800);
+    document.getElementById('rsvp-success').classList.remove('hidden');
+    document.getElementById('rsvp-success-msg').textContent = attending === 'yes'
+      ? 'Terima kasih! Kami menantikan kehadiran anda.'
+      : 'Terima kasih atas maklum balas anda.';
+    rsvpYesBtn.disabled = false;
+    rsvpNoBtn.disabled  = false;
+    rsvpYesBtn.innerHTML = '<i class="fas fa-heart"></i> Ya';
+    rsvpNoBtn.innerHTML  = '<i class="fas fa-times-circle"></i> Tidak';
+    loadRsvpCounts();
   }
 
   rsvpYesBtn.addEventListener('click', () => submitRsvp('yes'));

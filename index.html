@@ -46,6 +46,7 @@
       <h1 class="stinger-names">Muhsin <span>&amp;</span> Syaqiela</h1>
       <p class="stinger-date">30 &middot; 05 &middot; 2026</p>
       <p class="stinger-label">Walimatul Urus</p>
+      <p class="stinger-hashtag">#FoundTheQieToMuhsinsHeart</p>
     </div>
     <div class="stinger-curtain stinger-curtain-top"></div>
     <div class="stinger-curtain stinger-curtain-bottom"></div>
@@ -65,7 +66,12 @@
   </nav>
 
   <!-- ========== MUSIC PLAYER ========== -->
-  <div id="music-player" role="region" aria-label="Music mini player">
+  <div id="music-player" class="mp-minimized" role="region" aria-label="Music mini player">
+    <!-- Collapsed tab — always visible -->
+    <button class="mp-tab" id="mp-tab" aria-label="Togol pemain muzik" aria-expanded="false">
+      <i class="fas fa-music" id="mp-tab-icon"></i>
+    </button>
+    <div class="mp-content">
     <div class="mp-body">
       <!-- Album art placeholder -->
       <div class="mp-art" id="mp-art" aria-hidden="true">
@@ -94,6 +100,34 @@
     </div>
     <!-- Hidden YouTube player — audio only, visually invisible -->
     <div id="yt-player" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
+    </div><!-- /.mp-content -->
+  </div>
+
+  <!-- ========== FLOATING CONTACTS ========== -->
+  <div id="float-contacts" aria-label="Nombor hubungi">
+    <button class="fc-toggle" id="fc-toggle-btn" aria-expanded="false" aria-controls="fc-list" title="Nombor Hubungi">
+      <i class="fas fa-phone-alt"></i>
+    </button>
+    <ul class="fc-list" id="fc-list" role="list">
+      <li class="fc-item">
+        <a href="tel:+60196210677" class="fc-link">
+          <span class="fc-name">Hj Shukri</span>
+          <span class="fc-number">+60 19-621 0677</span>
+        </a>
+      </li>
+      <li class="fc-item" style="--fc-delay:.06s">
+        <a href="tel:+60173629686" class="fc-link">
+          <span class="fc-name">Hjh Nurciana</span>
+          <span class="fc-number">+60 17-362 9686</span>
+        </a>
+      </li>
+      <li class="fc-item" style="--fc-delay:.12s">
+        <a href="tel:+601114793439" class="fc-link">
+          <span class="fc-name">Kak Syifa&#x2019;</span>
+          <span class="fc-number">+60 11-1479 3439</span>
+        </a>
+      </li>
+    </ul>
   </div>
 
   <!-- ========== HERO ========== -->
@@ -566,6 +600,59 @@
         stinger.classList.add('stinger-done');
         document.body.classList.remove('stinger-active');
       }, 3900);
+    })();
+  </script>
+
+  <script>
+    // ===== FLOATING CONTACTS TOGGLE =====
+    (function () {
+      var btn  = document.getElementById('fc-toggle-btn');
+      var wrap = document.getElementById('float-contacts');
+      if (!btn || !wrap) return;
+
+      btn.addEventListener('click', function () {
+        var open = wrap.classList.toggle('fc-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) {
+          wrap.classList.remove('fc-open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    // ===== MUSIC PLAYER MINIMIZE/EXPAND =====
+    (function () {
+      var mp  = document.getElementById('music-player');
+      var tab = document.getElementById('mp-tab');
+      if (!mp || !tab) return;
+
+      tab.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var minimized = mp.classList.toggle('mp-minimized');
+        tab.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+      });
+
+      // Collapse when clicking outside the player
+      document.addEventListener('click', function (e) {
+        if (!mp.contains(e.target)) {
+          mp.classList.add('mp-minimized');
+          tab.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Keep mp-playing class in sync so the pulse dot shows
+      var observer = new MutationObserver(function () {
+        var art = document.getElementById('mp-art');
+        if (art) {
+          mp.classList.toggle('mp-playing', art.classList.contains('playing'));
+        }
+      });
+      var art = document.getElementById('mp-art');
+      if (art) observer.observe(art, { attributes: true, attributeFilter: ['class'] });
     })();
   </script>
 </body>
