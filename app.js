@@ -110,7 +110,8 @@
     ytPlayer = new YT.Player('yt-player', {
       videoId: '1-wpZS9AePY',
       playerVars: {
-        autoplay:        0,
+        autoplay:        1,
+        mute:            1,
         loop:            1,
         playlist:        '1-wpZS9AePY', // required for loop to work
         controls:        0,
@@ -124,6 +125,28 @@
       events: {
         onReady: function (event) {
           ytReady = true;
+          // Start playing muted (browsers allow muted autoplay)
+          event.target.playVideo();
+          musicOn = true;
+          startProgress();
+          if (musicIcon) musicIcon.className = 'fas fa-pause';
+          const mpArt = document.getElementById('mp-art');
+          if (mpArt) mpArt.classList.add('playing');
+          musicBtn.setAttribute('aria-label', 'Pause background music');
+
+          // Unmute on first user gesture anywhere on the page
+          const unmuteOnInteraction = function () {
+            if (ytReady && ytPlayer.isMuted && ytPlayer.isMuted()) {
+              ytPlayer.unMute();
+            }
+            document.removeEventListener('click',   unmuteOnInteraction);
+            document.removeEventListener('touchend', unmuteOnInteraction);
+            document.removeEventListener('keydown',  unmuteOnInteraction);
+          };
+          document.addEventListener('click',    unmuteOnInteraction, { once: true });
+          document.addEventListener('touchend', unmuteOnInteraction, { once: true });
+          document.addEventListener('keydown',  unmuteOnInteraction, { once: true });
+
           try {
             const data  = event.target.getVideoData();
             const title = data && data.title;
