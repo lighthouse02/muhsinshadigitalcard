@@ -39,8 +39,21 @@ exports.handler = async (event) => {
       return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
     }
 
-    // ── GET: list all RSVPs (admin only) ────────────────────────
+    // ── GET: public counts (?counts=1) or full list (admin only) ─
     if (event.httpMethod === 'GET') {
+      // Public: return only aggregate counts
+      if ((event.queryStringParameters || {}).counts === '1') {
+        const rows = await sql`
+          SELECT attending, COUNT(*) AS total FROM rsvp GROUP BY attending
+        `;
+        let hadir = 0, takHadir = 0;
+        rows.forEach(r => {
+          if (r.attending === 'yes') hadir = parseInt(r.total);
+          else takHadir = parseInt(r.total);
+        });
+        return { statusCode: 200, headers: CORS, body: JSON.stringify({ hadir, takHadir }) };
+      }
+
       if ((event.headers['x-admin-key'] || '') !== ADMIN_SECRET) {
         return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized' }) };
       }

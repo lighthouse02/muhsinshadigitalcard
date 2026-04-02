@@ -368,6 +368,19 @@
   const guestsGroup      = document.getElementById('guests-group');
   const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
 
+  // ── RSVP counts ──
+  function loadRsvpCounts() {
+    fetch('/.netlify/functions/rsvp?counts=1')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        document.getElementById('rsvp-count-hadir').textContent    = data.hadir;
+        document.getElementById('rsvp-count-takhadir').textContent = data.takHadir;
+      })
+      .catch(() => {});
+  }
+  loadRsvpCounts();
+
   attendanceRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       const attending = radio.value === 'yes';
@@ -430,6 +443,7 @@
       guestsGroup.style.display  = 'none';
       rsvpBtn.disabled = false;
       rsvpBtn.textContent = 'Send RSVP';
+      loadRsvpCounts();
     }, 1000);
   });
 

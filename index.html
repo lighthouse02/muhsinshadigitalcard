@@ -408,6 +408,22 @@
         <div id="rsvp-panel" class="engage-panel active" role="tabpanel">
           <div class="panel-card">
             <p class="panel-card-hint">Kindly respond by <strong>15 May 2026</strong></p>
+
+            <!-- RSVP counts -->
+            <div class="rsvp-counts" id="rsvp-counts" aria-live="polite">
+              <div class="rsvp-count-item rsvp-count-hadir">
+                <i class="fas fa-heart"></i>
+                <span class="rsvp-count-num" id="rsvp-count-hadir">—</span>
+                <span class="rsvp-count-label">Hadir</span>
+              </div>
+              <div class="rsvp-count-divider"></div>
+              <div class="rsvp-count-item rsvp-count-takhadir">
+                <i class="fas fa-times-circle"></i>
+                <span class="rsvp-count-num" id="rsvp-count-takhadir">—</span>
+                <span class="rsvp-count-label">Tak Hadir</span>
+              </div>
+            </div>
+
             <form id="rsvp-form" novalidate>
 
               <!-- Attendance — card-style radio -->

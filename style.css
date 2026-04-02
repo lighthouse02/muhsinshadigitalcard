@@ -1565,9 +1565,53 @@ img { display: block; max-width: 100%; }
   font-size: .97rem;
   color: var(--text-light);
   text-align: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--bg-alt);
+}
+
+/* ── RSVP attendance counts ── */
+.rsvp-counts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--bg-alt);
+}
+.rsvp-count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  flex: 1;
+}
+.rsvp-count-item i {
+  font-size: 1.1rem;
+}
+.rsvp-count-hadir i    { color: var(--gold); }
+.rsvp-count-takhadir i { color: #b0b0b0; }
+.rsvp-count-num {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--mocha);
+}
+.rsvp-count-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+.rsvp-count-divider {
+  width: 1px;
+  height: 3rem;
+  background: var(--bg-alt);
+  flex-shrink: 0;
+  margin: 0 1rem;
 }
 
 /* ── Attendance card-style radio ── */
