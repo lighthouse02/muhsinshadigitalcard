@@ -134,18 +134,24 @@
           if (mpArt) mpArt.classList.add('playing');
           musicBtn.setAttribute('aria-label', 'Pause background music');
 
-          // Unmute on first user gesture anywhere on the page
-          const unmuteOnInteraction = function () {
-            if (ytReady && ytPlayer.isMuted && ytPlayer.isMuted()) {
+          // Unmute on first user gesture anywhere on the page.
+          // capture:true fires BEFORE button click handlers, so unmute
+          // happens regardless of which element the user interacts with first.
+          let unmuted = false;
+          function unmuteOnInteraction() {
+            if (unmuted) return;
+            unmuted = true;
+            if (ytReady) {
               ytPlayer.unMute();
+              ytPlayer.setVolume(100);
             }
-            document.removeEventListener('click',   unmuteOnInteraction);
-            document.removeEventListener('touchend', unmuteOnInteraction);
-            document.removeEventListener('keydown',  unmuteOnInteraction);
-          };
-          document.addEventListener('click',    unmuteOnInteraction, { once: true });
-          document.addEventListener('touchend', unmuteOnInteraction, { once: true });
-          document.addEventListener('keydown',  unmuteOnInteraction, { once: true });
+            document.removeEventListener('click',    unmuteOnInteraction, true);
+            document.removeEventListener('touchend', unmuteOnInteraction, true);
+            document.removeEventListener('keydown',  unmuteOnInteraction, true);
+          }
+          document.addEventListener('click',    unmuteOnInteraction, { capture: true });
+          document.addEventListener('touchend', unmuteOnInteraction, { capture: true });
+          document.addEventListener('keydown',  unmuteOnInteraction, { capture: true });
 
           try {
             const data  = event.target.getVideoData();
@@ -201,7 +207,7 @@
       if (mpArt) mpArt.classList.remove('playing');
       musicBtn.setAttribute('aria-label', 'Play background music');
     } else {
-      if (ytReady) ytPlayer.playVideo();
+      if (ytReady) { ytPlayer.unMute(); ytPlayer.setVolume(100); ytPlayer.playVideo(); }
       startProgress();
       if (musicIcon) musicIcon.className = 'fas fa-pause';
       if (mpArt) mpArt.classList.add('playing');
