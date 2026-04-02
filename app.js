@@ -391,11 +391,10 @@
   });
 
   /* =============================================
-     7. RSVP FORM
+     7. RSVP BUTTONS (Ya / Tidak)
   ============================================= */
-  const rsvpForm         = document.getElementById('rsvp-form');
-  const guestsGroup      = document.getElementById('guests-group');
-  const attendanceRadios = rsvpForm.querySelectorAll('input[name="attendance"]');
+  const rsvpYesBtn = document.getElementById('rsvp-yes');
+  const rsvpNoBtn  = document.getElementById('rsvp-no');
 
   // ── RSVP counts ──
   function loadRsvpCounts() {
@@ -410,386 +409,33 @@
   }
   loadRsvpCounts();
 
-  attendanceRadios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      const attending = radio.value === 'yes';
-      guestsGroup.style.display  = attending ? '' : 'none';
-      clearInlineError('attendance-error');
-    });
-  });
+  function submitRsvp(attending) {
+    const btn = attending === 'yes' ? rsvpYesBtn : rsvpNoBtn;
+    rsvpYesBtn.disabled = true;
+    rsvpNoBtn.disabled  = true;
+    btn.textContent = 'Menghantar…';
 
-  function isValidMalaysianPhone(p) {
-    return /^(\+?60|0)[1-9]\d{7,9}$/.test(p.replace(/[\s\-]/g, ''));
-  }
-
-  rsvpForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    document.getElementById('rsvp-success').classList.add('hidden');
-
-    const attendance   = rsvpForm.querySelector('input[name="attendance"]:checked');
-    const salutation   = (document.getElementById('rsvp-salutation').value || '').trim();
-    const rawName      = document.getElementById('rsvp-name').value.trim();
-    const name         = salutation ? `${salutation} ${rawName}` : rawName;
-    const phone        = document.getElementById('rsvp-phone').value.trim();
-
-    if (!attendance)                   { showInlineError('attendance-error', 'Please select your attendance'); return; }
-    clearInlineError('attendance-error');
-    if (!name)                         { flashError('rsvp-name',  'Please enter your name'); return; }
-    if (!isValidMalaysianPhone(phone)) { flashError('rsvp-phone', 'Please enter a valid phone number'); return; }
-
-    const rsvpBtn    = rsvpForm.querySelector('.btn-primary');
-    const attendingVal = attendance.value;
-    rsvpBtn.disabled = true;
-    rsvpBtn.textContent = 'Sending…';
+    fetch('/.netlify/functions/rsvp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ attending })
+    }).catch(() => {});
 
     setTimeout(() => {
-      // Persist RSVP to localStorage
-      const RSVP_KEY = 'muhsin_syaqiela_rsvp';
-      const rsvpList = (() => { try { return JSON.parse(localStorage.getItem(RSVP_KEY)) || []; } catch { return []; } })();
-      const guests = parseInt(document.getElementById('rsvp-guests')?.value || '1', 10);
-      rsvpList.push({ name, phone, attending: attendingVal, guests: attendingVal === 'yes' ? guests : 0, time: Date.now() });
-      try { localStorage.setItem(RSVP_KEY, JSON.stringify(rsvpList)); } catch { /* quota */ }
-
-      // Sync to Neon (fire-and-forget — localStorage is the local fallback)
-      fetch('/.netlify/functions/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, attending: attendingVal, guests: attendingVal === 'yes' ? guests : 0 })
-      }).catch(() => {});
-
       document.getElementById('rsvp-success').classList.remove('hidden');
-      document.getElementById('rsvp-success-msg').textContent = attendingVal === 'yes'
-        ? 'Thank you! We look forward to celebrating with you.'
-        : 'We understand and appreciate you letting us know.';
-      const cardSection = document.getElementById('rsvp-card-section');
-      if (attendingVal === 'yes') {
-        cardSection.classList.remove('hidden');
-        document.fonts.ready.then(() => drawAttendanceCard(name));
-      } else {
-        cardSection.classList.add('hidden');
-      }
-      rsvpForm.reset();
-      guestsGroup.style.display  = 'none';
-      rsvpBtn.disabled = false;
-      rsvpBtn.textContent = 'Send RSVP';
+      document.getElementById('rsvp-success-msg').textContent = attending === 'yes'
+        ? 'Terima kasih! Kami menantikan kehadiran anda.'
+        : 'Terima kasih atas maklum balas anda.';
+      rsvpYesBtn.disabled = false;
+      rsvpNoBtn.disabled  = false;
+      rsvpYesBtn.innerHTML = '<i class="fas fa-heart"></i> Ya';
+      rsvpNoBtn.innerHTML  = '<i class="fas fa-times-circle"></i> Tidak';
       loadRsvpCounts();
-    }, 1000);
-  });
-
-  // Attendance card — download
-  document.getElementById('rsvp-card-dl').addEventListener('click', () => {
-    const canvas = document.getElementById('rsvp-card-canvas');
-    const link   = document.createElement('a');
-    link.download = 'muhsin-syaqiela-attendance.png';
-    link.href    = canvas.toDataURL('image/png');
-    link.click();
-  });
-
-  function drawAttendanceCard(guestName) {
-    const canvas = document.getElementById('rsvp-card-canvas');
-    if (!canvas) return;
-
-    const HERO_IMG_URL = 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&fm=webp&q=80';
-    const heroImg = new Image();
-    heroImg.crossOrigin = 'anonymous';
-    heroImg.onload  = () => _renderCard(heroImg, guestName);
-    heroImg.onerror = () => _renderCard(null, guestName);   // fallback: dark fill
-    heroImg.src = HERO_IMG_URL;
+    }, 800);
   }
 
-  function _renderCard(heroImg, guestName) {
-    const canvas = document.getElementById('rsvp-card-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = 800, H = 580;
-    canvas.width  = W;
-    canvas.height = H;
-
-    const gold     = '#C8A96E';
-    const ink      = '#2a2018';
-    const muted    = '#6b5c48';
-    const cream    = '#fdf8ef';
-    const heroBg   = '#1e1510';
-    const HERO_H   = 185;
-
-    /* ── tiny helpers ─────────────────────────── */
-    function diamond(x, y, s) {
-      ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI / 4);
-      ctx.fillStyle = gold; ctx.fillRect(-s, -s, s * 2, s * 2);
-      ctx.restore();
-    }
-    function hline(x1, x2, y) {
-      ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
-    }
-
-    /* ══════════════════════════════════════════
-       ZONE 1 — HERO BAND  (Y 0 – 185)
-       Hero photo + layered dark + gold overlay
-    ════════════════════════════════════════════ */
-    // clip to hero band so photo doesn't bleed below
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, W, HERO_H);
-    ctx.clip();
-
-    if (heroImg) {
-      // cover-fit the image into the hero band
-      const iW = heroImg.naturalWidth  || heroImg.width;
-      const iH = heroImg.naturalHeight || heroImg.height;
-      const scale = Math.max(W / iW, HERO_H / iH);
-      const dw = iW * scale, dh = iH * scale;
-      const dx = (W - dw) / 2, dy = (HERO_H - dh) / 2;
-      ctx.drawImage(heroImg, dx, dy, dw, dh);
-    } else {
-      ctx.fillStyle = heroBg;
-      ctx.fillRect(0, 0, W, HERO_H);
-    }
-
-    // dark layered overlay — same feel as .hero-overlay on the site
-    const ov1 = ctx.createLinearGradient(0, 0, 0, HERO_H);
-    ov1.addColorStop(0,   'rgba(20,14,8,.72)');
-    ov1.addColorStop(0.5, 'rgba(20,14,8,.55)');
-    ov1.addColorStop(1,   'rgba(20,14,8,.78)');
-    ctx.fillStyle = ov1; ctx.fillRect(0, 0, W, HERO_H);
-
-    // subtle gold edge vignette
-    const hg = ctx.createLinearGradient(0, 0, W, HERO_H);
-    hg.addColorStop(0,   'rgba(200,169,110,.18)');
-    hg.addColorStop(0.5, 'rgba(200,169,110,0)');
-    hg.addColorStop(1,   'rgba(200,169,110,.18)');
-    ctx.fillStyle = hg; ctx.fillRect(0, 0, W, HERO_H);
-
-    ctx.restore(); // end hero clip
-
-    // "WEDDING INVITATION"
-    ctx.fillStyle = gold; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('W E D D I N G   I N V I T A T I O N', W/2, 55);
-
-    // Bismillah
-    ctx.fillStyle = 'rgba(232,212,168,.72)';
-    ctx.font = '14px serif';
-    ctx.fillText('\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650', W/2, 77);
-
-    // BIG couple names
-    ctx.fillStyle = '#f8edd8';
-    ctx.font = 'italic bold 66px "Playfair Display", Georgia, serif';
-    ctx.fillText('Muhsin & Syaqiela', W/2, 148);
-
-    // subtitle
-    ctx.fillStyle = 'rgba(200,169,110,.82)';
-    ctx.font = '300 10.5px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('T O G E T H E R   W I T H   T H E I R   F A M I L I E S', W/2, 171);
-
-    // hero bottom rule
-    ctx.strokeStyle = gold; ctx.lineWidth = 1.5;
-    hline(0, W, 185);
-
-    /* ══════════════════════════════════════════
-       ZONE 2 — CONFIRMED SECTION  (Y 185 – 375)
-       Cream, guest name, blessing
-    ════════════════════════════════════════════ */
-    ctx.fillStyle = cream;
-    ctx.fillRect(0, 185, W, 190);
-    const mg = ctx.createLinearGradient(0, 185, 0, 375);
-    mg.addColorStop(0, 'rgba(200,169,110,.07)'); mg.addColorStop(1, 'rgba(200,169,110,0)');
-    ctx.fillStyle = mg; ctx.fillRect(0, 185, W, 190);
-
-    // "CONFIRMED ATTENDANCE" label
-    ctx.fillStyle = muted;
-    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText('C O N F I R M E D   A T T E N D A N C E', W/2, 241);
-
-    // guest name — auto-shrink so it stays left of the stamp
-    const maxNameW = W - 260;
-    let fs = 44;
-    ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
-    while (ctx.measureText(guestName).width > maxNameW && fs > 16) {
-      fs -= 2;
-      ctx.font = `600 ${fs}px "Playfair Display", Georgia, serif`;
-    }
-    ctx.fillStyle = ink;
-    ctx.textAlign = 'center';
-    ctx.fillText(guestName, W/2 - 30, 308);
-
-    // gold underline
-    const nw = ctx.measureText(guestName).width;
-    ctx.strokeStyle = gold; ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(W/2 - 30 - nw/2, 318); ctx.lineTo(W/2 - 30 + nw/2, 318);
-    ctx.stroke();
-
-    // blessing
-    ctx.fillStyle = muted;
-    ctx.font = 'italic 14px "EB Garamond", Georgia, serif';
-    ctx.fillText('We are deeply honoured by your presence.', W/2, 353);
-
-    /* ══════════════════════════════════════════
-       ZONE 3 — EVENT DETAILS BAND  (Y 375 – 488)
-       Three columns: Date | Time | Location
-    ════════════════════════════════════════════ */
-    ctx.fillStyle = '#f2e6d4';
-    ctx.fillRect(0, 375, W, 113);
-    ctx.strokeStyle = gold; ctx.lineWidth = 1;
-    hline(0, W, 375); hline(0, W, 488);
-
-    // column dividers
-    ctx.strokeStyle = 'rgba(200,169,110,.30)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(W/3, 388); ctx.lineTo(W/3, 480); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(2*W/3, 388); ctx.lineTo(2*W/3, 480); ctx.stroke();
-
-    const details = [
-      { x: W/6,      label: 'DATE',     v1: 'Saturday, 30 May 2026', v2: '' },
-      { x: W/2,      label: 'TIME',     v1: '11:00 AM – 4:00 PM',      v2: 'Jamuan · Walimah' },
-      { x: 5*W/6,    label: 'LOCATION', v1: 'Masjid Bandar Baru',     v2: 'Senawang, N. Sembilan' },
-    ];
-    details.forEach(d => {
-      ctx.textAlign = 'center';
-      ctx.fillStyle = gold;
-      ctx.font = '600 9.5px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-      ctx.fillText(d.label, d.x, 402);
-      ctx.fillStyle = ink;
-      ctx.font = '600 14.5px "Playfair Display", Georgia, serif';
-      ctx.fillText(d.v1, d.x, 430);
-      if (d.v2) {
-        ctx.fillStyle = muted;
-        ctx.font = '400 12.5px "EB Garamond", Georgia, serif';
-        ctx.fillText(d.v2, d.x, 452);
-      }
-    });
-
-    /* ══════════════════════════════════════════
-       ZONE 4 — FOOTER  (Y 488 – 580)
-    ════════════════════════════════════════════ */
-    ctx.fillStyle = cream;
-    ctx.fillRect(0, 488, W, 92);
-
-    ctx.fillStyle = 'rgba(200,169,110,.45)';
-    ctx.font = '400 10px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    ctx.textAlign = 'center';
-
-    /* ══════════════════════════════════════════
-       BORDERS — drawn over everything
-    ════════════════════════════════════════════ */
-    ctx.strokeStyle = gold; ctx.lineWidth = 2.5;
-    ctx.strokeRect(10, 10, W - 20, H - 20);
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(20, 20, W - 40, H - 40);
-    [[28, 28], [W-28, 28], [28, H-28], [W-28, H-28]].forEach(([cx, cy]) => {
-      ctx.beginPath(); ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = gold; ctx.fill();
-    });
-
-    /* ══════════════════════════════════════════
-       CONFIRMED STAMP — top-right of cream zone
-       Green seal, rotated -18°
-    ════════════════════════════════════════════ */
-    const sGreen      = 'rgba(34,139,68,.90)';
-    const sGreenDark  = 'rgba(24,100,50,.95)';
-    const sGreenFill  = 'rgba(34,139,68,.10)';
-    const sGreenMid   = 'rgba(34,139,68,.55)';
-    const sx = W - 82, sy = 275, oR = 60, iR = 48, tR = 38;
-
-    ctx.save();
-    ctx.translate(sx, sy);
-    ctx.rotate(-18 * Math.PI / 180);
-
-    // soft filled background
-    ctx.beginPath(); ctx.arc(0, 0, oR, 0, Math.PI * 2);
-    ctx.fillStyle = sGreenFill; ctx.fill();
-
-    // outer ring — thick
-    ctx.strokeStyle = sGreen; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(0, 0, oR, 0, Math.PI * 2); ctx.stroke();
-
-    // inner ring — thin
-    ctx.strokeStyle = sGreenMid; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(0, 0, iR, 0, Math.PI * 2); ctx.stroke();
-
-    // small tick dashes on inner ring (12 positions like a clock)
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * Math.PI * 2;
-      const r1 = iR - 2, r2 = iR + 3;
-      ctx.strokeStyle = sGreenMid; ctx.lineWidth = i % 3 === 0 ? 1.4 : 0.7;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(a) * r1, Math.sin(a) * r1);
-      ctx.lineTo(Math.cos(a) * r2, Math.sin(a) * r2);
-      ctx.stroke();
-    }
-
-    // arc text "CONFIRMED" — top half, letters upright along upper arc
-    ctx.fillStyle = sGreenDark;
-    ctx.font = 'bold 11px "DM Sans", "Helvetica Neue", Arial, sans-serif';
-    const cText = 'CONFIRMED';
-    const cAngle = Math.PI * 0.68, cStart = -Math.PI/2 - cAngle/2, cStep = cAngle / (cText.length - 1);
-    for (let i = 0; i < cText.length; i++) {
-      const a = cStart + i * cStep;
-      ctx.save();
-      ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
-      ctx.rotate(a + Math.PI / 2);  // upright: tangent points outward
-      ctx.fillText(cText[i], -3.5, 4);
-      ctx.restore();
-    }
-
-    // star separator dots between CONFIRMED and ATTENDANCE
-    const starAngles = [-Math.PI/2 - 0.08, Math.PI/2 + 0.08]; // just past each word end
-    starAngles.forEach(a => {
-      ctx.fillStyle = sGreen;
-      ctx.beginPath(); ctx.arc(Math.cos(a) * tR, Math.sin(a) * tR, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    // arc text "ATTENDANCE" — bottom half, letters upright along lower arc
-    // For bottom arc: letters must be rotated so baseline faces inward (flip by π)
-    const aText = 'ATTENDANCE';
-    const aAngle = Math.PI * 0.78;
-    // start angle at bottom-left, sweep clockwise to bottom-right
-    const aStart = Math.PI/2 + aAngle/2;   // start right-side (index 0 = leftmost letter)
-    const aStep  = -aAngle / (aText.length - 1);  // sweep counter-clockwise so text reads left→right along bottom
-    for (let i = 0; i < aText.length; i++) {
-      const a = aStart + i * aStep;
-      ctx.save();
-      ctx.translate(Math.cos(a) * tR, Math.sin(a) * tR);
-      ctx.rotate(a - Math.PI / 2);  // flip so letters face outward on bottom
-      ctx.fillText(aText[i], -3.5, 4);
-      ctx.restore();
-    }
-
-    // centre checkmark ✓
-    ctx.strokeStyle = sGreen; ctx.lineWidth = 3.5;
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(-11, 1);
-    ctx.lineTo(-3,  9);
-    ctx.lineTo(12, -8);
-    ctx.stroke();
-    ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
-
-    ctx.restore(); // end stamp transform
-  }
-
-  /* =============================================
-     DEV PREVIEW — Ctrl+Shift+K
-     Shows the attendance card with sample data
-     without filling the RSVP form.
-  ============================================= */
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.shiftKey && e.key === 'K') {
-      e.preventDefault();
-      const successEl = document.getElementById('rsvp-success');
-      const cardSection = document.getElementById('rsvp-card-section');
-      const msgEl = document.getElementById('rsvp-success-msg');
-      // Scroll to RSVP section
-      document.getElementById('rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Show success block with card
-      successEl.classList.remove('hidden');
-      cardSection.classList.remove('hidden');
-      if (msgEl) msgEl.textContent = '[DEV PREVIEW] Thank you! We look forward to celebrating with you.';
-      document.fonts.ready.then(() => drawAttendanceCard('Dr. Ahmad Muadz bin Idris'));
-      // Subtle console hint
-      console.info('%c[DEV] Attendance card preview — Ctrl+Shift+K', 'color:#C8A96E;font-weight:600');
-    }
-  });
+  rsvpYesBtn.addEventListener('click', () => submitRsvp('yes'));
+  rsvpNoBtn.addEventListener('click',  () => submitRsvp('no'));
 
   /* =============================================
      7. SIGNATURE PAD + PRIVATE MESSAGE

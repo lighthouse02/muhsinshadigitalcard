@@ -23,18 +23,11 @@ exports.handler = async (event) => {
     // ── POST: submit RSVP (public) ──────────────────────────────
     if (event.httpMethod === 'POST') {
       const body     = JSON.parse(event.body || '{}');
-      const name     = sanitize(body.name, 100);
-      const phone    = sanitize(body.phone, 30);
       const attending = body.attending === 'yes' ? 'yes' : 'no';
-      const guests    = Math.min(20, Math.max(0, parseInt(body.guests) || 0));
-
-      if (!name || !phone) {
-        return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Missing name or phone' }) };
-      }
 
       await sql`
         INSERT INTO rsvp (name, phone, attending, guests)
-        VALUES (${name}, ${phone}, ${attending}, ${guests})
+        VALUES (${'Anonymous'}, ${''}, ${attending}, ${0})
       `;
       return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
     }
