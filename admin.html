@@ -349,6 +349,79 @@
     }
     .export-btn:hover { background: var(--gold); color: var(--white); }
 
+    /* ── RSVP Tally ── */
+    .rsvp-tally-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .rsvp-tally-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .rsvp-tally-card.green { border-left-color: var(--green); }
+    .rsvp-tally-card.red   { border-left-color: var(--red); }
+    .rsvp-tally-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+    .rsvp-tally-card.green .rsvp-tally-icon { color: var(--green); }
+    .rsvp-tally-card.red   .rsvp-tally-icon { color: var(--red); }
+    .rsvp-tally-num   { font-size: 3.2rem; font-weight: 700; line-height: 1; color: var(--ink); }
+    .rsvp-tally-lbl   { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-top: .4rem; }
+    .rsvp-tally-sub   { font-size: .78rem; color: var(--muted); margin-top: .2rem; min-height: 1em; }
+
+    /* ── RSVP Grid ── */
+    .rsvp-grid-wrap {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem 1.2rem;
+      box-shadow: var(--shadow);
+    }
+    .rsvp-grid-header {
+      display: flex;
+      align-items: baseline;
+      gap: .75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .rsvp-grid-title    { font-size: .9rem; font-weight: 600; color: var(--ink); }
+    .rsvp-grid-subtitle { font-size: .75rem; color: var(--muted); }
+    .rsvp-grid { display: flex; flex-wrap: wrap; gap: 3px; }
+    .rsvp-cell {
+      width: 14px; height: 14px;
+      border-radius: 2px;
+      background: #ebedf0;
+      cursor: default;
+      transition: opacity .15s;
+    }
+    .rsvp-cell:hover { opacity: .7; }
+    .rsvp-cell.h1 { background: #c6e48b; }
+    .rsvp-cell.h2 { background: #7bc96f; }
+    .rsvp-cell.h3 { background: #40c463; }
+    .rsvp-cell.h4 { background: #216e39; }
+    .rsvp-cell.tidak { background: #f4a0a0; }
+    .rsvp-legend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 1rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .rsvp-legend-sep { width: 10px; }
+    .rsvp-legend-lbl { font-size: .72rem; color: var(--muted); }
+    .rsvp-legend-cell {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border-radius: 2px;
+    }
+
     @media (max-width: 600px) {
       td, th { padding: .6rem .65rem; }
       .stat-value { font-size: 1.6rem; }
@@ -412,37 +485,47 @@
     <!-- ── RSVP Panel ── -->
     <div class="panel active" id="panel-rsvp">
       <div class="panel-header">
-        <span class="panel-title">Senarai RSVP</span>
-        <div style="display:flex;gap:.5rem;align-items:center;">
-          <span class="panel-count" id="rsvp-count-label">0 respons</span>
-          <button class="export-btn" id="export-rsvp"><i class="fas fa-download"></i> Export CSV</button>
+        <span class="panel-title">Tally Kehadiran</span>
+        <span class="panel-count" id="rsvp-count-label">0 respons</span>
+      </div>
+
+      <!-- Tally cards -->
+      <div class="rsvp-tally-row">
+        <div class="rsvp-tally-card green">
+          <div class="rsvp-tally-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="rsvp-tally-num" id="tally-hadir">0</div>
+          <div class="rsvp-tally-lbl">Hadir</div>
+          <div class="rsvp-tally-sub" id="tally-seats">0 tempat duduk</div>
+        </div>
+        <div class="rsvp-tally-card red">
+          <div class="rsvp-tally-icon"><i class="fas fa-times-circle"></i></div>
+          <div class="rsvp-tally-num" id="tally-tidak">0</div>
+          <div class="rsvp-tally-lbl">Tidak Hadir</div>
+          <div class="rsvp-tally-sub">&nbsp;</div>
         </div>
       </div>
-      <div class="filter-row">
-        <input type="text" id="rsvp-search" placeholder="Cari nama atau no. telefon…" />
-        <select id="rsvp-filter">
-          <option value="all">Semua</option>
-          <option value="yes">Hadir</option>
-          <option value="no">Tidak Hadir</option>
-        </select>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nama</th>
-              <th>Telefon</th>
-              <th>Status</th>
-              <th>Tetamu</th>
-              <th>Tarikh</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="rsvp-tbody">
-            <tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i>Tiada rekod RSVP lagi.</div></td></tr>
-          </tbody>
-        </table>
+
+      <!-- Grid -->
+      <div class="rsvp-grid-wrap">
+        <div class="rsvp-grid-header">
+          <span class="rsvp-grid-title"><i class="fas fa-th"></i> Grid Kehadiran</span>
+          <span class="rsvp-grid-subtitle">Setiap kotak = 1 respons RSVP</span>
+        </div>
+        <div class="rsvp-grid" id="rsvp-grid"></div>
+        <div class="rsvp-legend">
+          <span class="rsvp-legend-lbl">Hadir (sedikit tetamu)</span>
+          <span class="rsvp-legend-cell" style="background:#c6e48b"></span>
+          <span class="rsvp-legend-cell" style="background:#7bc96f"></span>
+          <span class="rsvp-legend-cell" style="background:#40c463"></span>
+          <span class="rsvp-legend-cell" style="background:#216e39"></span>
+          <span class="rsvp-legend-lbl">(ramai)</span>
+          <span class="rsvp-legend-sep"></span>
+          <span class="rsvp-legend-cell" style="background:#f4a0a0"></span>
+          <span class="rsvp-legend-lbl">Tidak Hadir</span>
+          <span class="rsvp-legend-sep"></span>
+          <span class="rsvp-legend-cell" style="background:#ebedf0"></span>
+          <span class="rsvp-legend-lbl">Baki kapasiti</span>
+        </div>
       </div>
     </div>
 
@@ -678,7 +761,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-label"><i class="fas fa-lock"></i> Perutusan Peribadi</div>
-      <div class="stat-sub">${cachedMsgs.length}</div>
+        <div class="stat-value">${cachedMsgs.length}</div>
         <div class="stat-sub">untuk Muhsin</div>
       </div>
       <div class="stat-card">
@@ -690,61 +773,37 @@
   }
 
   /* ── RSVP ── */
-  let rsvpFilter = 'all', rsvpSearch = '';
   function renderRsvp() {
-    let rows = [...cachedRsvp].reverse();
-    if (rsvpFilter !== 'all') rows = rows.filter(r => r.attending === rsvpFilter);
-    if (rsvpSearch) {
-      const q = rsvpSearch.toLowerCase();
-      rows = rows.filter(r => (r.name||'').toLowerCase().includes(q) || (r.phone||'').includes(q));
-    }
+    const attending = cachedRsvp.filter(r => r.attending === 'yes');
+    const notComing = cachedRsvp.filter(r => r.attending === 'no');
+    const seats     = attending.reduce((sum, r) => sum + (parseInt(r.guests) || 1), 0);
+
     document.getElementById('rsvp-count-label').textContent = `${cachedRsvp.length} respons`;
-    const tbody = document.getElementById('rsvp-tbody');
-    if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i>Tiada rekod dijumpai.</div></td></tr>';
-      return;
+    document.getElementById('tally-hadir').textContent = attending.length;
+    document.getElementById('tally-tidak').textContent = notComing.length;
+    document.getElementById('tally-seats').textContent = `${seats} tempat duduk`;
+
+    // Build grid cells — filled responses first
+    const cells = [...cachedRsvp].map(r => {
+      const g   = parseInt(r.guests) || 1;
+      const cls = r.attending === 'yes'
+        ? (g >= 7 ? 'h4' : g >= 5 ? 'h3' : g >= 3 ? 'h2' : 'h1')
+        : 'tidak';
+      const tip = r.attending === 'yes' ? `Hadir · ${g} orang` : 'Tidak Hadir';
+      return `<div class="rsvp-cell ${cls}" title="${tip}"></div>`;
+    });
+
+    // Pad with empty slots up to CAPACITY (max 300 grey cells shown)
+    const emptyCount = Math.min(Math.max(0, CAPACITY - cachedRsvp.length), 300);
+    for (let i = 0; i < emptyCount; i++) {
+      cells.push('<div class="rsvp-cell" title="Belum dijawab"></div>');
     }
-    tbody.innerHTML = rows.map((r, i) => {
-      const rowId = r.id != null ? r.id : 'ls_' + (cachedRsvp.length - 1 - i);
-      return `<tr>
-        <td class="time-cell">${i + 1}</td>
-        <td><strong>${esc(r.name)}</strong></td>
-        <td>${esc(r.phone)}</td>
-        <td><span class="badge badge-${r.attending === 'yes' ? 'yes' : 'no'}">${r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir'}</span></td>
-        <td>${r.attending === 'yes' ? (r.guests || 1) : '—'}</td>
-        <td class="time-cell">${fmtDate(r.time)}</td>
-        <td>
-          <button class="action-btn del" title="Padam" onclick="deleteRsvp('${rowId}')">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>`;
-    }).join('');
+
+    const grid = document.getElementById('rsvp-grid');
+    grid.innerHTML = cells.length
+      ? cells.join('')
+      : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem 0">Tiada respons lagi.</p>';
   }
-
-  window.deleteRsvp = async function(id) {
-    if (!confirm('Padam rekod RSVP ini?')) return;
-    if (String(id).startsWith('ls_')) {
-      const idx = parseInt(id.replace('ls_', ''));
-      const arr = loadLocal(RSVP_KEY); arr.splice(idx, 1); saveLocal(RSVP_KEY, arr);
-    } else {
-      await apiFetch(`/.netlify/functions/rsvp?id=${id}`, { method: 'DELETE' }).catch(() => {});
-    }
-    await renderAll();
-  };
-
-  document.getElementById('rsvp-search').addEventListener('input', function() {
-    rsvpSearch = this.value; renderRsvp();
-  });
-  document.getElementById('rsvp-filter').addEventListener('change', function() {
-    rsvpFilter = this.value; renderRsvp();
-  });
-
-  document.getElementById('export-rsvp').addEventListener('click', () => {
-    const header = ['Nama', 'Telefon', 'Status', 'Bilangan Tetamu', 'Tarikh'];
-    const rows = cachedRsvp.map(r => [r.name, r.phone, r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', r.attending === 'yes' ? (r.guests || 1) : 0, fmtDate(r.time)]);
-    downloadCSV('rsvp-muhsin-syaqiela.csv', [header, ...rows]);
-  });
 
   /* ── Wishes ── */
   let wishesFilter = 'all', wishesSearch = '';
