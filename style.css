@@ -80,6 +80,233 @@ img { display: block; max-width: 100%; }
 ::-webkit-scrollbar-track { background: var(--ivory); }
 ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 
+/* ============================================
+   STINGER INTRO — Premium
+   Sequence:
+     0.0s  deep-gradient canvas fills screen
+     0.3s  bismillah blurs in
+     1.0s  ornament + names blur in
+     1.7s  date + label blur in
+     2.6s  hold — full presence
+     3.2s  golden seam gleams, curtains split
+     3.9s  overlay removed
+   ============================================ */
+#stinger {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  pointer-events: all;
+  /* Dark gold gradient — rich amber centre, deep gold edges, no black */
+  background-color: #1c1200;
+  background-image:
+    radial-gradient(ellipse at 50% 46%, #5a3e0a 0%, #3a2706 35%, #241800 65%, #1c1200 100%);
+}
+
+/* Golden seam that gleams at the moment of split */
+#stinger::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    var(--gold-dark) 20%,
+    #fff4d6 50%,
+    var(--gold-dark) 80%,
+    transparent 100%);
+  transform: scaleX(0);
+  transform-origin: center;
+  z-index: 3;
+  opacity: 0;
+}
+#stinger.stinger-split::before {
+  animation: seamGlow .55s ease forwards;
+}
+
+/* Text canvas */
+#stinger .stinger-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .9rem;
+  text-align: center;
+  padding: 2rem;
+  z-index: 2;
+}
+
+/* Content — blur + lift reveal */
+.stinger-bismillah {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: var(--gold-light);
+  letter-spacing: .08em;
+  opacity: 0;
+  animation: stgReveal .9s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: .3s;
+}
+
+.stinger-ornament {
+  font-size: 1rem;
+  color: var(--gold-dark);
+  letter-spacing: .35em;
+  opacity: 0;
+  animation: stgReveal .75s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: 1.0s;
+}
+
+.stinger-names {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  color: var(--ivory);
+  letter-spacing: .03em;
+  line-height: 1.1;
+  opacity: 0;
+  animation: stgReveal .9s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: 1.1s;
+}
+.stinger-names span {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.stinger-date {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(.85rem, 2.2vw, 1.1rem);
+  font-weight: 300;
+  letter-spacing: .24em;
+  color: rgba(253,250,244,.5);
+  opacity: 0;
+  animation: stgReveal .75s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: 1.7s;
+}
+
+.stinger-label {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(.9rem, 2.4vw, 1.15rem);
+  color: var(--gold);
+  letter-spacing: .12em;
+  opacity: 0;
+  animation: stgReveal .75s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: 1.9s;
+}
+
+/* Curtain panels */
+.stinger-curtain {
+  position: absolute;
+  left: 0; right: 0;
+  height: 50%;
+  background: #1c1200;
+  z-index: 1;
+  animation: none;
+}
+.stinger-curtain-top    { top: 0;    transform-origin: top; }
+.stinger-curtain-bottom { bottom: 0; transform-origin: bottom; }
+
+/* ===== DECORATIVE BORDER FRAME ===== */
+.stinger-frame {
+  position: absolute;
+  inset: clamp(16px, 3.5vw, 32px);
+  border: 1px solid rgba(200,169,110,.28);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  animation: stgFadeIn 1.2s ease forwards;
+  animation-delay: .5s;
+}
+
+/* Mid-top & mid-bottom ornament flowers */
+.stinger-frame::before,
+.stinger-frame::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(26px, 4vw, 36px);
+  height: clamp(26px, 4vw, 36px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55'/%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55' transform='rotate(60 20 20)'/%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55' transform='rotate(120 20 20)'/%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55' transform='rotate(180 20 20)'/%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55' transform='rotate(240 20 20)'/%3E%3Cellipse cx='20' cy='10' rx='3' ry='6' fill='%23C8A96E' fill-opacity='0.55' transform='rotate(300 20 20)'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23C8A96E' fill-opacity='0.9'/%3E%3Ccircle cx='20' cy='20' r='2' fill='%23fff4d6' fill-opacity='0.75'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.stinger-frame::before { top: -1px;    transform: translateX(-50%) translateY(-50%); }
+.stinger-frame::after  { bottom: -1px; transform: translateX(-50%) translateY(50%); }
+
+/* Corner flower ornaments — same SVG, mirrored 4 ways via CSS transform */
+.sf-c {
+  position: absolute;
+  width: clamp(52px, 8vw, 76px);
+  height: clamp(52px, 8vw, 76px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cline x1='22' y1='14' x2='80' y2='14' stroke='%23C8A96E' stroke-width='0.8' stroke-opacity='0.38'/%3E%3Cline x1='14' y1='22' x2='14' y2='80' stroke='%23C8A96E' stroke-width='0.8' stroke-opacity='0.38'/%3E%3Ccircle cx='50' cy='14' r='2' fill='%23C8A96E' fill-opacity='0.22'/%3E%3Ccircle cx='14' cy='50' r='2' fill='%23C8A96E' fill-opacity='0.22'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5' transform='rotate(60 14 14)'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5' transform='rotate(120 14 14)'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5' transform='rotate(180 14 14)'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5' transform='rotate(240 14 14)'/%3E%3Cellipse cx='14' cy='6' rx='2.2' ry='4.5' fill='%23C8A96E' fill-opacity='0.5' transform='rotate(300 14 14)'/%3E%3Ccircle cx='14' cy='14' r='3.2' fill='%23C8A96E' fill-opacity='0.88'/%3E%3Ccircle cx='14' cy='14' r='1.5' fill='%23fff4d6' fill-opacity='0.7'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.sf-tl { top: -2px; left: -2px; }
+.sf-tr { top: -2px; right: -2px; transform: scaleX(-1); }
+.sf-bl { bottom: -2px; left: -2px; transform: scaleY(-1); }
+.sf-br { bottom: -2px; right: -2px; transform: scale(-1); }
+
+/* Frame exits with the inner content */
+#stinger.stinger-split .stinger-frame {
+  animation: stgInnerExit .5s cubic-bezier(.4,0,1,1) forwards;
+  animation-delay: .06s;
+}
+
+/* Cinematic curtain split */
+#stinger.stinger-split .stinger-curtain-top {
+  animation: curtainUp .8s cubic-bezier(.86,0,.07,1) forwards;
+}
+#stinger.stinger-split .stinger-curtain-bottom {
+  animation: curtainDown .8s cubic-bezier(.86,0,.07,1) forwards;
+}
+
+/* Inner content scales out as curtains leave */
+#stinger.stinger-split .stinger-inner {
+  animation: stgInnerExit .5s cubic-bezier(.4,0,1,1) forwards;
+  animation-delay: .08s;
+}
+
+#stinger.stinger-done {
+  display: none;
+}
+
+@keyframes stgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes stgReveal {
+  from { opacity: 0; transform: translateY(18px) scale(.97); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);   filter: blur(0); }
+}
+@keyframes curtainUp {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100%); }
+}
+@keyframes curtainDown {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+@keyframes stgInnerExit {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.05); }
+}
+@keyframes seamGlow {
+  0%   { opacity: 0; transform: scaleX(0); }
+  35%  { opacity: 1; transform: scaleX(1); }
+  75%  { opacity: .8; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+
+/* Prevent body scroll while stinger is active */
+body.stinger-active {
+  overflow: hidden;
+}
+
 /* ---------- TYPOGRAPHY ---------- */
 /* Base: mobile — fluid up to desktop */
 .section-title {

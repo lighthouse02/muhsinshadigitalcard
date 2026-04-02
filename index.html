@@ -32,7 +32,24 @@
 </head>
 <body>
 
-  <!-- ========== STICKY NAVIGATION ========== -->
+  <!-- ========== STINGER INTRO ========== -->
+  <div id="stinger" aria-hidden="true">
+    <div class="stinger-frame" aria-hidden="true">
+      <span class="sf-c sf-tl"></span>
+      <span class="sf-c sf-tr"></span>
+      <span class="sf-c sf-bl"></span>
+      <span class="sf-c sf-br"></span>
+    </div>
+    <div class="stinger-inner">
+      <p class="stinger-bismillah">&#x628;&#x650;&#x633;&#x652;&#x645;&#x650; &#x627;&#x644;&#x644;&#x651;&#x647;&#x650; &#x627;&#x644;&#x631;&#x651;&#x62D;&#x652;&#x645;&#x64E;&#x646;&#x650; &#x627;&#x644;&#x631;&#x651;&#x62D;&#x650;&#x64A;&#x645;&#x650;</p>
+      <div class="stinger-ornament">&#10022; &nbsp; &#10022; &nbsp; &#10022;</div>
+      <h1 class="stinger-names">Muhsin <span>&amp;</span> Syaqiela</h1>
+      <p class="stinger-date">30 &middot; 05 &middot; 2026</p>
+      <p class="stinger-label">Walimatul Urus</p>
+    </div>
+    <div class="stinger-curtain stinger-curtain-top"></div>
+    <div class="stinger-curtain stinger-curtain-bottom"></div>
+  </div>
   <nav id="site-nav" class="site-nav" aria-label="Site navigation">
     <div class="nav-inner">
       <a href="#hero" class="nav-logo">M <span>&</span> S</a>
@@ -529,5 +546,27 @@
   <!-- YouTube IFrame API (async) -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="app.js"></script>
+
+  <!-- ========== STINGER CONTROLLER ========== -->
+  <script>
+    (function () {
+      const stinger = document.getElementById('stinger');
+      if (!stinger) return;
+
+      // Lock scroll while intro plays
+      document.body.classList.add('stinger-active');
+
+      // At 3.2 s — start curtain split
+      setTimeout(function () {
+        stinger.classList.add('stinger-split');
+      }, 3200);
+
+      // At 3.9 s — remove overlay entirely & unlock scroll
+      setTimeout(function () {
+        stinger.classList.add('stinger-done');
+        document.body.classList.remove('stinger-active');
+      }, 3900);
+    })();
+  </script>
 </body>
 </html>
