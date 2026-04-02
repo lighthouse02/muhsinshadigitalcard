@@ -304,7 +304,7 @@
   <!-- ========== RSVP CTA PULL ========== -->
   <div class="rsvp-pull">
     <div class="container rsvp-pull-inner">
-      <p class="rsvp-pull-text"><i class="fas fa-calendar-check"></i> Kehadiran tuan/puan sungguh kami nantikan &mdash; sila sahkan<strong>kehadiran</strong></p>
+      <p class="rsvp-pull-text"><i class="fas fa-calendar-check"></i> Kehadiran tuan/puan sungguh kami nantikan &mdash; sila sahkan<strong> kehadiran</strong></p>
       <a href="#rsvp" class="btn-primary">Sahkan Kehadiran &amp; Tinggalkan Doa</a>
     </div>
   </div>
@@ -452,16 +452,21 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="photo-caption">Caption <span class="label-opt">(pilihan)</span></label>
+                  <label for="photo-caption">Kapsyen <span class="label-opt">(pilihan)</span></label>
                   <input type="text" id="photo-caption" placeholder="Kenangan indah hari ini…" maxlength="120" />
                 </div>
               </div>
 
-              <button type="submit" class="btn-primary" style="width:100%;margin-top:.5rem;">
-                <i class="fas fa-paper-plane"></i> <span id="gb-submit-label">Hantar Doa & Ucapan</span>
+              <button type="submit" class="btn-primary" id="gb-submit-btn" style="width:100%;margin-top:.5rem;">
+                <i class="fas fa-paper-plane"></i> <span id="gb-submit-label">Hantar Doa &amp; Ucapan</span>
               </button>
+              <div id="wishes-success" class="form-success hidden">
+                <i class="fas fa-check-circle"></i> Ucapan tuan/puan telah dirakamkan. Jazakumullahu khairan!
+              </div>
             </form>
           </div>
+
+          <div id="wishes-wall" class="wishes-wall"></div>
 
           <a href="wall.html" class="wall-link" target="_blank" rel="noopener">
             Lihat semua ucapan di papan digital &rarr;

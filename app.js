@@ -683,12 +683,22 @@
       body: JSON.stringify(entry)
     }).catch(() => {});
 
-    const card = buildWishCard(entry);
-    if (wishesWall) {
-      wishesWall.insertBefore(card, wishesWall.firstChild);
-      wishesWall.scrollTop = 0;
-    }
-    nameInput.value = '';
+    // Show loading state on button
+    const gbBtn = document.getElementById('gb-submit-btn');
+    const gbSuccessEl = document.getElementById('wishes-success');
+    if (gbBtn) { gbBtn.disabled = true; if (gbSubmitLabel) gbSubmitLabel.textContent = 'Menghantar…'; }
+    if (gbSuccessEl) gbSuccessEl.classList.add('hidden');
+
+    setTimeout(() => {
+      const card = buildWishCard(entry);
+      if (wishesWall) {
+        wishesWall.insertBefore(card, wishesWall.firstChild);
+        wishesWall.scrollTop = 0;
+      }
+      if (gbSuccessEl) gbSuccessEl.classList.remove('hidden');
+      if (gbBtn) { gbBtn.disabled = false; if (gbSubmitLabel) gbSubmitLabel.textContent = GB_LABELS[currentGbType] || 'Hantar Doa & Ucapan'; }
+      nameInput.value = '';
+    }, 700);
   });
 
   /* =============================================
