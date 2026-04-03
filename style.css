@@ -2577,14 +2577,13 @@ body.stinger-active {
   flex-direction: column;
   gap: .8rem;
 }
-.map-frame { overflow: hidden; }
-.map-frame iframe {
+.map-frame { overflow: hidden; border-radius: var(--radius-sm); }
+#map-canvas {
   display: block;
   width: 100%;
-  /* Shorter on mobile to keep page scannable */
   height: 260px;
 }
-@media (min-width: 640px) { .map-frame iframe { height: 100%; min-height: 320px; } }
+@media (min-width: 640px) { #map-canvas { height: 380px; } }
 
 /* ---------- GIFT ---------- */
 #gift {
@@ -2801,6 +2800,7 @@ body.stinger-active {
   #location { page-break-inside: avoid; }
   .location-card { box-shadow: none; border: 1px solid #ccc; }
   .map-frame { display: none; }
+  #map-canvas { display: none; }
 
   #footer { background: none; padding: 1rem 0; }
   .footer-names, .footer-date, .footer-dua, .footer-dua-trans, .footer-hashtag, .footer-closing { color: #000; }
