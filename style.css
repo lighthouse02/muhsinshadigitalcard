@@ -394,26 +394,48 @@ body.stinger-active {
   opacity: 1;
 }
 
-.fc-link {
+.fc-card {
   display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: .5rem .75rem .5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .45rem .6rem .45rem .9rem;
   background: rgba(12, 9, 3, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(200,169,110,.22);
   border-right: none;
   border-radius: 12px 0 0 12px;
-  text-decoration: none;
-  min-width: 160px;
-  transition: background .18s, border-color .18s;
+  min-width: 190px;
   box-shadow: -3px 4px 22px rgba(0,0,0,.5);
 }
-.fc-link:hover {
-  background: rgba(200,169,110,.06);
-  border-color: rgba(200,169,110,.45);
+.fc-info { display: flex; flex-direction: column; gap: 1px; }
+.fc-btns { display: flex; gap: .35rem; flex-shrink: 0; }
+.fc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: .85rem;
+  transition: background .18s, transform .15s;
+  flex-shrink: 0;
 }
+.fc-btn:active { transform: scale(.9); }
+.fc-btn-call {
+  background: rgba(200,169,110,.12);
+  color: var(--gold);
+  border: 1px solid rgba(200,169,110,.3);
+}
+.fc-btn-call:hover { background: rgba(200,169,110,.28); }
+.fc-btn-wa {
+  background: rgba(37,211,102,.12);
+  color: #25d366;
+  border: 1px solid rgba(37,211,102,.3);
+}
+.fc-btn-wa:hover { background: rgba(37,211,102,.28); }
 .fc-name {
   font-family: var(--font-sans);
   font-size: .58rem;

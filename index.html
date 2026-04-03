@@ -116,22 +116,40 @@
     </button>
     <ul class="fc-list" id="fc-list" role="list">
       <li class="fc-item">
-        <a href="tel:+60196210677" class="fc-link">
-          <span class="fc-name">Hj Shukri</span>
-          <span class="fc-number">+60 19-621 0677</span>
-        </a>
+        <div class="fc-card">
+          <div class="fc-info">
+            <span class="fc-name">Hj Shukri</span>
+            <span class="fc-number">+60 19-621 0677</span>
+          </div>
+          <div class="fc-btns">
+            <a href="tel:+60196210677" class="fc-btn fc-btn-call" title="Telefon"><i class="fas fa-phone"></i></a>
+            <a href="https://wa.me/60196210677" class="fc-btn fc-btn-wa" title="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
       </li>
       <li class="fc-item" style="--fc-delay:.06s">
-        <a href="tel:+60173629686" class="fc-link">
-          <span class="fc-name">Hjh Nurciana</span>
-          <span class="fc-number">+60 17-362 9686</span>
-        </a>
+        <div class="fc-card">
+          <div class="fc-info">
+            <span class="fc-name">Hjh Nurciana</span>
+            <span class="fc-number">+60 17-362 9686</span>
+          </div>
+          <div class="fc-btns">
+            <a href="tel:+60173629686" class="fc-btn fc-btn-call" title="Telefon"><i class="fas fa-phone"></i></a>
+            <a href="https://wa.me/60173629686" class="fc-btn fc-btn-wa" title="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
       </li>
       <li class="fc-item" style="--fc-delay:.12s">
-        <a href="tel:+601114793439" class="fc-link">
-          <span class="fc-name">Kak Syifa&#x2019;</span>
-          <span class="fc-number">+60 11-1479 3439</span>
-        </a>
+        <div class="fc-card">
+          <div class="fc-info">
+            <span class="fc-name">Kak Syifa&#x2019;</span>
+            <span class="fc-number">+60 11-1479 3439</span>
+          </div>
+          <div class="fc-btns">
+            <a href="tel:+601114793439" class="fc-btn fc-btn-call" title="Telefon"><i class="fas fa-phone"></i></a>
+            <a href="https://wa.me/601114793439" class="fc-btn fc-btn-wa" title="WhatsApp" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -528,39 +546,46 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLcE=" crossorigin=""></script>
   <script>
   (function () {
-    var lat = 2.7453, lng = 101.9523;
-    var map = L.map('map-canvas', { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 16);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    function initMap() {
+      var lat = 2.7453, lng = 101.9523;
+      var map = L.map('map-canvas', { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(map);
 
-    var flowerSvg = [
-      '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="62" viewBox="0 0 48 62">',
-        '<defs><filter id="ds" x="-30%" y="-30%" width="160%" height="160%">',
-          '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000060"/>',
-        '</filter></defs>',
-        '<path d="M24 0 C10.75 0 0 10.75 0 24 C0 37.5 24 62 24 62 C24 62 48 37.5 48 24 C48 10.75 37.25 0 24 0 Z" fill="#1a1208" filter="url(#ds)"/>',
-        '<path d="M24 0 C10.75 0 0 10.75 0 24 C0 37.5 24 62 24 62 C24 62 48 37.5 48 24 C48 10.75 37.25 0 24 0 Z" fill="none" stroke="#C8A96E" stroke-width="1.5"/>',
-        '<circle cx="24" cy="22" r="17" fill="none" stroke="#C8A96E" stroke-width="0.6" opacity="0.35"/>',
-        '<text x="7" y="29" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#C8A96E" letter-spacing="-0.5">M</text>',
-        '<text x="21" y="27" font-family="Georgia,serif" font-size="9" font-style="italic" fill="#e8d090" opacity="0.9">&amp;</text>',
-        '<text x="27" y="29" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#C8A96E" letter-spacing="-0.5">S</text>',
-      '</svg>'
-    ].join('');
+      var flowerSvg = [
+        '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="62" viewBox="0 0 48 62">',
+          '<defs><filter id="ds" x="-30%" y="-30%" width="160%" height="160%">',
+            '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000060"/>',
+          '</filter></defs>',
+          '<path d="M24 0 C10.75 0 0 10.75 0 24 C0 37.5 24 62 24 62 C24 62 48 37.5 48 24 C48 10.75 37.25 0 24 0 Z" fill="#1a1208" filter="url(#ds)"/>',
+          '<path d="M24 0 C10.75 0 0 10.75 0 24 C0 37.5 24 62 24 62 C24 62 48 37.5 48 24 C48 10.75 37.25 0 24 0 Z" fill="none" stroke="#C8A96E" stroke-width="1.5"/>',
+          '<circle cx="24" cy="22" r="17" fill="none" stroke="#C8A96E" stroke-width="0.6" opacity="0.35"/>',
+          '<text x="7" y="29" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#C8A96E" letter-spacing="-0.5">M</text>',
+          '<text x="21" y="27" font-family="Georgia,serif" font-size="9" font-style="italic" fill="#e8d090" opacity="0.9">&amp;</text>',
+          '<text x="27" y="29" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#C8A96E" letter-spacing="-0.5">S</text>',
+        '</svg>'
+      ].join('');
 
-    var icon = L.divIcon({
-      html: flowerSvg,
-      iconSize:   [48, 62],
-      iconAnchor: [24, 62],
-      popupAnchor:[0, -64],
-      className: ''
-    });
+      var icon = L.divIcon({
+        html: flowerSvg,
+        iconSize:   [48, 62],
+        iconAnchor: [24, 62],
+        popupAnchor:[0, -64],
+        className: ''
+      });
 
-    L.marker([lat, lng], { icon: icon })
-      .addTo(map)
-      .bindPopup('<strong style="font-family:serif;">Masjid Bandar Baru Senawang</strong><br>70450 Seremban, Negeri Sembilan')
-      .openPopup();
+      L.marker([lat, lng], { icon: icon })
+        .addTo(map)
+        .bindPopup('<strong style="font-family:serif;">Masjid Bandar Baru Senawang</strong><br>70450 Seremban, Negeri Sembilan')
+        .openPopup();
+
+      setTimeout(function () { map.invalidateSize(); }, 400);
+    }
+
+    if (document.readyState === 'complete') { initMap(); }
+    else { window.addEventListener('load', initMap); }
   })();
   </script>
   <script src="https://www.youtube.com/iframe_api"></script>
