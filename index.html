@@ -364,171 +364,101 @@
     </div>
   </div>
 
-  <!-- ========== ENGAGE (RSVP · MESSAGE · WISHES) ========== -->
+  <!-- ========== RSVP + UCAPAN ========== -->
   <section id="rsvp">
     <div class="container">
       <h2 class="section-title">Sertai Kami Meraikan Kesyukuran Ini</h2>
-      <p class="section-sub">Sahkan kehadiran, kirimkan perutusan peribadi, atau titipkan doa</p>
+      <p class="section-sub">Sahkan kehadiran dan titipkan ucapan anda</p>
 
-      <!-- ── Tab cards ── -->
-      <div class="engage-tabs" role="tablist">
-        <button class="engage-tab active" role="tab" aria-selected="true"  aria-controls="rsvp-panel"   data-tab="rsvp-panel">
-          <div class="tab-icon"><i class="fas fa-calendar-check"></i></div>
-          <div class="tab-label">Kehadiran</div>
-          <div class="tab-desc">Sahkan kehadiran anda</div>
-        </button>
-        <button class="engage-tab"        role="tab" aria-selected="false" aria-controls="msg-panel"    data-tab="msg-panel">
-          <div class="tab-icon"><i class="fas fa-lock"></i></div>
-          <div class="tab-label">Perutusan Peribadi</div>
-          <div class="tab-desc">Khas untuk Muhsin & Sya</div>
-        </button>
-        <button class="engage-tab"        role="tab" aria-selected="false" aria-controls="wishes-panel" data-tab="wishes-panel">
-          <div class="tab-icon"><i class="fas fa-heart"></i></div>
-          <div class="tab-label">Papan Doa & Ucapan</div>
-          <div class="tab-desc">Titipkan ucapan &amp; doa</div>
-        </button>
+      <!-- Combined RSVP + Ucapan card -->
+      <div class="panel-card">
+
+        <!-- Counts -->
+        <div class="rsvp-counts" id="rsvp-counts" aria-live="polite">
+          <div class="rsvp-count-item rsvp-count-hadir">
+            <span class="rsvp-count-num" id="rsvp-count-hadir">—</span>
+            <span class="rsvp-count-label">Hadir</span>
+          </div>
+          <div class="rsvp-count-divider"></div>
+          <div class="rsvp-count-item rsvp-count-takhadir">
+            <span class="rsvp-count-num" id="rsvp-count-takhadir">—</span>
+            <span class="rsvp-count-label">Tidak Hadir</span>
+          </div>
+        </div>
+
+        <form id="rsvp-form" novalidate>
+          <div class="form-group">
+            <label for="rsvp-name">Nama Penuh <span>*</span></label>
+            <input type="text" id="rsvp-name" placeholder="Masukkan nama penuh anda" required autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label>Kehadiran <span>*</span></label>
+            <div class="rsvp-radio-group">
+              <label class="rsvp-radio-label">
+                <input type="radio" name="rsvp-attending" value="yes" id="rsvp-radio-yes" />
+                <span class="rsvp-radio-circle"></span>
+                <span>Hadir</span>
+              </label>
+              <label class="rsvp-radio-label">
+                <input type="radio" name="rsvp-attending" value="no" id="rsvp-radio-no" />
+                <span class="rsvp-radio-circle"></span>
+                <span>Tidak Hadir</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rsvp-ucapan">Ucapan <span class="label-opt">(pilihan)</span></label>
+            <textarea id="rsvp-ucapan" rows="4" placeholder="Tulis ucapan anda…"></textarea>
+
+            <!-- Public / Private toggle -->
+            <div class="ucapan-vis-row" id="ucapan-vis-row">
+              <span class="ucapan-vis-label">Hantar sebagai:</span>
+              <div class="ucapan-vis-btns" role="group" aria-label="Jenis ucapan">
+                <button type="button" class="uv-btn uv-btn-public active" id="uv-public" aria-pressed="true">
+                  <i class="fas fa-globe"></i> Awam
+                </button>
+                <button type="button" class="uv-btn uv-btn-private" id="uv-private" aria-pressed="false">
+                  <i class="fas fa-lock"></i> Peribadi
+                </button>
+              </div>
+              <span class="ucapan-vis-hint" id="ucapan-vis-hint">Papan ucapan — semua tetamu boleh lihat</span>
+            </div>
+          </div>
+
+          <!-- Signature pad — shown only when Peribadi is selected -->
+          <div class="form-group" id="sig-group" hidden>
+            <label>Tandatangan <span>*</span></label>
+            <div class="sig-wrapper">
+              <canvas id="signature-canvas"></canvas>
+              <div class="sig-actions">
+                <button type="button" id="sig-clear" class="btn-outline">
+                  <i class="fas fa-eraser"></i> Padam
+                </button>
+              </div>
+            </div>
+            <p class="sig-hint">Tinggalkan tandatangan di atas menggunakan jari</p>
+            <p id="sig-error" class="form-error hidden" role="alert"></p>
+          </div>
+
+          <button type="submit" class="btn-primary" id="rsvp-submit-btn" style="width:100%;">
+            Hantar RSVP
+          </button>
+          <div id="rsvp-success" class="form-success hidden">
+            <i class="fas fa-check-circle"></i>
+            <p id="rsvp-success-msg">Terima kasih atas maklum balas anda!</p>
+          </div>
+        </form>
       </div>
 
-      <!-- ── Panels ── -->
-      <div class="engage-panels">
+      <!-- Wishes wall -->
+      <div id="wishes-wall" class="wishes-wall"></div>
 
-        <!-- RSVP panel -->
-        <div id="rsvp-panel" class="engage-panel active" role="tabpanel">
-          <div class="panel-card">
-            <p class="panel-card-hint">Sila sahkan kehadiran tuan/puan</p>
+      <a href="wall.html" class="wall-link" target="_blank" rel="noopener">
+        Lihat semua ucapan di papan digital &rarr;
+      </a>
 
-            <!-- RSVP counts -->
-            <div class="rsvp-counts" id="rsvp-counts" aria-live="polite">
-              <div class="rsvp-count-item rsvp-count-hadir">
-                <i class="fas fa-heart"></i>
-                <span class="rsvp-count-num" id="rsvp-count-hadir">—</span>
-                <span class="rsvp-count-label">Hadir</span>
-              </div>
-              <div class="rsvp-count-divider"></div>
-              <div class="rsvp-count-item rsvp-count-takhadir">
-                <i class="fas fa-times-circle"></i>
-                <span class="rsvp-count-num" id="rsvp-count-takhadir">—</span>
-                <span class="rsvp-count-label">Tidak Hadir</span>
-              </div>
-            </div>
-
-            <p class="rsvp-question">Adakah tuan/puan akan hadir?</p>
-            <div class="rsvp-buttons">
-              <button type="button" id="rsvp-yes" class="rsvp-btn rsvp-btn-ya"><i class="fas fa-heart"></i> Ya</button>
-              <button type="button" id="rsvp-no" class="rsvp-btn rsvp-btn-tidak"><i class="fas fa-times-circle"></i> Tidak</button>
-            </div>
-            <div id="rsvp-success" class="form-success hidden">
-              <i class="fas fa-check-circle"></i>
-              <p id="rsvp-success-msg">Terima kasih atas maklum balas anda!</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Private Message panel -->
-        <div id="msg-panel" class="engage-panel" role="tabpanel">
-          <div class="panel-card">
-            <p class="panel-card-hint">Hanya Muhsin & Sya yang akan membaca perutusan ini<i class="fas fa-lock" style="color:var(--gold);"></i></p>
-            <form id="message-form" novalidate>
-              <div class="form-group">
-                <label for="msg-name">Nama Tuan/Puan <span>*</span></label>
-                <input type="text" id="msg-name" name="msg-name" placeholder="Nama anda" required />
-              </div>
-              <div class="form-group">
-                <label for="msg-text">Perutusan Tuan/Puan <span>*</span></label>
-                <textarea id="msg-text" name="msg-text" rows="4" placeholder="Coretkan perutusan ikhlas dari hati…" required></textarea>
-              </div>
-              <div class="form-group">
-                <label>Tandatangan <span>*</span></label>
-                <div class="sig-wrapper">
-                  <canvas id="signature-canvas"></canvas>
-                  <div class="sig-actions">
-                    <button type="button" id="sig-clear" class="btn-outline">
-                      <i class="fas fa-eraser"></i> Padam
-                    </button>
-                  </div>
-                </div>
-                <p class="sig-hint">Tinggalkan tandatangan di atas menggunakan jari</p>
-                <p id="sig-error" class="form-error hidden" role="alert"></p>
-              </div>
-              <button type="submit" class="btn-primary" style="width:100%;">Hantar Perutusan Peribadi</button>
-              <div id="msg-success" class="form-success hidden">
-                <i class="fas fa-envelope-open-text"></i> Perutusan tuan/puan telah selamat disampaikan kepada Muhsin & Sya.
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- Wishes Wall panel -->
-        <div id="wishes-panel" class="engage-panel" role="tabpanel">
-          <div class="panel-card">
-            <p class="panel-card-hint">Titipkan Ucapan atau kenangan bergambar</p>
-
-            <!-- Entry type selector -->
-            <div class="gb-type-tabs" role="tablist" aria-label="Type of entry">
-              <button class="gb-type-btn active" data-type="wish" role="tab" aria-selected="true">
-                <span class="gb-type-icon">💬</span><span>Doa & Ucapan</span>
-              </button>
-              <button class="gb-type-btn" data-type="photo" role="tab" aria-selected="false">
-                <span class="gb-type-icon">📸</span><span>Kenangan</span>
-              </button>
-            </div>
-
-            <form id="wishes-form" novalidate>
-              <!-- Name always shown -->
-              <div class="form-group">
-                <label for="wish-name">Nama Tuan/Puan <span>*</span></label>
-                <input type="text" id="wish-name" placeholder="Nama anda" required />
-              </div>
-
-              <!-- Wish -->
-              <div id="gb-field-wish" class="gb-type-field">
-                <div class="form-group">
-                  <label for="wish-text">Doa &amp; Ucapan <span>*</span></label>
-                  <textarea id="wish-text" rows="3" placeholder="Doa restu dan ucapan untuk Muhsin &amp; Syaqiela…"></textarea>
-                </div>
-              </div>
-
-              <!-- Photo Memory -->
-              <div id="gb-field-photo" class="gb-type-field" hidden>
-                <div class="form-group">
-                  <div id="photo-drop-zone" class="photo-drop-zone">
-                    <input type="file" id="photo-input" accept="image/*" capture="environment" class="photo-file-input" />
-                    <label for="photo-input" class="photo-drop-label">
-                      <i class="fas fa-camera"></i>
-                      <span>Pilih atau tangkap gambar</span>
-                      <small>Maks 5 MB &bull; JPG, PNG, WEBP</small>
-                    </label>
-                  </div>
-                  <div id="photo-preview" class="photo-preview hidden">
-                    <img id="photo-preview-img" alt="Selected photo preview" />
-                    <button type="button" id="photo-change-btn" class="btn-outline photo-change-btn">
-                      <i class="fas fa-camera"></i> Tukar Gambar
-                    </button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="photo-caption">Kapsyen <span class="label-opt">(pilihan)</span></label>
-                  <input type="text" id="photo-caption" placeholder="Kenangan indah hari ini…" maxlength="120" />
-                </div>
-              </div>
-
-              <button type="submit" class="btn-primary" id="gb-submit-btn" style="width:100%;margin-top:.5rem;">
-                <i class="fas fa-paper-plane"></i> <span id="gb-submit-label">Hantar Doa &amp; Ucapan</span>
-              </button>
-              <div id="wishes-success" class="form-success hidden">
-                <i class="fas fa-check-circle"></i> Ucapan tuan/puan telah dirakamkan. Jazakumullahu khairan!
-              </div>
-            </form>
-          </div>
-
-          <div id="wishes-wall" class="wishes-wall"></div>
-
-          <a href="wall.html" class="wall-link" target="_blank" rel="noopener">
-            Lihat semua ucapan di papan digital &rarr;
-          </a>
-        </div>
-
-      </div><!-- /.engage-panels -->
     </div>
   </section>
 

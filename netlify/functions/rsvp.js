@@ -24,10 +24,11 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'POST') {
       const body     = JSON.parse(event.body || '{}');
       const attending = body.attending === 'yes' ? 'yes' : 'no';
+      const name      = sanitize(body.name || 'Tetamu', 100);
 
       await sql`
         INSERT INTO rsvp (name, phone, attending, guests)
-        VALUES (${'Anonymous'}, ${''}, ${attending}, ${0})
+        VALUES (${name}, ${''}, ${attending}, ${0})
       `;
       return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
     }

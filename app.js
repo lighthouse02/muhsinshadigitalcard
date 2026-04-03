@@ -404,30 +404,8 @@
   });
 
   /* =============================================
-     6. ENGAGE TABS (RSVP · Message · Wishes)
+     6. COMBINED RSVP + UCAPAN FORM
   ============================================= */
-  const engageTabs   = document.querySelectorAll('.engage-tab');
-  const engagePanels = document.querySelectorAll('.engage-panel');
-
-  engageTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      engageTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-      engagePanels.forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      document.getElementById(tab.dataset.tab).classList.add('active');
-      // Re-initialise signature canvas if switching to message panel
-      if (tab.dataset.tab === 'msg-panel') resizeCanvas();
-    });
-  });
-
-  /* =============================================
-     7. RSVP BUTTONS (Ya / Tidak)
-  ============================================= */
-  const rsvpYesBtn = document.getElementById('rsvp-yes');
-  const rsvpNoBtn  = document.getElementById('rsvp-no');
-
-  // ── RSVP counts ──
   function loadRsvpCounts() {
     fetch('/.netlify/functions/rsvp?counts=1')
       .then(r => r.ok ? r.json() : null)
@@ -440,39 +418,98 @@
   }
   loadRsvpCounts();
 
-  async function submitRsvp(attending) {
-    const btn = attending === 'yes' ? rsvpYesBtn : rsvpNoBtn;
-    rsvpYesBtn.disabled = true;
-    rsvpNoBtn.disabled  = true;
+  const rsvpForm = document.getElementById('rsvp-form');
+  rsvpForm && rsvpForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name           = sanitize(document.getElementById('rsvp-name').value.trim());
+    const attendingRadio = document.querySelector('input[name="rsvp-attending"]:checked');
+    const ucapan         = sanitize((document.getElementById('rsvp-ucapan').value || '').trim());
+    const btn            = document.getElementById('rsvp-submit-btn');
+    const successEl      = document.getElementById('rsvp-success');
+    const activeBtn      = document.querySelector('.uv-btn.active');
+    const ucapanMode     = activeBtn && activeBtn.id === 'uv-private' ? 'private' : 'public';
+
+    if (!name) { flashError('rsvp-name', 'Sila masukkan nama penuh'); return; }
+    if (!attendingRadio) {
+      const rg = document.querySelector('.rsvp-radio-group');
+      if (rg) {
+        rg.style.outline = '2px solid #e53935';
+        rg.style.borderRadius = '6px';
+        setTimeout(() => { rg.style.outline = ''; }, 2400);
+      }
+      return;
+    }
+    if (ucapan && ucapanMode === 'private' && sigPad.isEmpty()) {
+      showInlineError('sig-error', 'Sila tandatangan sebelum menghantar');
+      return;
+    }
+    clearInlineError('sig-error');
+
+    btn.disabled    = true;
     btn.textContent = 'Menghantar…';
+    successEl.classList.add('hidden');
 
     try {
       await fetch('/.netlify/functions/rsvp', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attending })
+        body:    JSON.stringify({ attending: attendingRadio.value, name })
       });
-    } catch (_) {}
 
-    document.getElementById('rsvp-success').classList.remove('hidden');
-    document.getElementById('rsvp-success-msg').textContent = attending === 'yes'
-      ? 'Terima kasih! Kami menantikan kehadiran anda.'
-      : 'Terima kasih atas maklum balas anda.';
-    rsvpYesBtn.disabled = false;
-    rsvpNoBtn.disabled  = false;
-    rsvpYesBtn.innerHTML = '<i class="fas fa-heart"></i> Ya';
-    rsvpNoBtn.innerHTML  = '<i class="fas fa-times-circle"></i> Tidak';
-    loadRsvpCounts();
-  }
+      if (ucapan) {
+        if (ucapanMode === 'public') {
+          const entry = { type: 'wish', name, text: ucapan, time: Date.now() };
+          const saved = gbLoad(); saved.push(entry); gbSave(saved);
+          fetch('/.netlify/functions/wishes', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(entry)
+          }).catch(() => {});
+          const wall = document.getElementById('wishes-wall');
+          if (wall) wall.insertBefore(buildWishCard(entry), wall.firstChild);
+        } else {
+          fetch('/.netlify/functions/messages', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name, text: ucapan, sig: sigPad.toDataURL() })
+          }).catch(() => {});
+        }
+      }
 
-  rsvpYesBtn.addEventListener('click', () => submitRsvp('yes'));
-  rsvpNoBtn.addEventListener('click',  () => submitRsvp('no'));
+      // Reset form
+      document.getElementById('rsvp-name').value    = '';
+      document.getElementById('rsvp-ucapan').value  = '';
+      attendingRadio.checked = false;
+      if (ucapanMode === 'private') sigPad.clear();
+      // Reset toggle back to Awam
+      const uvPub = document.getElementById('uv-public');
+      const uvPri = document.getElementById('uv-private');
+      const sgGrp = document.getElementById('sig-group');
+      if (uvPub)  { uvPub.classList.add('active');    uvPub.setAttribute('aria-pressed', 'true'); }
+      if (uvPri)  { uvPri.classList.remove('active'); uvPri.setAttribute('aria-pressed', 'false'); }
+      if (sgGrp)    sgGrp.hidden = true;
+      const hint = document.getElementById('ucapan-vis-hint');
+      if (hint) hint.textContent = 'Papan ucapan — semua tetamu boleh lihat';
+
+      successEl.classList.remove('hidden');
+      document.getElementById('rsvp-success-msg').textContent = attendingRadio.value === 'yes'
+        ? 'Terima kasih! Kami menantikan kehadiran tuan/puan.'
+        : 'Terima kasih atas maklum balas tuan/puan.';
+      loadRsvpCounts();
+    } catch (_) {
+      successEl.innerHTML = '<p style="color:#e53935;text-align:center;">Ralat berlaku. Sila cuba semula.</p>';
+      successEl.classList.remove('hidden');
+    }
+
+    btn.disabled    = false;
+    btn.textContent = 'Hantar RSVP';
+  });
 
   /* =============================================
-     7. SIGNATURE PAD + PRIVATE MESSAGE
+     7. SIGNATURE PAD + UCAPAN TOGGLE
   ============================================= */
-  const canvas     = document.getElementById('signature-canvas');
-  const sigPad     = new SignaturePad(canvas, {
+  const canvas = document.getElementById('signature-canvas');
+  const sigPad = new SignaturePad(canvas, {
     backgroundColor: 'rgb(250,250,250)',
     penColor:        'rgb(139,115,85)',
     minWidth:        1.2,
@@ -495,116 +532,30 @@
   document.getElementById('sig-clear').addEventListener('click', () => sigPad.clear());
   canvas.addEventListener('pointerdown', () => clearInlineError('sig-error'));
 
-  const msgForm = document.getElementById('message-form');
-  msgForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  // Awam / Peribadi toggle
+  const uvPublic  = document.getElementById('uv-public');
+  const uvPrivate = document.getElementById('uv-private');
+  const sigGroup  = document.getElementById('sig-group');
+  const visHint   = document.getElementById('ucapan-vis-hint');
 
-    const name = document.getElementById('msg-name').value.trim();
-    const text = document.getElementById('msg-text').value.trim();
+  uvPublic && uvPublic.addEventListener('click', () => {
+    uvPublic.classList.add('active');      uvPublic.setAttribute('aria-pressed', 'true');
+    uvPrivate.classList.remove('active');  uvPrivate.setAttribute('aria-pressed', 'false');
+    sigGroup.hidden = true;
+    if (visHint) visHint.textContent = 'Papan ucapan — semua tetamu boleh lihat';
+  });
 
-    // Hide any previous success
-    document.getElementById('msg-success').classList.add('hidden');
-
-    if (!name) { flashError('msg-name', 'Sila masukkan nama tuan/puan'); return; }
-    if (!text) { flashError('msg-text', 'Sila coretkan perutusan'); return; }
-    if (sigPad.isEmpty()) {
-      showInlineError('sig-error', 'Sila tandatangan sebelum menghantar');
-      return;
-    }
-    clearInlineError('sig-error');
-
-    // In a real implementation, you'd POST name, text, and sigPad.toDataURL() to your backend
-    const successEl = document.getElementById('msg-success');
-    const msgBtn = msgForm.querySelector('.btn-primary');
-    msgBtn.disabled = true;
-    msgBtn.textContent = 'Menghantar…';
-
-    setTimeout(() => {
-      // Persist private message to localStorage
-      const MSG_KEY  = 'muhsin_syaqiela_messages';
-      const msgList  = (() => { try { return JSON.parse(localStorage.getItem(MSG_KEY)) || []; } catch { return []; } })();
-      const sigData  = sigPad.toDataURL();
-      msgList.push({ name, text, sig: sigData, time: Date.now() });
-      try { localStorage.setItem(MSG_KEY, JSON.stringify(msgList)); } catch { /* quota */ }
-
-      // Sync to Neon
-      fetch('/.netlify/functions/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, text, sig: sigData })
-      }).catch(() => {});
-
-      successEl.classList.remove('hidden');
-      msgForm.reset();
-      sigPad.clear();
-      msgBtn.disabled = false;
-      msgBtn.textContent = 'Hantar Perutusan Peribadi';
-    }, 1000);
+  uvPrivate && uvPrivate.addEventListener('click', () => {
+    uvPrivate.classList.add('active');    uvPrivate.setAttribute('aria-pressed', 'true');
+    uvPublic.classList.remove('active');  uvPublic.setAttribute('aria-pressed', 'false');
+    sigGroup.hidden = false;
+    setTimeout(resizeCanvas, 50);
+    if (visHint) visHint.textContent = 'Hanya untuk Muhsin & Sya — tidak akan dipaparkan di papan';
   });
 
   /* =============================================
-     8. DIGITAL GUESTBOOK
-        Types: wish · doa · voice note · photo memory
-        Persisted in localStorage (max 30 entries)
+     8. WISHES WALL
   ============================================= */
-  const wishesForm    = document.getElementById('wishes-form');
-  const wishesWall    = document.getElementById('wishes-wall');
-  const gbTypeBtns    = document.querySelectorAll('.gb-type-btn');
-  const gbSubmitLabel = document.getElementById('gb-submit-label');
-  let currentGbType   = 'wish';
-
-  const GB_LABELS = {
-    wish: 'Hantar Doa Restu', photo: 'Hantar Kenangan Bergambar',
-  };
-
-  // ── Type tab switching ──
-  gbTypeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const type = btn.dataset.type;
-      currentGbType = type;
-      gbTypeBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-      document.querySelectorAll('.gb-type-field').forEach(f => { f.hidden = true; });
-      const activeField = document.getElementById('gb-field-' + type);
-      if (activeField) activeField.hidden = false;
-      if (gbSubmitLabel) gbSubmitLabel.textContent = GB_LABELS[type] || 'Post';
-    });
-  });
-
-  // ── Photo upload ──
-  let photoDataUrl = null;
-  const photoInput      = document.getElementById('photo-input');
-  const photoDropZone   = document.getElementById('photo-drop-zone');
-  const photoPreviewDiv = document.getElementById('photo-preview');
-  const photoPreviewImg = document.getElementById('photo-preview-img');
-  const photoChangeBtn  = document.getElementById('photo-change-btn');
-
-  photoInput && photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Gambar mesti kurang daripada 5 MB. Sila pilih gambar yang lebih kecil.');
-      photoInput.value = '';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      photoDataUrl = e.target.result;
-      if (photoPreviewImg) photoPreviewImg.src = photoDataUrl;
-      if (photoDropZone)   photoDropZone.classList.add('hidden');
-      if (photoPreviewDiv) photoPreviewDiv.classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-  });
-
-  photoChangeBtn && photoChangeBtn.addEventListener('click', () => {
-    photoDataUrl = null;
-    if (photoInput)      photoInput.value = '';
-    if (photoPreviewDiv) photoPreviewDiv.classList.add('hidden');
-    if (photoDropZone)   photoDropZone.classList.remove('hidden');
-  });
-
   // ── localStorage helpers ──
   const GB_KEY = 'muhsin_syaqiela_guestbook';
   const GB_MAX = 30;
@@ -663,74 +614,29 @@
     return card;
   }
 
-  // ── Load persisted entries on page load (replaces sample cards) ──
-  (function () {
-    if (!wishesWall) return;
-    const saved = gbLoad();
-    if (!saved.length) return;
-    wishesWall.innerHTML = '';
-    saved.slice().reverse().forEach(entry => {
-      try { wishesWall.appendChild(buildWishCard(entry)); } catch (_) { /* skip corrupt */ }
-    });
+  // ── Load wishes: server first, localStorage fallback ──
+  (function loadWishes() {
+    const wall = document.getElementById('wishes-wall');
+    if (!wall) return;
+    fetch('/.netlify/functions/wishes')
+      .then(r => r.ok ? r.json() : null)
+      .then(entries => {
+        if (!entries || !entries.length) return;
+        wall.innerHTML = '';
+        entries.slice().reverse().forEach(entry => {
+          try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
+        });
+        gbSave(entries);
+      })
+      .catch(() => {
+        const saved = gbLoad();
+        if (!saved.length) return;
+        wall.innerHTML = '';
+        saved.slice().reverse().forEach(entry => {
+          try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
+        });
+      });
   })();
-
-  // ── Form submit ──
-  wishesForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const nameInput = document.getElementById('wish-name');
-    const name = sanitize(nameInput.value.trim());
-    if (!name) { flashError('wish-name', 'Sila masukkan nama tuan/puan'); return; }
-
-    const entry = { type: currentGbType, name, time: Date.now() };
-
-    if (currentGbType === 'wish') {
-      const t = document.getElementById('wish-text');
-      const text = sanitize(t.value.trim());
-      if (!text) { flashError('wish-text', 'Sila coretkan doa restu'); return; }
-      entry.text = text; t.value = '';
-
-    } else if (currentGbType === 'photo') {
-      if (!photoDataUrl) {
-        if (photoDropZone) { photoDropZone.style.outline = '2px solid #e53935'; setTimeout(() => { photoDropZone.style.outline = ''; }, 2000); }
-        return;
-      }
-      entry.photoDataUrl = photoDataUrl;
-      const cap = sanitize((document.getElementById('photo-caption').value || '').trim());
-      if (cap) entry.caption = cap;
-      photoDataUrl = null;
-      if (photoInput) photoInput.value = '';
-      const capField = document.getElementById('photo-caption');
-      if (capField) capField.value = '';
-      if (photoPreviewDiv) photoPreviewDiv.classList.add('hidden');
-      if (photoDropZone)   photoDropZone.classList.remove('hidden');
-    }
-
-    const saved = gbLoad(); saved.push(entry); gbSave(saved);
-
-    // Sync to Neon
-    fetch('/.netlify/functions/wishes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(entry)
-    }).catch(() => {});
-
-    // Show loading state on button
-    const gbBtn = document.getElementById('gb-submit-btn');
-    const gbSuccessEl = document.getElementById('wishes-success');
-    if (gbBtn) { gbBtn.disabled = true; if (gbSubmitLabel) gbSubmitLabel.textContent = 'Menghantar…'; }
-    if (gbSuccessEl) gbSuccessEl.classList.add('hidden');
-
-    setTimeout(() => {
-      const card = buildWishCard(entry);
-      if (wishesWall) {
-        wishesWall.insertBefore(card, wishesWall.firstChild);
-        wishesWall.scrollTop = 0;
-      }
-      if (gbSuccessEl) gbSuccessEl.classList.remove('hidden');
-      if (gbBtn) { gbBtn.disabled = false; if (gbSubmitLabel) gbSubmitLabel.textContent = GB_LABELS[currentGbType] || 'Hantar Doa & Ucapan'; }
-      nameInput.value = '';
-    }, 700);
-  });
 
   /* =============================================
      9. COPY ACCOUNT NUMBER
@@ -768,7 +674,7 @@
   ============================================= */
   const revealEls = document.querySelectorAll(
     '#countdown-section, #itinerary .itinerary-simple, .gallery-item, ' +
-    '#rsvp .engage-tabs, #rsvp .panel-card, ' +
+    '#rsvp .panel-card, ' +
     '#location .location-card, #gift .gift-card'
   );
 
