@@ -528,6 +528,41 @@
           <span class="rsvp-legend-lbl">Baki kapasiti</span>
         </div>
       </div>
+
+      <!-- RSVP names table -->
+      <div style="margin-top:1.5rem;">
+        <div class="panel-header" style="margin-bottom:.75rem;">
+          <span class="panel-title">Senarai Tetamu</span>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <span class="panel-count" id="rsvp-list-count">0 respons</span>
+            <button class="export-btn" id="export-rsvp"><i class="fas fa-download"></i> Export CSV</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <input type="text" id="rsvp-search" placeholder="Cari nama…" />
+          <select id="rsvp-filter">
+            <option value="all">Semua</option>
+            <option value="yes">Hadir</option>
+            <option value="no">Tidak Hadir</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Status</th>
+                <th>Tarikh</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rsvp-tbody">
+              <tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons lagi.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ── Wishes Panel ── -->
@@ -774,6 +809,7 @@
   }
 
   /* ── RSVP ── */
+  let rsvpFilter = 'all', rsvpSearch = '';
   function renderRsvp() {
     const attending = cachedRsvp.filter(r => r.attending === 'yes');
     const notComing = cachedRsvp.filter(r => r.attending === 'no');
@@ -784,17 +820,17 @@
     document.getElementById('tally-tidak').textContent = notComing.length;
     document.getElementById('tally-seats').textContent = `${seats} tempat duduk`;
 
-    // Build grid cells — filled responses first
+    // Build grid cells
     const cells = [...cachedRsvp].map(r => {
       const g   = parseInt(r.guests) || 1;
       const cls = r.attending === 'yes'
         ? (g >= 7 ? 'h4' : g >= 5 ? 'h3' : g >= 3 ? 'h2' : 'h1')
         : 'tidak';
-      const tip = r.attending === 'yes' ? `Hadir · ${g} orang` : 'Tidak Hadir';
+      const name = r.name ? esc(r.name) + ' — ' : '';
+      const tip  = r.attending === 'yes' ? `${name}Hadir · ${g} orang` : `${name}Tidak Hadir`;
       return `<div class="rsvp-cell ${cls}" title="${tip}"></div>`;
     });
 
-    // Pad with empty slots up to CAPACITY (max 300 grey cells shown)
     const emptyCount = Math.min(Math.max(0, CAPACITY - cachedRsvp.length), 300);
     for (let i = 0; i < emptyCount; i++) {
       cells.push('<div class="rsvp-cell" title="Belum dijawab"></div>');
@@ -804,7 +840,63 @@
     grid.innerHTML = cells.length
       ? cells.join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem 0">Tiada respons lagi.</p>';
+
+    renderRsvpTable();
   }
+
+  function renderRsvpTable() {
+    let rows = [...cachedRsvp].reverse();
+    if (rsvpFilter !== 'all') rows = rows.filter(r => r.attending === rsvpFilter);
+    if (rsvpSearch) {
+      const q = rsvpSearch.toLowerCase();
+      rows = rows.filter(r => (r.name || '').toLowerCase().includes(q));
+    }
+    document.getElementById('rsvp-list-count').textContent = `${rows.length} respons`;
+    const tbody = document.getElementById('rsvp-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons dijumpai.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((r, i) => {
+      const rowId = r.id != null ? r.id : 'ls_' + i;
+      const badge = r.attending === 'yes'
+        ? '<span class="badge badge-yes">Hadir</span>'
+        : '<span class="badge badge-no">Tidak Hadir</span>';
+      return `<tr>
+        <td class="time-cell">${i + 1}</td>
+        <td><strong>${esc(r.name || '—')}</strong></td>
+        <td>${badge}</td>
+        <td class="time-cell">${fmtDate(r.time)}</td>
+        <td>
+          <button class="action-btn del" title="Padam" onclick="deleteRsvp('${rowId}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.deleteRsvp = async function(id) {
+    if (!confirm('Padam rekod RSVP ini?')) return;
+    if (String(id).startsWith('ls_')) {
+      const arr = loadLocal(RSVP_KEY); arr.splice(parseInt(id.replace('ls_', '')), 1); saveLocal(RSVP_KEY, arr);
+    } else {
+      await apiFetch(`/.netlify/functions/rsvp?id=${id}`, { method: 'DELETE' }).catch(() => {});
+    }
+    await renderAll();
+  };
+
+  document.getElementById('rsvp-search').addEventListener('input', function() {
+    rsvpSearch = this.value; renderRsvpTable();
+  });
+  document.getElementById('rsvp-filter').addEventListener('change', function() {
+    rsvpFilter = this.value; renderRsvpTable();
+  });
+  document.getElementById('export-rsvp').addEventListener('click', () => {
+    const header = ['Nama', 'Status', 'Tarikh'];
+    const rows = cachedRsvp.map(r => [r.name || '', r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', fmtDate(r.time)]);
+    downloadCSV('rsvp-muhsin-syaqiela.csv', [header, ...rows]);
+  });
 
   /* ── Wishes ── */
   let wishesFilter = 'all', wishesSearch = '';
