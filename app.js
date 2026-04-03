@@ -105,8 +105,13 @@
     if (dur > 0) ytPlayer.seekTo(ratio * dur, true);
   });
 
-  // YouTube IFrame API calls this globally when the script has loaded
-  window.onYouTubeIframeAPIReady = function () {
+  // YouTube IFrame API — robust initialisation
+  // Extracted into a named function so we can handle both the normal
+  // async callback AND the race where the API is already loaded.
+  function initYTPlayer() {
+    if (ytPlayer) return;                        // already initialised
+    if (!window.YT || !window.YT.Player) return; // API not available yet
+
     ytPlayer = new YT.Player('yt-player', {
       videoId: '1-wpZS9AePY',
       playerVars: {
@@ -120,7 +125,7 @@
         iv_load_policy:  3,
         modestbranding:  1,
         rel:             0,
-        origin:          window.location.origin, // fixes postMessage cross-origin error
+        origin:          window.location.origin,
       },
       events: {
         onReady: function (event) {
@@ -134,9 +139,11 @@
           if (mpArt) mpArt.classList.add('playing');
           musicBtn.setAttribute('aria-label', 'Pause background music');
 
+          // Make sure the player is visible (undo any earlier hide)
+          const mp = document.getElementById('music-player');
+          if (mp) mp.style.display = '';
+
           // Unmute on first user gesture anywhere on the page.
-          // capture:true fires BEFORE button click handlers, so unmute
-          // happens regardless of which element the user interacts with first.
           let unmuted = false;
           function unmuteOnInteraction() {
             if (unmuted) return;
@@ -157,7 +164,6 @@
             const data  = event.target.getVideoData();
             const title = data && data.title;
             if (title && musicTitle) {
-              // Split "Title - Artist" if separator present
               const sep = title.indexOf(' - ');
               if (sep > -1) {
                 musicTitle.textContent = title.slice(0, sep);
@@ -166,7 +172,6 @@
               } else {
                 musicTitle.textContent = title;
               }
-              // Marquee if title overflows its container
               requestAnimationFrame(() => {
                 const wrap = musicTitle.parentElement;
                 if (wrap && musicTitle.scrollWidth > wrap.clientWidth + 2) {
@@ -178,25 +183,46 @@
             }
           } catch (_) { /* title stays hardcoded fallback */ }
         },
-        onError: function () {
-          const mp = document.getElementById('music-player');
-          if (mp) mp.style.display = 'none';
+        onError: function (event) {
+          // Only hide on fatal errors (invalid video id = 100, 101, 150).
+          // Transient errors (2 = bad param, 5 = HTML5 error) are retried.
+          var code = event.data;
+          if (code === 100 || code === 101 || code === 150) {
+            var mp = document.getElementById('music-player');
+            if (mp) mp.style.display = 'none';
+          }
         },
         onStateChange: function (event) {
-          // YT.PlayerState.ENDED = 0 — requeue for loop safety
           if (event.data === 0 && ytReady) ytPlayer.playVideo();
         },
       },
     });
-  };
+  }
 
-  // Hide player if YouTube fails to load within 10 seconds
+  // Set the global callback for the normal async path
+  window.onYouTubeIframeAPIReady = initYTPlayer;
+
+  // Race-condition fix: if the YT API already loaded (cached scripts),
+  // the callback already fired before we assigned it — init now.
+  if (window.YT && window.YT.Player) {
+    initYTPlayer();
+  }
+
+  // Fallback: if the API still hasn't loaded after 15 s, inject the
+  // script tag again (covers ad-blocker edge cases / dropped requests).
+  // We no longer permanently hide the player on timeout.
   setTimeout(function () {
-    if (!ytReady) {
-      const mp = document.getElementById('music-player');
-      if (mp) mp.style.display = 'none';
+    if (!ytReady && !ytPlayer) {
+      // Try loading the API one more time
+      if (!window.YT || !window.YT.Player) {
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+      } else {
+        initYTPlayer();
+      }
     }
-  }, 10000);
+  }, 15000);
 
   musicBtn.addEventListener('click', () => {
     const mpArt = document.getElementById('mp-art');
