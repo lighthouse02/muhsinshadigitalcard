@@ -74,6 +74,8 @@
   let ytPlayer   = null;
   let ytReady    = false;
   let progressInt = null;
+  const _pageLoadTime  = Date.now();   // used to sync music with stinger
+  const STINGER_MS     = 3200;         // must match stinger-split timeout in index.html
 
   function fmtTime(sec) {
     if (!isFinite(sec) || sec < 0) return '--:--';
@@ -130,18 +132,24 @@
       events: {
         onReady: function (event) {
           ytReady = true;
-          // Start playing muted (browsers allow muted autoplay)
-          event.target.playVideo();
-          musicOn = true;
-          startProgress();
-          if (musicIcon) musicIcon.className = 'fas fa-pause';
-          const mpArt = document.getElementById('mp-art');
-          if (mpArt) mpArt.classList.add('playing');
-          musicBtn.setAttribute('aria-label', 'Pause background music');
 
-          // Make sure the player is visible (undo any earlier hide)
-          const mp = document.getElementById('music-player');
-          if (mp) mp.style.display = '';
+          // Delay playback so music starts exactly when the stinger curtains open
+          const elapsed = Date.now() - _pageLoadTime;
+          const delay   = Math.max(0, STINGER_MS - elapsed);
+          setTimeout(function () {
+            // Start playing muted (browsers allow muted autoplay)
+            event.target.playVideo();
+            musicOn = true;
+            startProgress();
+            if (musicIcon) musicIcon.className = 'fas fa-pause';
+            const mpArt = document.getElementById('mp-art');
+            if (mpArt) mpArt.classList.add('playing');
+            musicBtn.setAttribute('aria-label', 'Pause background music');
+
+            // Make sure the player is visible (undo any earlier hide)
+            const mp = document.getElementById('music-player');
+            if (mp) mp.style.display = '';
+          }, delay);
 
           // Unmute on first user gesture anywhere on the page.
           let unmuted = false;
