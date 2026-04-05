@@ -510,6 +510,10 @@
             wall.insertBefore(buildWishCard(entry), wall.firstChild);
             const badge = document.getElementById('wall-wish-count');
             if (badge) badge.textContent = wall.childElementCount;
+          } else {
+            // Wall is on wall.html — just bump the badge count
+            const badge = document.getElementById('wall-wish-count');
+            if (badge) badge.textContent = (parseInt(badge.textContent) || 0) + 1;
           }
         } else {
           fetch('/.netlify/functions/messages', {
@@ -716,11 +720,8 @@
     return card;
   }
 
-  // ── Load wishes: server first, localStorage fallback ──
-  (function loadWishes() {
-    const wall = document.getElementById('wishes-wall');
-    if (!wall) return;
-
+  // ── Load wish count for badge only (wall is on wall.html) ──
+  (function loadWishCount() {
     function updateWishCount(count) {
       const badge = document.getElementById('wall-wish-count');
       if (badge && count > 0) badge.textContent = count;
@@ -729,22 +730,14 @@
     fetch('/.netlify/functions/wishes')
       .then(r => r.ok ? r.json() : null)
       .then(entries => {
-        if (!entries || !entries.length) return;
-        wall.innerHTML = '';
-        entries.slice().reverse().forEach(entry => {
-          try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
-        });
-        updateWishCount(entries.length);
-        gbSave(entries);
+        if (entries && entries.length) {
+          updateWishCount(entries.length);
+          gbSave(entries);
+        }
       })
       .catch(() => {
         const saved = gbLoad();
-        if (!saved.length) return;
-        wall.innerHTML = '';
-        saved.slice().reverse().forEach(entry => {
-          try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
-        });
-        updateWishCount(saved.length);
+        if (saved.length) updateWishCount(saved.length);
       });
   })();
 
