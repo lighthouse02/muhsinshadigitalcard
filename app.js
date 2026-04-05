@@ -77,6 +77,21 @@
   const _pageLoadTime  = Date.now();   // used to sync music with stinger
   const STINGER_MS     = 3200;         // must match stinger-split timeout in index.html
 
+  // Register unmute listener IMMEDIATELY so any tap during the stinger is captured,
+  // even before the YT player is ready.
+  let _userHasInteracted = false;
+  function _onFirstInteraction() {
+    if (_userHasInteracted) return;
+    _userHasInteracted = true;
+    if (ytReady) { ytPlayer.unMute(); ytPlayer.setVolume(100); }
+    document.removeEventListener('click',    _onFirstInteraction, true);
+    document.removeEventListener('touchend', _onFirstInteraction, true);
+    document.removeEventListener('keydown',  _onFirstInteraction, true);
+  }
+  document.addEventListener('click',    _onFirstInteraction, { capture: true });
+  document.addEventListener('touchend', _onFirstInteraction, { capture: true });
+  document.addEventListener('keydown',  _onFirstInteraction, { capture: true });
+
   function fmtTime(sec) {
     if (!isFinite(sec) || sec < 0) return '--:--';
     const m = Math.floor(sec / 60);
@@ -137,8 +152,10 @@
           const elapsed = Date.now() - _pageLoadTime;
           const delay   = Math.max(0, STINGER_MS - elapsed);
           setTimeout(function () {
-            // Start playing muted (browsers allow muted autoplay)
+            // Start playing muted (browsers require muted autoplay)
             event.target.playVideo();
+            // If user already tapped during the stinger, unmute immediately
+            if (_userHasInteracted) { ytPlayer.unMute(); ytPlayer.setVolume(100); }
             musicOn = true;
             startProgress();
             if (musicIcon) musicIcon.className = 'fas fa-pause';
@@ -150,23 +167,6 @@
             const mp = document.getElementById('music-player');
             if (mp) mp.style.display = '';
           }, delay);
-
-          // Unmute on first user gesture anywhere on the page.
-          let unmuted = false;
-          function unmuteOnInteraction() {
-            if (unmuted) return;
-            unmuted = true;
-            if (ytReady) {
-              ytPlayer.unMute();
-              ytPlayer.setVolume(100);
-            }
-            document.removeEventListener('click',    unmuteOnInteraction, true);
-            document.removeEventListener('touchend', unmuteOnInteraction, true);
-            document.removeEventListener('keydown',  unmuteOnInteraction, true);
-          }
-          document.addEventListener('click',    unmuteOnInteraction, { capture: true });
-          document.addEventListener('touchend', unmuteOnInteraction, { capture: true });
-          document.addEventListener('keydown',  unmuteOnInteraction, { capture: true });
 
           try {
             const data  = event.target.getVideoData();
