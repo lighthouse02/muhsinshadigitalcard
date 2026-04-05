@@ -850,29 +850,36 @@
   const shareBackdrop   = document.getElementById('share-modal-backdrop');
   const shareSaveBtn    = document.getElementById('share-save-btn');
   const shareWaBtn      = document.getElementById('share-wa-btn');
-  const shareTgBtn      = document.getElementById('share-tg-btn');
   const shareToast      = document.getElementById('share-toast');
   let toastTimer = null;
 
   const SHARE_URL = window.location.href.split('#')[0];
   const SHARE_CAPTION =
-`Assalamualaikum warahmatullahi wabarakatuh,
+`🌙 *Bismillahirrahmanirrahim*
 
-Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke Majlis Kesyukuran Perkahwinan anak lelaki kami:
+_Assalamualaikum warahmatullahi wabarakatuh_
 
-💍 Muhammad Muhsin Bin Haji Shukri
-dengan pilihan hatinya,
-Syaqiela Amirah Syafiqah Binti Syaiful Azlan
+Dengan penuh rasa syukur dan kegembiraan, kami dengan hormatnya menjemput *Tuan/Puan sekeluarga* hadir ke:
 
-📅 Sabtu, 30 Mei 2026
-🍽️ Jamuan: 11.00 pagi – 4.00 petang
-📍 Pekarangan Masjid Bandar Baru Senawang, 70450 Seremban, Negeri Sembilan
+✨ *Majlis Kesyukuran Perkahwinan*
 
-Kehadiran Tuan/Puan amat kami hargai dan menjadi rahmat kepada majlis kami.
+💍 *Muhammad Muhsin Bin Haji Shukri*
+_dengan pilihan hatinya_
+💍 *Syaqiela Amirah Syafiqah Binti Syaiful Azlan*
+
+━━━━━━━━━━━━━━━
+📅 *Tarikh:* Sabtu, 30 Mei 2026
+🍽️ *Jamuan:* 11.00 pagi – 4.00 petang
+💒 *Ketibaan Pengantin:* 12.30 tengahari
+📍 *Lokasi:* Pekarangan Masjid Bandar Baru Senawang,
+70450 Seremban, Negeri Sembilan
+━━━━━━━━━━━━━━━
+
+Kehadiran Tuan/Puan amat kami hargai dan menjadi _rahmat serta berkat_ kepada majlis kami. 🤍
 
 🔗 ${SHARE_URL}
 
-Wassalamualaikum w.b.t.`;
+_Wassalamualaikum w.b.t._`;
 
   function showToast(msg) {
     if (!shareToast) return;
@@ -1011,23 +1018,6 @@ Wassalamualaikum w.b.t.`;
     });
   }
 
-  // Telegram shortcut
-  if (shareTgBtn) {
-    shareTgBtn.addEventListener('click', async () => {
-      setActLoading(shareTgBtn, true);
-      const blob = await buildPdfBlob();
-      setActLoading(shareTgBtn, false);
-      if (!blob) { showToast('⚠ Gagal menjana PDF.'); return; }
-      const file = new File([blob], 'jemputan-muhsin-syaqiela.pdf', { type: 'application/pdf' });
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ title: 'Warkah Jemputan Muhsin & Syaqiela', text: SHARE_CAPTION, files: [file] }); return; }
-        catch (err) { if (err.name === 'AbortError') return; }
-      }
-      // Fallback: download PDF then open Telegram
-      triggerDownload(blob, 'jemputan-muhsin-syaqiela.pdf');
-      window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(SHARE_CAPTION)}`, '_blank', 'noopener');
-      showToast('✓ PDF telah disimpan. Sila lampirkan dalam Telegram.');
-    });
-  }
+  // Telegram shortcut — removed
 
 })();
