@@ -1037,10 +1037,23 @@
     msgSearch = this.value; renderMessages();
   });
 
-  // Auto-refresh every 30 seconds when dashboard is open
+  // Auto-refresh every 10 seconds (fallback for cross-device)
   setInterval(async () => {
     if (sessionStorage.getItem(SESSION_KEY) === 'yes') await renderAll();
-  }, 30000);
+  }, 10000);
+
+  // Refresh instantly when tab regains focus
+  document.addEventListener('visibilitychange', async () => {
+    if (!document.hidden && sessionStorage.getItem(SESSION_KEY) === 'yes') await renderAll();
+  });
+
+  // BroadcastChannel: refresh instantly when a guest submits RSVP in same browser
+  if (typeof BroadcastChannel !== 'undefined') {
+    const _adminChannel = new BroadcastChannel('rsvp-new');
+    _adminChannel.onmessage = async () => {
+      if (sessionStorage.getItem(SESSION_KEY) === 'yes') await renderAll();
+    };
+  }
 
   /* ── Demo toolbar ── */
   const seedBtn    = document.getElementById('seed-btn');

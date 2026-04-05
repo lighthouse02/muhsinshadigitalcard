@@ -321,7 +321,7 @@
     const gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
       '&text=Muhsin+%26+Syaqiela+%E2%80%94+Majlis+Kesyukuran+Perkahwinan' +
       '&dates=20260530T030000Z%2F20260530T080000Z' +
-      '&details=Anda+dijemput+hadir+ke+Majlis+Kesyukuran+Perkahwinan+Muhammad+Muhsin+bin+Haji+Shukri+%26+Syaqiela+Amirah+Syafiqah.' +
+      '&details=Anda+dijemput+hadir+ke+Majlis+Kesyukuran+Perkahwinan+Muhammad+Muhsin+Bin+Haji+Shukri+%26+Syaqiela+Amirah+Syafiqah+Binti+Syaiful+Azlan.' +
       '&location=Pekarangan+Masjid+Bandar+Baru+Senawang%2C+70450+Seremban%2C+Negeri+Sembilan';
     document.getElementById('cal-google').href = gcal;
 
@@ -334,7 +334,7 @@
       'DTSTART:20260530T110000',
       'DTEND:20260530T160000',
       'SUMMARY:Muhsin & Syaqiela — Majlis Kesyukuran Perkahwinan',
-      'DESCRIPTION:Anda dijemput hadir ke Majlis Kesyukuran Perkahwinan Muhammad Muhsin bin Haji Shukri & Syaqiela Amirah Syafiqah. Jamuan: 11.00 pagi - 4.00 petang.',
+      'DESCRIPTION:Anda dijemput hadir ke Majlis Kesyukuran Perkahwinan Muhammad Muhsin Bin Haji Shukri & Syaqiela Amirah Syafiqah Binti Syaiful Azlan. Jamuan: 11.00 pagi - 4.00 petang.',
       'LOCATION:Pekarangan Masjid Bandar Baru Senawang\, 70450 Seremban\, Negeri Sembilan',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -404,8 +404,29 @@
   });
 
   /* =============================================
+     5b. PERSONALISED INVITATION LINK (?jemputan=)
+  ============================================= */
+  (function applyJemputan() {
+    const raw = new URLSearchParams(window.location.search).get('jemputan');
+    if (!raw) return;
+    const guestName = decodeURIComponent(raw).replace(/<[^>]*>/g, '').trim().slice(0, 80);
+    if (!guestName) return;
+    const el = document.getElementById('hero-jemputan');
+    if (el) {
+      el.textContent = '\u2709 Kepada Yang Dihormati, ' + guestName;
+      el.classList.remove('hidden');
+    }
+    const nameInput = document.getElementById('rsvp-name');
+    if (nameInput) nameInput.value = guestName;
+  })();
+
+  /* =============================================
      6. COMBINED RSVP + UCAPAN FORM
   ============================================= */
+  // BroadcastChannel — notifies admin dashboard instantly when a guest submits
+  const _rsvpChannel = (typeof BroadcastChannel !== 'undefined')
+    ? new BroadcastChannel('rsvp-new') : null;
+
   function loadRsvpCounts() {
     fetch('/.netlify/functions/rsvp?counts=1')
       .then(r => r.ok ? r.json() : null)
@@ -506,10 +527,17 @@
       if (hint) hint.textContent = 'Papan ucapan — semua tetamu boleh lihat';
 
       successEl.classList.remove('hidden');
-      document.getElementById('rsvp-success-msg').textContent = attendingRadio.value === 'yes'
+      const isHadir = attendingRadio.value === 'yes';
+      document.getElementById('rsvp-success-msg').textContent = isHadir
         ? 'Terima kasih! Kami menantikan kehadiran tuan/puan.'
         : 'Terima kasih atas maklum balas tuan/puan.';
       loadRsvpCounts();
+
+      // Notify admin dashboard in same browser immediately
+      if (_rsvpChannel) _rsvpChannel.postMessage({ ts: Date.now() });
+
+      // Show WA contact picker — carry ucapan text if written
+      setTimeout(() => showWaPicker(ucapan || ''), 800);
     } catch (_) {
       successEl.innerHTML = '<p style="color:#e53935;text-align:center;">Ralat berlaku. Sila cuba semula.</p>';
       successEl.classList.remove('hidden');
@@ -518,6 +546,54 @@
     btn.disabled    = false;
     btn.textContent = 'Hantar RSVP';
   });
+
+  /* =============================================
+     6b. WA CONTACT PICKER
+  ============================================= */
+  const _waContacts = [
+    { name: 'Hj Shukri',     role: 'Bapa Pengantin Lelaki', number: '60196210677' },
+    { name: 'Hjh Nurciana',  role: 'Ibu Pengantin Lelaki',  number: '60173629686' },
+    { name: "Kak Syifa'",    role: 'Penganjur Majlis',       number: '601114793439' },
+  ];
+
+  function showWaPicker(msg) {
+    const picker   = document.getElementById('wa-picker');
+    const contacts = document.getElementById('wa-picker-contacts');
+    if (!picker || !contacts) return;
+
+    contacts.innerHTML = _waContacts.map((c, i) => `
+      <button class="wa-picker-contact" data-idx="${i}">
+        <span class="wa-picker-contact-icon"><i class="fab fa-whatsapp"></i></span>
+        <span class="wa-picker-contact-info">
+          <span class="wa-picker-contact-name">${c.name}</span>
+          <span class="wa-picker-contact-role">${c.role}</span>
+        </span>
+      </button>`).join('');
+
+    contacts.querySelectorAll('.wa-picker-contact').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const c = _waContacts[parseInt(btn.dataset.idx)];
+        closeWaPicker();
+        const url = msg ? `https://wa.me/${c.number}?text=${encodeURIComponent(msg)}` : `https://wa.me/${c.number}`;
+        window.open(url, '_blank', 'noopener');
+      });
+    });
+
+    picker.classList.add('open');
+    picker.setAttribute('aria-hidden', 'false');
+
+    document.getElementById('wa-picker-close').onclick = closeWaPicker;
+    document.getElementById('wa-picker-skip').onclick  = closeWaPicker;
+    document.getElementById('wa-picker-backdrop').onclick = closeWaPicker;
+  }
+
+  function closeWaPicker() {
+    const picker = document.getElementById('wa-picker');
+    if (picker) {
+      picker.classList.remove('open');
+      picker.setAttribute('aria-hidden', 'true');
+    }
+  }
 
   /* =============================================
      7. SIGNATURE PAD + UCAPAN TOGGLE
@@ -784,9 +860,9 @@
 
 Dengan penuh rasa syukur dan kegembiraan, kami menjemput Tuan/Puan sekeluarga hadir ke Majlis Kesyukuran Perkahwinan anak lelaki kami:
 
-💍 Muhammad Muhsin bin Haji Shukri
+💍 Muhammad Muhsin Bin Haji Shukri
 dengan pilihan hatinya,
-Syaqiela Amirah Syafiqah binti Syaiful Azlan
+Syaqiela Amirah Syafiqah Binti Syaiful Azlan
 
 📅 Sabtu, 30 Mei 2026
 🍽️ Jamuan: 11.00 pagi – 4.00 petang

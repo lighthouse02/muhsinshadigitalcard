@@ -982,6 +982,25 @@ body.stinger-active {
   font-size: .55em;
   vertical-align: middle;
 }
+.hero-jemputan {
+  font-family: var(--font-sans);
+  font-size: .8rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.85);
+  background: rgba(200,169,110,.2);
+  border: 1px solid rgba(200,169,110,.45);
+  border-radius: 2rem;
+  padding: .32rem 1rem;
+  display: inline-block;
+  margin-bottom: .9rem;
+  backdrop-filter: blur(4px);
+  animation: fadeInDown .6s ease both;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .hero-announce {
   font-family: var(--font-serif);
   font-size: 1.15rem;
@@ -1348,6 +1367,126 @@ body.stinger-active {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   cursor: pointer;
+}
+
+/* ── WA Contact Picker Modal ── */
+.wa-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.wa-picker.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.wa-picker-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,12,4,.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  cursor: pointer;
+}
+.wa-picker-box {
+  position: relative;
+  z-index: 1;
+  background: var(--ivory);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.25rem 1.1rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.38);
+  transform: translateY(18px) scale(.95);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.wa-picker.open .wa-picker-box {
+  transform: translateY(0) scale(1);
+}
+.wa-picker-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+.wa-picker-hdr h3 {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mocha);
+  margin: 0;
+}
+.wa-picker-sub {
+  font-size: .82rem;
+  color: var(--text-light);
+  margin: 0 0 1rem;
+}
+.wa-picker-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-bottom: 1rem;
+}
+.wa-picker-contact {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: .75rem 1rem;
+  background: #fff;
+  border: 1.5px solid #e8ddd0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .2s, background .2s;
+  width: 100%;
+}
+.wa-picker-contact:hover {
+  border-color: #25D366;
+  background: #f0fdf4;
+}
+.wa-picker-contact-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+  color: #16a34a;
+}
+.wa-picker-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+}
+.wa-picker-contact-name {
+  font-family: var(--font-serif);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--mocha);
+}
+.wa-picker-contact-role {
+  font-size: .75rem;
+  color: var(--text-light);
+}
+.wa-picker-skip {
+  width: 100%;
+  padding: .55rem;
+  border: none;
+  background: transparent;
+  font-size: .82rem;
+  color: var(--text-light);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .share-modal-box {
   position: relative;

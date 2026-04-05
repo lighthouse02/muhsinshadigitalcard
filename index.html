@@ -159,6 +159,7 @@
     <div class="hero-overlay"></div>
     <div class="petals-container" id="petals"></div>
     <div class="hero-content">
+      <p id="hero-jemputan" class="hero-jemputan hidden"></p>
       <p class="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
       <p class="hero-subtitle fade-in-up delay-1">Dengan penuh kesyukuran</p>
       <h1 class="hero-names fade-in-up delay-2">Muhsin <span>&</span> Syaqiela</h1>
@@ -677,5 +678,19 @@
       if (art) observer.observe(art, { attributes: true, attributeFilter: ['class'] });
     })();
   </script>
+
+  <!-- ========== WA CONTACT PICKER MODAL ========== -->
+  <div id="wa-picker" class="wa-picker" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="wa-picker-title">
+    <div class="wa-picker-backdrop" id="wa-picker-backdrop"></div>
+    <div class="wa-picker-box">
+      <div class="wa-picker-hdr">
+        <h3 id="wa-picker-title"><i class="fab fa-whatsapp" style="color:#25D366;margin-right:.45rem;"></i>Hantar Pengesahan WhatsApp</h3>
+        <button class="share-modal-x" id="wa-picker-close" aria-label="Tutup"><i class="fas fa-times"></i></button>
+      </div>
+      <p class="wa-picker-sub">Hantar ucapan tahniah &amp; doa restu kepada tuan rumah:</p>
+      <div class="wa-picker-contacts" id="wa-picker-contacts"></div>
+      <button class="wa-picker-skip" id="wa-picker-skip">Langkau</button>
+    </div>
+  </div>
 </body>
 </html>
