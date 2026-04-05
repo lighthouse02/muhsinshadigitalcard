@@ -553,12 +553,13 @@
                 <th>#</th>
                 <th>Nama</th>
                 <th>Status</th>
+                <th>Peserta</th>
                 <th>Tarikh</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="rsvp-tbody">
-              <tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons lagi.</div></td></tr>
+              <tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons lagi.</div></td></tr>
             </tbody>
           </table>
         </div>
@@ -854,7 +855,7 @@
     document.getElementById('rsvp-list-count').textContent = `${rows.length} respons`;
     const tbody = document.getElementById('rsvp-tbody');
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons dijumpai.</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i>Tiada respons dijumpai.</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map((r, i) => {
@@ -862,10 +863,12 @@
       const badge = r.attending === 'yes'
         ? '<span class="badge badge-yes">Hadir</span>'
         : '<span class="badge badge-no">Tidak Hadir</span>';
+      const peserta = r.attending === 'yes' ? (parseInt(r.guests) || 1) : '—';
       return `<tr>
         <td class="time-cell">${i + 1}</td>
         <td><strong>${esc(r.name || '—')}</strong></td>
         <td>${badge}</td>
+        <td class="time-cell" style="text-align:center">${peserta}</td>
         <td class="time-cell">${fmtDate(r.time)}</td>
         <td>
           <button class="action-btn del" title="Padam" onclick="deleteRsvp('${rowId}')">
@@ -893,8 +896,8 @@
     rsvpFilter = this.value; renderRsvpTable();
   });
   document.getElementById('export-rsvp').addEventListener('click', () => {
-    const header = ['Nama', 'Status', 'Tarikh'];
-    const rows = cachedRsvp.map(r => [r.name || '', r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', fmtDate(r.time)]);
+    const header = ['Nama', 'Status', 'Peserta', 'Tarikh'];
+    const rows = cachedRsvp.map(r => [r.name || '', r.attending === 'yes' ? 'Hadir' : 'Tidak Hadir', r.attending === 'yes' ? (parseInt(r.guests) || 1) : 0, fmtDate(r.time)]);
     downloadCSV('rsvp-muhsin-syaqiela.csv', [header, ...rows]);
   });
 

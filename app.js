@@ -412,6 +412,7 @@
       .then(data => {
         if (!data) return;
         document.getElementById('rsvp-count-hadir').textContent    = data.hadir;
+        document.getElementById('rsvp-count-total').textContent    = data.totalPeserta;
         document.getElementById('rsvp-count-takhadir').textContent = data.takHadir;
       })
       .catch(() => {});
@@ -419,10 +420,21 @@
   loadRsvpCounts();
 
   const rsvpForm = document.getElementById('rsvp-form');
+
+  // Show/hide guests field based on attendance selection
+  document.querySelectorAll('input[name="rsvp-attending"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const guestsGroup = document.getElementById('rsvp-guests-group');
+      if (guestsGroup) guestsGroup.hidden = radio.value !== 'yes';
+    });
+  });
+
   rsvpForm && rsvpForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name           = sanitize(document.getElementById('rsvp-name').value.trim());
     const attendingRadio = document.querySelector('input[name="rsvp-attending"]:checked');
+    const guestsInput    = document.getElementById('rsvp-guests');
+    const guests         = guestsInput ? Math.min(Math.max(parseInt(guestsInput.value) || 1, 1), 5) : 1;
     const ucapan         = sanitize((document.getElementById('rsvp-ucapan').value || '').trim());
     const btn            = document.getElementById('rsvp-submit-btn');
     const successEl      = document.getElementById('rsvp-success');
@@ -453,7 +465,7 @@
       await fetch('/.netlify/functions/rsvp', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ attending: attendingRadio.value, name })
+        body:    JSON.stringify({ attending: attendingRadio.value, name, guests: attendingRadio.value === 'yes' ? guests : 0 })
       });
 
       if (ucapan) {
@@ -480,6 +492,9 @@
       document.getElementById('rsvp-name').value    = '';
       document.getElementById('rsvp-ucapan').value  = '';
       attendingRadio.checked = false;
+      if (guestsInput) { guestsInput.value = '1'; }
+      const guestsGroup = document.getElementById('rsvp-guests-group');
+      if (guestsGroup) guestsGroup.hidden = true;
       if (ucapanMode === 'private') sigPad.clear();
       // Reset toggle back to Awam
       const uvPub = document.getElementById('uv-public');

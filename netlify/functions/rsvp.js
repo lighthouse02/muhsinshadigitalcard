@@ -25,10 +25,11 @@ exports.handler = async (event) => {
       const body     = JSON.parse(event.body || '{}');
       const attending = body.attending === 'yes' ? 'yes' : 'no';
       const name      = sanitize(body.name || 'Tetamu', 100);
+      const guests    = attending === 'yes' ? Math.min(Math.max(parseInt(body.guests) || 1, 1), 5) : 0;
 
       await sql`
         INSERT INTO rsvp (name, phone, attending, guests)
-        VALUES (${name}, ${''}, ${attending}, ${0})
+        VALUES (${name}, ${''}, ${attending}, ${guests})
       `;
       return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
     }
@@ -38,14 +39,18 @@ exports.handler = async (event) => {
       // Public: return only aggregate counts
       if ((event.queryStringParameters || {}).counts === '1') {
         const rows = await sql`
-          SELECT attending, COUNT(*) AS total FROM rsvp GROUP BY attending
+          SELECT attending, COUNT(*) AS total, SUM(GREATEST(guests, 1)) AS total_peserta FROM rsvp GROUP BY attending
         `;
-        let hadir = 0, takHadir = 0;
+        let hadir = 0, takHadir = 0, totalPeserta = 0;
         rows.forEach(r => {
-          if (r.attending === 'yes') hadir = parseInt(r.total);
-          else takHadir = parseInt(r.total);
+          if (r.attending === 'yes') {
+            hadir = parseInt(r.total);
+            totalPeserta = parseInt(r.total_peserta) || hadir;
+          } else {
+            takHadir = parseInt(r.total);
+          }
         });
-        return { statusCode: 200, headers: CORS, body: JSON.stringify({ hadir, takHadir }) };
+        return { statusCode: 200, headers: CORS, body: JSON.stringify({ hadir, takHadir, totalPeserta }) };
       }
 
       if ((event.headers['x-admin-key'] || '') !== ADMIN_SECRET) {

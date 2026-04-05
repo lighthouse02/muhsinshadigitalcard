@@ -2054,6 +2054,15 @@ body.stinger-active {
 }
 .rsvp-count-hadir .rsvp-count-num  { color: var(--gold-dark); }
 .rsvp-count-takhadir .rsvp-count-num { color: var(--mocha); }
+.rsvp-count-total .rsvp-count-num { color: #5c7a5a; }
+.rsvp-count-total i { color: #5c7a5a; }
+
+.field-hint {
+  font-size: .78rem;
+  color: var(--text-light);
+  margin-top: .3rem;
+  font-style: italic;
+}
 
 /* ── Custom radio buttons ── */
 .rsvp-radio-group {
