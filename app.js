@@ -412,7 +412,6 @@
       .then(data => {
         if (!data) return;
         document.getElementById('rsvp-count-hadir').textContent    = data.hadir;
-        document.getElementById('rsvp-count-total').textContent    = data.totalPeserta;
         document.getElementById('rsvp-count-takhadir').textContent = data.takHadir;
       })
       .catch(() => {});
