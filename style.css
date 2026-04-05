@@ -2497,8 +2497,32 @@ body.stinger-active {
   text-underline-offset: 3px;
   letter-spacing: .02em;
   transition: color .2s, opacity .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
 }
 .wall-link:hover { color: var(--gold); opacity: .85; }
+.wall-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 .45rem;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  transition: transform .2s;
+}
+.wall-link:hover .wall-count-badge { transform: scale(1.12); }
+.wall-count-badge:empty { display: none; }
 .wishes-wall {
   display: flex;
   flex-direction: column;

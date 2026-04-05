@@ -506,7 +506,11 @@
             body:    JSON.stringify(entry)
           }).catch(() => {});
           const wall = document.getElementById('wishes-wall');
-          if (wall) wall.insertBefore(buildWishCard(entry), wall.firstChild);
+          if (wall) {
+            wall.insertBefore(buildWishCard(entry), wall.firstChild);
+            const badge = document.getElementById('wall-wish-count');
+            if (badge) badge.textContent = wall.childElementCount;
+          }
         } else {
           fetch('/.netlify/functions/messages', {
             method:  'POST',
@@ -716,6 +720,12 @@
   (function loadWishes() {
     const wall = document.getElementById('wishes-wall');
     if (!wall) return;
+
+    function updateWishCount(count) {
+      const badge = document.getElementById('wall-wish-count');
+      if (badge && count > 0) badge.textContent = count;
+    }
+
     fetch('/.netlify/functions/wishes')
       .then(r => r.ok ? r.json() : null)
       .then(entries => {
@@ -724,6 +734,7 @@
         entries.slice().reverse().forEach(entry => {
           try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
         });
+        updateWishCount(entries.length);
         gbSave(entries);
       })
       .catch(() => {
@@ -733,6 +744,7 @@
         saved.slice().reverse().forEach(entry => {
           try { wall.appendChild(buildWishCard(entry)); } catch (_) {}
         });
+        updateWishCount(saved.length);
       });
   })();
 
