@@ -2667,8 +2667,9 @@ body.stinger-active {
   padding: .17rem .55rem;
   border-radius: 30px;
 }
-.wish-badge-doa   { background: rgba(200,169,110,.18); color: var(--gold-dark); }
-.wish-badge-photo { background: rgba(33,150,243,.12);  color: #1565c0; }
+.wish-badge-doa    { background: rgba(200,169,110,.18); color: var(--gold-dark); }
+.wish-badge-photo  { background: rgba(33,150,243,.12);  color: #1565c0; }
+.wish-badge-guests { background: rgba(200,169,110,.12); color: var(--gold); border: 1px solid rgba(200,169,110,.25); }
 
 .wish-avatar-doa {
   background: linear-gradient(135deg, #f9e4c8, #c8a96e);

@@ -42,8 +42,11 @@ exports.handler = async (event) => {
     // ── GET: list all wishes (public — used by wall.html) ───────
     if (event.httpMethod === 'GET') {
       const rows = await sql`
-        SELECT id, name, type, text, photo_data, caption, created_at
-        FROM wishes ORDER BY created_at ASC
+        SELECT w.id, w.name, w.type, w.text, w.photo_data, w.caption, w.created_at,
+               r.guests
+        FROM wishes w
+        LEFT JOIN rsvp r ON LOWER(TRIM(w.name)) = LOWER(TRIM(r.name))
+        ORDER BY w.created_at ASC
       `;
       const mapped = rows.map(r => ({
         id:           r.id,
@@ -53,6 +56,7 @@ exports.handler = async (event) => {
         photoDataUrl: r.photo_data,
         caption:      r.caption,
         time:         new Date(r.created_at).getTime(),
+        guests:       parseInt(r.guests) || 0,
       }));
       return { statusCode: 200, headers: CORS, body: JSON.stringify(mapped) };
     }

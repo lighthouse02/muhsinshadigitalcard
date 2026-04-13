@@ -201,6 +201,16 @@
       border: 1px solid rgba(120,200,150,.25);
     }
 
+    .wc-badge-guests {
+      background: rgba(200,169,110,.12);
+      color: var(--gold);
+      border: 1px solid rgba(200,169,110,.25);
+      font-size: .72rem;
+      font-weight: 600;
+      padding: .18rem .6rem;
+      border-radius: 30px;
+    }
+
     /* ── Text ── */
     .wc-text {
       font-family: 'EB Garamond', Georgia, serif;
@@ -667,6 +677,9 @@
         const initial = esc((entry.name || '?').charAt(0).toUpperCase());
         const name    = esc(entry.name || 'Tetamu');
         const time    = esc(relTime(entry.time));
+        const guestBadge = entry.guests > 1
+          ? `<span class="wc-badge wc-badge-guests">👥 +${entry.guests - 1}</span>`
+          : '';
 
         if (entry.type === 'photo') {
           return `<div class="wc wc-photo">
@@ -674,6 +687,7 @@
             <div class="wc-meta">
               <div class="wc-avatar">${initial}</div>
               <span class="wc-name">${name}</span>
+              ${guestBadge}
               <span class="wc-badge wc-badge-photo"><i class="fas fa-camera"></i> Kenangan</span>
             </div>
             ${entry.caption ? `<p class="wc-caption">${esc(entry.caption)}</p>` : ''}
@@ -686,6 +700,7 @@
             <div class="wc-meta">
               <div class="wc-avatar-doa">🤲</div>
               <span class="wc-name">${name}</span>
+              ${guestBadge}
               <span class="wc-badge wc-badge-doa">Doa</span>
             </div>
             <div class="wc-divider"></div>
@@ -698,6 +713,7 @@
           <div class="wc-meta">
             <div class="wc-avatar">${initial}</div>
             <span class="wc-name">${name}</span>
+            ${guestBadge}
           </div>
           <p class="wc-text"><span class="wc-quote-icon">&ldquo;</span>${esc(entry.text)}</p>
           <span class="wc-time">${time}</span>

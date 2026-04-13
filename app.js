@@ -440,7 +440,7 @@
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (!data) return;
-        document.getElementById('rsvp-count-hadir').textContent    = data.hadir;
+        document.getElementById('rsvp-count-hadir').textContent    = data.totalPeserta || data.hadir;
         document.getElementById('rsvp-count-takhadir').textContent = data.takHadir;
       })
       .catch(() => {});
@@ -498,7 +498,7 @@
 
       if (ucapan) {
         if (ucapanMode === 'public') {
-          const entry = { type: 'wish', name, text: ucapan, time: Date.now() };
+          const entry = { type: 'wish', name, text: ucapan, time: Date.now(), guests: attendingRadio.value === 'yes' ? guests : 0 };
           const saved = gbLoad(); saved.push(entry); gbSave(saved);
           fetch('/.netlify/functions/wishes', {
             method:  'POST',
@@ -681,6 +681,9 @@
     const card    = document.createElement('div');
     const initial = escapeHtml((entry.name || '?').charAt(0).toUpperCase());
     const timeNode = `<span class="wish-time">${gbRelTime(entry.time)}</span>`;
+    const guestBadge = entry.guests > 1
+      ? `<span class="wish-badge wish-badge-guests">👥 +${entry.guests - 1}</span>`
+      : '';
 
     if (entry.type === 'photo') {
       card.className = 'wish-card wish-card-photo';
@@ -690,6 +693,7 @@
           `<div class="wish-meta-row">` +
             `<div class="wish-avatar wish-avatar-sm">${initial}</div>` +
             `<strong>${escapeHtml(entry.name)}</strong>` +
+            guestBadge +
             `<span class="wish-badge wish-badge-photo"><i class="fas fa-camera"></i> Photo</span>` +
           `</div>` +
           (entry.caption ? `<p class="wish-caption">${escapeHtml(entry.caption)}</p>` : '') +
@@ -702,6 +706,7 @@
         `<div class="wish-body">` +
           `<div class="wish-meta-row">` +
             `<strong>${escapeHtml(entry.name)}</strong>` +
+            guestBadge +
             `<span class="wish-badge wish-badge-doa">Doa</span>` +
           `</div>` +
           `<p>${escapeHtml(entry.text)}</p>` +
@@ -713,6 +718,7 @@
         `<div class="wish-avatar">${initial}</div>` +
         `<div class="wish-body">` +
           `<strong>${escapeHtml(entry.name)}</strong>` +
+          guestBadge +
           `<p>${escapeHtml(entry.text)}</p>` +
           timeNode +
         `</div>`;
