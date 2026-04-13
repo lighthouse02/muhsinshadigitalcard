@@ -106,14 +106,18 @@
       padding-bottom: 40px;
       padding-left: 2rem;
       padding-right: 2rem;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: auto;
+      -webkit-overflow-scrolling: touch;
     }
+    #wall::-webkit-scrollbar { width: 0; background: transparent; }
+    #wall { scrollbar-width: none; }
 
     /* ── Masonry columns ── */
     #mosaic {
       columns: 3 360px;
       column-gap: 1.4rem;
-      /* inner scroll driven by JS */
     }
 
     @media (max-width: 900px) {
@@ -741,45 +745,55 @@
 
         empty.classList.remove('visible');
         // Reset scroll when re-rendering so new card at top is visible
-        scrollY   = 0;
+        document.getElementById('wall').scrollTop = 0;
         direction = 1;
-        mosaic.style.transform = 'translateY(0)';
         mosaic.innerHTML = entries.slice().reverse().map(buildCard).join('');
       }
 
       /* ─────────────────── Auto-scroll ─────────────────── */
-      let scrollY    = 0;
       let direction  = 1;
       const SPEED    = 0.45;
       const PAUSE_MS = 3000;
+      const USER_PAUSE_MS = 5000; // resume auto-scroll after 5s of no interaction
       let paused     = false;
       let scrollPaused = false; // paused by drawer
+      let userScrolling = false; // paused by manual scroll
       let pauseTimer = null;
+      let userScrollTimer = null;
+
+      // Detect manual scroll interaction
+      const wall = document.getElementById('wall');
+      function onUserScroll() {
+        userScrolling = true;
+        clearTimeout(userScrollTimer);
+        userScrollTimer = setTimeout(() => { userScrolling = false; }, USER_PAUSE_MS);
+      }
+      wall.addEventListener('wheel', onUserScroll, { passive: true });
+      wall.addEventListener('touchstart', onUserScroll, { passive: true });
+      wall.addEventListener('touchmove', onUserScroll, { passive: true });
+      wall.addEventListener('mousedown', onUserScroll, { passive: true });
+      wall.addEventListener('pointerdown', onUserScroll, { passive: true });
 
       function scrollLoop() {
-        if (!scrollPaused) {
-          const wall    = document.getElementById('wall');
-          const content = document.getElementById('mosaic');
-          const maxScroll = Math.max(0, content.scrollHeight - wall.clientHeight + 40);
+        if (!scrollPaused && !userScrolling) {
+          const maxScroll = Math.max(0, wall.scrollHeight - wall.clientHeight);
 
           if (!paused && maxScroll > 0) {
-            scrollY += SPEED * direction;
+            wall.scrollTop += SPEED * direction;
 
-            if (scrollY >= maxScroll) {
-              scrollY   = maxScroll;
+            if (wall.scrollTop >= maxScroll) {
+              wall.scrollTop = maxScroll;
               direction = -1;
               paused    = true;
               clearTimeout(pauseTimer);
               pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
-            } else if (scrollY <= 0) {
-              scrollY   = 0;
+            } else if (wall.scrollTop <= 0) {
+              wall.scrollTop = 0;
               direction = 1;
               paused    = true;
               clearTimeout(pauseTimer);
               pauseTimer = setTimeout(() => { paused = false; }, PAUSE_MS);
             }
-
-            content.style.transform = `translateY(-${scrollY}px)`;
           }
         }
         requestAnimationFrame(scrollLoop);
