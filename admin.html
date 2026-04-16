@@ -495,8 +495,8 @@
         <div class="rsvp-tally-card green">
           <div class="rsvp-tally-icon"><i class="fas fa-check-circle"></i></div>
           <div class="rsvp-tally-num" id="tally-hadir">0</div>
-          <div class="rsvp-tally-lbl">Hadir</div>
-          <div class="rsvp-tally-sub" id="tally-seats">0 kehadiran</div>
+          <div class="rsvp-tally-lbl">Seats Reserved</div>
+          <div class="rsvp-tally-sub" id="tally-seats">0 responses</div>
         </div>
         <div class="rsvp-tally-card red">
           <div class="rsvp-tally-icon"><i class="fas fa-times-circle"></i></div>
@@ -518,13 +518,10 @@
           <span class="rsvp-legend-cell" style="background:#7bc96f"></span>
           <span class="rsvp-legend-cell" style="background:#40c463"></span>
           <span class="rsvp-legend-cell" style="background:#216e39"></span>
-          <span class="rsvp-legend-lbl">Hadir (1–2 · 3–4 · 5–6 · 7+)</span>
-          <span class="rsvp-legend-sep"></span>
-          <span class="rsvp-legend-cell" style="background:#f4a0a0"></span>
-          <span class="rsvp-legend-lbl">Tidak Hadir</span>
+          <span class="rsvp-legend-lbl">Reserved (1–2 · 3–4 · 5–6 · 7+)</span>
           <span class="rsvp-legend-sep"></span>
           <span class="rsvp-legend-cell" style="background:#ebedf0"></span>
-          <span class="rsvp-legend-lbl">Kosong</span>
+          <span class="rsvp-legend-lbl">Available</span>
         </div>
       </div>
 
@@ -781,9 +778,9 @@
         <div class="stat-sub">respons diterima</div>
       </div>
       <div class="stat-card green">
-        <div class="stat-label"><i class="fas fa-check-circle"></i> Hadir</div>
-        <div class="stat-value">${attending.length}</div>
-        <div class="stat-sub">${seats} kehadiran</div>
+        <div class="stat-label"><i class="fas fa-check-circle"></i> Seats Reserved</div>
+        <div class="stat-value">${seats}</div>
+        <div class="stat-sub">${attending.length} responses</div>
       </div>
       <div class="stat-card red">
         <div class="stat-label"><i class="fas fa-times-circle"></i> Tidak Hadir</div>
@@ -816,15 +813,15 @@
     const seats     = attending.reduce((sum, r) => sum + (parseInt(r.guests) || 1), 0);
 
     document.getElementById('rsvp-count-label').textContent = `${cachedRsvp.length} respons`;
-    document.getElementById('tally-hadir').textContent = attending.length;
+    document.getElementById('tally-hadir').textContent = seats;
     document.getElementById('tally-tidak').textContent = notComing.length;
-    document.getElementById('tally-seats').textContent = `${seats} kehadiran`;
+    document.getElementById('tally-seats').textContent = `${attending.length} responses`;
 
-    // Build kehadiran/1000 grid — each cell = 1 seat
+    // Build kehadiran/1000 grid — each cell = 1 seat reserved
     const cells = [];
     let seatIndex = 0;
 
-    // Fill confirmed seats (hadir) — sorted by entry
+    // Fill confirmed seats (hadir)
     const attending_ = cachedRsvp.filter(r => r.attending === 'yes');
     for (const r of attending_) {
       const g = parseInt(r.guests) || 1;
@@ -835,18 +832,9 @@
       }
     }
 
-    // Fill declined seats (tidak hadir)
-    const notComing_ = cachedRsvp.filter(r => r.attending === 'no');
-    for (const r of notComing_) {
-      if (seatIndex >= CAPACITY) break;
-      const name = r.name ? esc(r.name) : '';
-      cells.push(`<div class="rsvp-cell tidak" title="${name} — Tidak Hadir"></div>`);
-      seatIndex++;
-    }
-
-    // Fill remaining empty seats
+    // Fill remaining empty capacity
     for (; seatIndex < CAPACITY; seatIndex++) {
-      cells.push('<div class="rsvp-cell" title="Belum dijawab"></div>');
+      cells.push('<div class="rsvp-cell" title="Kosong"></div>');
     }
 
     const grid = document.getElementById('rsvp-grid');
