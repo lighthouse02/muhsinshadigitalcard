@@ -393,9 +393,9 @@
     }
     .rsvp-grid-title    { font-size: .9rem; font-weight: 600; color: var(--ink); }
     .rsvp-grid-subtitle { font-size: .75rem; color: var(--muted); }
-    .rsvp-grid { display: flex; flex-wrap: wrap; gap: 3px; }
+    .rsvp-grid { display: flex; flex-wrap: wrap; gap: 2px; }
     .rsvp-cell {
-      width: 14px; height: 14px;
+      width: 10px; height: 10px;
       border-radius: 2px;
       background: #ebedf0;
       cursor: default;
@@ -509,23 +509,22 @@
       <!-- Grid -->
       <div class="rsvp-grid-wrap">
         <div class="rsvp-grid-header">
-          <span class="rsvp-grid-title"><i class="fas fa-th"></i> Grid Kehadiran</span>
-          <span class="rsvp-grid-subtitle">Setiap kotak = 1 respons RSVP</span>
+          <span class="rsvp-grid-title"><i class="fas fa-th"></i> Kehadiran / 1000</span>
+          <span class="rsvp-grid-subtitle">Setiap kotak = 1 tempat duduk</span>
         </div>
         <div class="rsvp-grid" id="rsvp-grid"></div>
         <div class="rsvp-legend">
-          <span class="rsvp-legend-lbl">Hadir (sedikit tetamu)</span>
           <span class="rsvp-legend-cell" style="background:#c6e48b"></span>
           <span class="rsvp-legend-cell" style="background:#7bc96f"></span>
           <span class="rsvp-legend-cell" style="background:#40c463"></span>
           <span class="rsvp-legend-cell" style="background:#216e39"></span>
-          <span class="rsvp-legend-lbl">(ramai)</span>
+          <span class="rsvp-legend-lbl">Hadir (1–2 · 3–4 · 5–6 · 7+)</span>
           <span class="rsvp-legend-sep"></span>
           <span class="rsvp-legend-cell" style="background:#f4a0a0"></span>
           <span class="rsvp-legend-lbl">Tidak Hadir</span>
           <span class="rsvp-legend-sep"></span>
           <span class="rsvp-legend-cell" style="background:#ebedf0"></span>
-          <span class="rsvp-legend-lbl">Baki kapasiti</span>
+          <span class="rsvp-legend-lbl">Kosong</span>
         </div>
       </div>
 
@@ -821,26 +820,37 @@
     document.getElementById('tally-tidak').textContent = notComing.length;
     document.getElementById('tally-seats').textContent = `${seats} tempat duduk`;
 
-    // Build grid cells
-    const cells = [...cachedRsvp].map(r => {
-      const g   = parseInt(r.guests) || 1;
-      const cls = r.attending === 'yes'
-        ? (g >= 7 ? 'h4' : g >= 5 ? 'h3' : g >= 3 ? 'h2' : 'h1')
-        : 'tidak';
-      const name = r.name ? esc(r.name) + ' — ' : '';
-      const tip  = r.attending === 'yes' ? `${name}Hadir · ${g} orang` : `${name}Tidak Hadir`;
-      return `<div class="rsvp-cell ${cls}" title="${tip}"></div>`;
-    });
+    // Build kehadiran/1000 grid — each cell = 1 seat
+    const cells = [];
+    let seatIndex = 0;
 
-    const emptyCount = Math.min(Math.max(0, CAPACITY - cachedRsvp.length), 300);
-    for (let i = 0; i < emptyCount; i++) {
+    // Fill confirmed seats (hadir) — sorted by entry
+    const attending_ = cachedRsvp.filter(r => r.attending === 'yes');
+    for (const r of attending_) {
+      const g = parseInt(r.guests) || 1;
+      const name = r.name ? esc(r.name) : '';
+      for (let s = 0; s < g && seatIndex < CAPACITY; s++, seatIndex++) {
+        const cls = g >= 7 ? 'h4' : g >= 5 ? 'h3' : g >= 3 ? 'h2' : 'h1';
+        cells.push(`<div class="rsvp-cell ${cls}" title="${name} — ${s + 1}/${g} orang"></div>`);
+      }
+    }
+
+    // Fill declined seats (tidak hadir)
+    const notComing_ = cachedRsvp.filter(r => r.attending === 'no');
+    for (const r of notComing_) {
+      if (seatIndex >= CAPACITY) break;
+      const name = r.name ? esc(r.name) : '';
+      cells.push(`<div class="rsvp-cell tidak" title="${name} — Tidak Hadir"></div>`);
+      seatIndex++;
+    }
+
+    // Fill remaining empty seats
+    for (; seatIndex < CAPACITY; seatIndex++) {
       cells.push('<div class="rsvp-cell" title="Belum dijawab"></div>');
     }
 
     const grid = document.getElementById('rsvp-grid');
-    grid.innerHTML = cells.length
-      ? cells.join('')
-      : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem 0">Tiada respons lagi.</p>';
+    grid.innerHTML = cells.join('');
 
     renderRsvpTable();
   }
