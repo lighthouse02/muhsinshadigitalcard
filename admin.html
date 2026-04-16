@@ -473,7 +473,7 @@
       <div class="cap-bar-track">
         <div class="cap-bar-fill" id="cap-bar-fill" style="width:0%"></div>
       </div>
-      <div class="cap-bar-info" id="cap-bar-info">— / 500 jemputan dikonfirmasi</div>
+      <div class="cap-bar-info" id="cap-bar-info">— / 500 kehadiran confirmed</div>
     </div>
 
     <!-- Section tabs -->
@@ -496,7 +496,7 @@
           <div class="rsvp-tally-icon"><i class="fas fa-check-circle"></i></div>
           <div class="rsvp-tally-num" id="tally-hadir">0</div>
           <div class="rsvp-tally-lbl">Hadir</div>
-          <div class="rsvp-tally-sub" id="tally-seats">0 tempat duduk</div>
+          <div class="rsvp-tally-sub" id="tally-seats">0 kehadiran</div>
         </div>
         <div class="rsvp-tally-card red">
           <div class="rsvp-tally-icon"><i class="fas fa-times-circle"></i></div>
@@ -510,7 +510,7 @@
       <div class="rsvp-grid-wrap">
         <div class="rsvp-grid-header">
           <span class="rsvp-grid-title"><i class="fas fa-th"></i> Kehadiran / 1000</span>
-          <span class="rsvp-grid-subtitle">Setiap kotak = 1 tempat duduk</span>
+          <span class="rsvp-grid-subtitle">Setiap kotak = 1 kehadiran</span>
         </div>
         <div class="rsvp-grid" id="rsvp-grid"></div>
         <div class="rsvp-legend">
@@ -771,7 +771,7 @@
     fill.style.width = pct + '%';
     fill.className = 'cap-bar-fill' + (pct >= 100 ? ' full' : pct >= 80 ? ' warning' : '');
     document.getElementById('cap-bar-info').textContent =
-      `${seats} / ${CAPACITY} tempat dikonfirmasi (${pct}%)`;
+      `${seats} / ${CAPACITY} kehadiran confirmed (${pct}%)`;
 
     const grid = document.getElementById('stats-grid');
     grid.innerHTML = `
@@ -783,7 +783,7 @@
       <div class="stat-card green">
         <div class="stat-label"><i class="fas fa-check-circle"></i> Hadir</div>
         <div class="stat-value">${attending.length}</div>
-        <div class="stat-sub">${seats} tempat duduk</div>
+        <div class="stat-sub">${seats} kehadiran</div>
       </div>
       <div class="stat-card red">
         <div class="stat-label"><i class="fas fa-times-circle"></i> Tidak Hadir</div>
@@ -818,7 +818,7 @@
     document.getElementById('rsvp-count-label').textContent = `${cachedRsvp.length} respons`;
     document.getElementById('tally-hadir').textContent = attending.length;
     document.getElementById('tally-tidak').textContent = notComing.length;
-    document.getElementById('tally-seats').textContent = `${seats} tempat duduk`;
+    document.getElementById('tally-seats').textContent = `${seats} kehadiran`;
 
     // Build kehadiran/1000 grid — each cell = 1 seat
     const cells = [];
